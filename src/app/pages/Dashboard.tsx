@@ -40,7 +40,7 @@ export function Dashboard() {
   const progressPercentage = (userProgress.xp / userProgress.xpToNextLevel) * 100;
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto min-h-screen bg-slate-50/50">
+    <div className="p-6 md:p-10 max-w-7xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900 transition-colors duration-300">
       {/* Header */}
       <motion.div 
         className="mb-10"
@@ -48,11 +48,11 @@ export function Dashboard() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="text-4xl mb-3 font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 bg-clip-text text-transparent flex items-center gap-3">
+        <h1 className="text-4xl mb-3 font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent flex items-center gap-3">
           <Sparkles className="w-8 h-8 text-yellow-500 animate-pulse" />
           Xush kelibsiz, Talaba!
         </h1>
-        <p className="text-slate-500 text-lg font-medium">
+        <p className="text-slate-500 dark:text-slate-400 text-lg font-medium">
           Huquq va qonunchilikni o'rganish bo'yicha sayohatingizni davom ettiring
         </p>
       </motion.div>
@@ -67,25 +67,25 @@ export function Dashboard() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            <Card className="border-0 shadow-2xl relative overflow-hidden bg-white/80 backdrop-blur-xl">
+            <Card className="border-0 shadow-2xl relative overflow-hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl transition-colors duration-300">
               <div 
                 className="absolute inset-0 opacity-[0.03] pointer-events-none"
                 style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #ec4899 100%)' }}
               />
               
-              <CardHeader className="border-b border-slate-100 pb-6">
+              <CardHeader className="border-b border-slate-100 dark:border-slate-700/50 pb-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <CardTitle className="text-2xl font-bold flex items-center gap-3">
+                    <CardTitle className="text-2xl font-bold flex items-center gap-3 dark:text-white">
                       <div className="bg-gradient-to-br from-indigo-500 to-purple-500 p-2.5 rounded-xl shadow-lg">
                         <TrendingUp className="w-6 h-6 text-white" />
                       </div>
                       Kunlik Huquqiy Muammo
                     </CardTitle>
-                    <CardDescription className="text-base mt-2 font-medium">Bugungi real hayotiy vaziyatga ovoz bering</CardDescription>
+                    <CardDescription className="text-base mt-2 font-medium dark:text-slate-400">Bugungi real hayotiy vaziyatga ovoz bering</CardDescription>
                   </div>
                   <Badge 
-                    className="px-4 py-2 text-sm font-bold shadow-md"
+                    className="px-4 py-2 text-sm font-bold shadow-md text-white border-none"
                     style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
                   >
                     {results.totalVotes} ta ovoz
@@ -94,9 +94,9 @@ export function Dashboard() {
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-6">
-                  <div className="p-6 rounded-2xl bg-indigo-50/50 border border-indigo-100 shadow-sm">
-                    <h3 className="text-xl font-bold mb-3 text-slate-800">{todaysDilemma.title}</h3>
-                    <p className="text-base text-slate-600 leading-relaxed font-medium">
+                  <div className="p-6 rounded-2xl bg-indigo-50/50 dark:bg-indigo-900/20 border border-indigo-100 dark:border-indigo-800/50 shadow-sm transition-colors duration-300">
+                    <h3 className="text-xl font-bold mb-3 text-slate-800 dark:text-indigo-100">{todaysDilemma.title}</h3>
+                    <p className="text-base text-slate-600 dark:text-indigo-200/80 leading-relaxed font-medium">
                       {todaysDilemma.scenario}
                     </p>
                   </div>
@@ -117,14 +117,14 @@ export function Dashboard() {
                           className={`w-full text-left p-5 rounded-xl border-2 transition-all duration-300 relative overflow-hidden ${
                             hasVoted
                               ? isSelected
-                                ? "border-purple-400 bg-purple-50/80 shadow-md"
-                                : "border-slate-100 bg-slate-50/50 opacity-80"
-                              : "border-slate-200 hover:border-purple-400 hover:bg-purple-50/50 hover:shadow-md cursor-pointer"
+                                ? "border-purple-400 dark:border-purple-500 bg-purple-50/80 dark:bg-purple-900/30 shadow-md"
+                                : "border-slate-100 dark:border-slate-700/50 bg-slate-50/50 dark:bg-slate-800/50 opacity-80"
+                              : "border-slate-200 dark:border-slate-700 hover:border-purple-400 dark:hover:border-purple-500 hover:bg-purple-50/50 dark:hover:bg-purple-900/20 hover:shadow-md cursor-pointer bg-white dark:bg-slate-800"
                           } ${hasVoted ? "cursor-default" : ""}`}
                         >
                           <div className="flex items-start justify-between gap-3 relative z-10">
                             <div className="flex-1">
-                              <p className="text-base font-semibold text-slate-700 mb-2">{option}</p>
+                              <p className={`text-base font-semibold mb-2 ${hasVoted && isSelected ? 'text-purple-900 dark:text-purple-200' : 'text-slate-700 dark:text-slate-300'}`}>{option}</p>
                               {hasVoted && (
                                 <motion.div 
                                   className="space-y-2"
@@ -132,7 +132,7 @@ export function Dashboard() {
                                   animate={{ opacity: 1, height: 'auto' }}
                                   transition={{ duration: 0.5, delay: 0.1 }}
                                 >
-                                  <div className="relative h-2.5 bg-slate-200 rounded-full overflow-hidden">
+                                  <div className="relative h-2.5 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden">
                                     <motion.div
                                       className="absolute inset-y-0 left-0 rounded-full shadow-sm"
                                       style={{ background: 'linear-gradient(90deg, #8b5cf6 0%, #d946ef 100%)' }}
@@ -141,7 +141,7 @@ export function Dashboard() {
                                       transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
                                     />
                                   </div>
-                                  <p className="text-sm font-bold text-purple-600">
+                                  <p className="text-sm font-bold text-purple-600 dark:text-purple-400">
                                     {percentage}% ({votes} ovoz)
                                   </p>
                                 </motion.div>
@@ -153,7 +153,7 @@ export function Dashboard() {
                                 animate={{ scale: 1, rotate: 0 }}
                                 transition={{ duration: 0.5, type: "spring" }}
                               >
-                                <CheckCircle2 className="w-6 h-6 text-purple-600 flex-shrink-0 mt-1" />
+                                <CheckCircle2 className="w-6 h-6 text-purple-600 dark:text-purple-400 flex-shrink-0 mt-1" />
                               </motion.div>
                             )}
                           </div>
@@ -166,7 +166,7 @@ export function Dashboard() {
                     <motion.p 
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      className="text-sm font-medium text-slate-500 text-center flex items-center justify-center gap-2 bg-slate-50 py-3 rounded-lg"
+                      className="text-sm font-medium text-slate-500 dark:text-slate-400 text-center flex items-center justify-center gap-2 bg-slate-50 dark:bg-slate-800/50 py-3 rounded-lg border border-slate-100 dark:border-slate-700/50"
                     >
                       <Zap className="w-4 h-4 text-amber-500" />
                       Ovoz berish uchun variantlardan birini tanlang
@@ -183,15 +183,15 @@ export function Dashboard() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
+            <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl transition-colors duration-300">
               <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-3">
+                <CardTitle className="text-2xl flex items-center gap-3 dark:text-white">
                   <div className="bg-gradient-to-br from-emerald-400 to-teal-500 p-2.5 rounded-xl shadow-lg">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
                   Sizning O'quv Yo'lingiz
                 </CardTitle>
-                <CardDescription className="text-base font-medium">Huquqni mukammal o'zlashtirish uchun darslarni yakunlang</CardDescription>
+                <CardDescription className="text-base font-medium dark:text-slate-400">Huquqni mukammal o'zlashtirish uchun darslarni yakunlang</CardDescription>
               </CardHeader>
               <CardContent>
                 <LearningJourney />
@@ -224,13 +224,13 @@ export function Dashboard() {
                     <span className="text-5xl font-extrabold relative z-10">{userProgress.level}</span>
                   </motion.div>
                   <h3 className="font-bold text-2xl mb-1">{userProgress.level}-Daraja</h3>
-                  <p className="text-sm font-medium text-blue-100 flex items-center justify-center gap-2 bg-black/10 w-max mx-auto px-3 py-1 rounded-full">
+                  <p className="text-sm font-medium text-blue-100 flex items-center justify-center gap-2 bg-black/20 w-max mx-auto px-4 py-1.5 rounded-full border border-white/10">
                     <Sparkles className="w-4 h-4 text-yellow-300" />
                     Huquqshunos
                   </p>
                 </div>
 
-                <div className="space-y-2 bg-black/10 p-4 rounded-2xl backdrop-blur-sm">
+                <div className="space-y-2 bg-black/20 p-4 rounded-2xl backdrop-blur-sm border border-white/10">
                   <div className="flex justify-between text-sm font-bold">
                     <span>{userProgress.xp} XP</span>
                     <span>{userProgress.xpToNextLevel} XP</span>
@@ -250,7 +250,7 @@ export function Dashboard() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
+            <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl transition-colors duration-300">
               <CardContent className="p-6">
                 <div className="flex items-center gap-5">
                   <motion.div 
@@ -261,10 +261,10 @@ export function Dashboard() {
                     <Flame className="w-8 h-8 text-white" />
                   </motion.div>
                   <div>
-                    <p className="text-3xl font-extrabold bg-gradient-to-r from-orange-500 to-red-600 bg-clip-text text-transparent">
+                    <p className="text-3xl font-extrabold bg-gradient-to-r from-orange-500 to-red-600 dark:from-orange-400 dark:to-red-500 bg-clip-text text-transparent">
                       {userProgress.streak} Kun
                     </p>
-                    <p className="text-sm font-bold text-slate-500 uppercase tracking-wider mt-1">Uzluksiz ta'lim 🔥</p>
+                    <p className="text-sm font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider mt-1">Uzluksiz ta'lim 🔥</p>
                   </div>
                 </div>
               </CardContent>
@@ -277,23 +277,23 @@ export function Dashboard() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.5 }}
           >
-            <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl">
+            <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl transition-colors duration-300">
               <CardHeader className="pb-4">
-                <CardTitle className="text-lg font-bold">Tezkor Statistika</CardTitle>
+                <CardTitle className="text-lg font-bold dark:text-white">Tezkor Statistika</CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
-                    <span className="text-sm font-semibold text-slate-600">Tugallangan darslar</span>
-                    <span className="font-extrabold text-xl text-indigo-600">{userProgress.completedLessons.length}</span>
+                  <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Tugallangan darslar</span>
+                    <span className="font-extrabold text-xl text-indigo-600 dark:text-indigo-400">{userProgress.completedLessons.length}</span>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
-                    <span className="text-sm font-semibold text-slate-600">Yechilgan holatlar</span>
-                    <span className="font-extrabold text-xl text-purple-600">{userProgress.completedCases.length}</span>
+                  <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Yechilgan holatlar</span>
+                    <span className="font-extrabold text-xl text-purple-600 dark:text-purple-400">{userProgress.completedCases.length}</span>
                   </div>
-                  <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 border border-slate-100 hover:bg-slate-100 transition-colors">
-                    <span className="text-sm font-semibold text-slate-600">Olingan nishonlar</span>
-                    <span className="font-extrabold text-xl text-pink-600">{earnedBadges.length}/{userProgress.badges.length}</span>
+                  <div className="flex justify-between items-center p-4 rounded-xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+                    <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">Olingan nishonlar</span>
+                    <span className="font-extrabold text-xl text-pink-600 dark:text-pink-400">{earnedBadges.length}/{userProgress.badges.length}</span>
                   </div>
                 </div>
               </CardContent>
