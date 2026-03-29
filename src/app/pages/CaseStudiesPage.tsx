@@ -46,7 +46,7 @@ export function CaseStudiesPage() {
         transition={{ duration: 0.5 }}
       >
         <h1 className="text-4xl mb-3 font-extrabold text-gray-900 dark:text-white flex items-center gap-4">
-          <div className="p-3 bg-primary/10 dark:bg-primary/20 rounded-2xl">
+          <div className="p-3 bg-primary/10 dark:bg-blue-500/20 rounded-2xl">
             <Scale className="w-10 h-10 text-primary dark:text-blue-400" />
           </div>
           Amaliy Holatlar va Mashqlar
@@ -59,7 +59,7 @@ export function CaseStudiesPage() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Chap Panel - Holatlar Ro'yxati */}
         <div className="lg:col-span-1">
-          <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-md h-full transition-colors duration-300">
+          <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/90 backdrop-blur-md h-full transition-colors duration-300">
             <CardHeader className="border-b border-gray-100 dark:border-slate-700/50 pb-4">
               <CardTitle className="text-xl font-bold dark:text-white">Holatni Tanlang</CardTitle>
               <CardDescription className="font-medium dark:text-slate-400">Mashq qilish uchun vaziyatni tanlang</CardDescription>
@@ -78,12 +78,12 @@ export function CaseStudiesPage() {
                       onClick={() => handleCaseSelect(caseStudy.id)}
                       className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 group ${
                         isSelected
-                          ? "border-primary dark:border-blue-500 bg-primary/5 dark:bg-blue-500/10 shadow-md scale-[1.02]"
-                          : "border-gray-100 dark:border-slate-700 hover:border-primary/30 dark:hover:border-blue-500/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:shadow-sm"
+                          ? "border-primary dark:border-blue-500 bg-primary/5 dark:bg-blue-500/20 shadow-md scale-[1.02]"
+                          : "border-gray-100 dark:border-slate-700 hover:border-primary/30 dark:hover:border-blue-400/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:shadow-sm"
                       }`}
                     >
                       <div className="space-y-2.5">
-                        <Badge variant="secondary" className={`${isSelected ? 'bg-primary/20 dark:bg-blue-500/20 text-primary dark:text-blue-300' : 'bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-gray-300'} text-xs font-bold px-2.5 py-1`}>
+                        <Badge variant="secondary" className={`${isSelected ? 'bg-primary/20 dark:bg-blue-500/30 text-primary dark:text-blue-300' : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300'} text-xs font-bold px-2.5 py-1 border-none`}>
                           {caseStudy.category}
                         </Badge>
                         <h4 className={`font-bold leading-snug ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-slate-200'}`}>{caseStudy.title}</h4>
@@ -107,10 +107,10 @@ export function CaseStudiesPage() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 className="h-full"
               >
-                <Card className="h-full border-0 shadow-lg bg-gray-50/50 dark:bg-slate-800/30 border-2 border-dashed border-gray-200 dark:border-slate-700">
+                <Card className="h-full border-0 shadow-lg bg-gray-50/50 dark:bg-slate-800/50 border-2 border-dashed border-gray-200 dark:border-slate-700 transition-colors duration-300">
                   <CardContent className="flex flex-col items-center justify-center h-[500px] text-center p-10">
-                    <div className="w-24 h-24 bg-white dark:bg-slate-800 rounded-full shadow-sm flex items-center justify-center mb-6">
-                      <Scale className="w-12 h-12 text-gray-300 dark:text-slate-600" />
+                    <div className="w-24 h-24 bg-white dark:bg-slate-700/50 rounded-full shadow-sm flex items-center justify-center mb-6">
+                      <Scale className="w-12 h-12 text-gray-300 dark:text-slate-500" />
                     </div>
                     <h3 className="text-2xl font-bold text-gray-800 dark:text-slate-200 mb-2">Mashqni boshlashga tayyormisiz?</h3>
                     <p className="text-base text-gray-500 dark:text-slate-400 max-w-sm">
@@ -130,10 +130,10 @@ export function CaseStudiesPage() {
                 {/* Ssenariy Kartasi */}
                 <Card className="border-0 shadow-xl overflow-hidden relative dark:bg-slate-800 transition-colors duration-300">
                   <div className="absolute top-0 left-0 w-1 h-full bg-primary dark:bg-blue-500" />
-                  <CardHeader className="bg-white dark:bg-slate-800 pb-4">
+                  <CardHeader className="bg-white dark:bg-slate-800 pb-4 border-b border-gray-50 dark:border-slate-700/50">
                     <div className="flex items-start justify-between gap-4">
                       <div className="flex-1">
-                        <Badge variant="secondary" className="mb-3 bg-primary/10 dark:bg-blue-500/20 text-primary dark:text-blue-400 font-bold">
+                        <Badge variant="secondary" className="mb-3 bg-primary/10 dark:bg-blue-500/20 text-primary dark:text-blue-400 font-bold border-none">
                           {currentCase.category}
                         </Badge>
                         <CardTitle className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">{currentCase.title}</CardTitle>
@@ -143,7 +143,7 @@ export function CaseStudiesPage() {
                           variant="outline"
                           size="sm"
                           onClick={handleReset}
-                          className="font-bold border-2 hover:bg-gray-50 dark:hover:bg-slate-700 dark:border-slate-600 dark:text-slate-200"
+                          className="font-bold border-2 hover:bg-gray-50 dark:hover:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:bg-slate-800"
                         >
                           <RotateCcw className="w-4 h-4 mr-2" />
                           Qayta urinish
@@ -151,12 +151,12 @@ export function CaseStudiesPage() {
                       )}
                     </div>
                   </CardHeader>
-                  <CardContent className="bg-gray-50/50 dark:bg-slate-900/50 pt-6">
+                  <CardContent className="bg-gray-50/50 dark:bg-slate-900/30 pt-6">
                     <h4 className="font-extrabold text-primary dark:text-blue-400 mb-3 flex items-center gap-2">
                       <ArrowRight className="w-5 h-5" />
                       Ssenariy:
                     </h4>
-                    <p className="text-base leading-relaxed text-gray-700 dark:text-slate-300 bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">
+                    <p className="text-base leading-relaxed text-gray-700 dark:text-slate-200 bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">
                       {currentCase.scenario}
                     </p>
                   </CardContent>
@@ -176,17 +176,18 @@ export function CaseStudiesPage() {
                         const isSelected = selectedAction === index;
                         const isCorrect = action.isCorrect;
                         
-                        let stateStyles = "border-gray-200 dark:border-slate-600 bg-white dark:bg-slate-700 hover:border-primary/50 dark:hover:border-blue-400 hover:bg-gray-50 dark:hover:bg-slate-600";
+                        let stateStyles = "border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 hover:border-primary/50 dark:hover:border-blue-500/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 text-gray-800 dark:text-slate-200";
                         
                         if (showFeedback) {
                           if (isSelected) {
                             stateStyles = isCorrect 
-                              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 shadow-md" 
-                              : "border-red-500 bg-red-50 dark:bg-red-900/30 shadow-md";
+                              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-100 shadow-md" 
+                              : "border-red-500 bg-red-50 dark:bg-red-900/40 text-red-900 dark:text-red-100 shadow-md";
                           } else if (isCorrect) {
-                            stateStyles = "border-emerald-200 dark:border-emerald-800 bg-emerald-50/30 dark:bg-emerald-900/10 opacity-70";
+                            // To'g'ri javobni ko'rsatib qo'yish (agar xato tanlagan bo'lsa)
+                            stateStyles = "border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/30 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 opacity-80";
                           } else {
-                            stateStyles = "border-gray-100 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 opacity-50";
+                            stateStyles = "border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-slate-500 opacity-40";
                           }
                         }
 
@@ -200,7 +201,7 @@ export function CaseStudiesPage() {
                               }`}
                             >
                               <div className="flex items-start justify-between gap-4">
-                                <p className={`text-base font-medium flex-1 ${showFeedback && isSelected ? (isCorrect ? 'text-emerald-900 dark:text-emerald-100' : 'text-red-900 dark:text-red-100') : 'text-gray-800 dark:text-slate-200'}`}>
+                                <p className="text-base font-medium flex-1">
                                   {action.text}
                                 </p>
                                 {showFeedback && (isSelected || isCorrect) && (
@@ -227,53 +228,14 @@ export function CaseStudiesPage() {
                                   animate={{ opacity: 1, height: 'auto', y: 0 }}
                                   className={`mt-3 p-5 rounded-xl border-l-4 ${
                                     isCorrect 
-                                      ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-900 dark:text-emerald-100" 
-                                      : "bg-red-50 dark:bg-red-900/20 border-red-500 text-red-900 dark:text-red-100"
+                                      ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-900 dark:text-emerald-200" 
+                                      : "bg-red-50 dark:bg-red-900/20 border-red-500 text-red-900 dark:text-red-200"
                                   }`}
                                 >
                                   <h4 className={`font-extrabold mb-2 text-lg ${isCorrect ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
                                     {isCorrect ? "Javobingiz To'g'ri! 🎉" : "Noto'g'ri javob"}
                                   </h4>
-                                  <p className="text-sm leading-relaxed font-medium dark:opacity-90">
+                                  <p className="text-sm leading-relaxed font-medium">
                                     {action.feedback}
                                   </p>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        );
-                      })}
-                    </div>
-
-                    {/* Muvaffaqiyat xabari */}
-                    <AnimatePresence>
-                      {showFeedback && currentCase.actions[selectedAction!]?.isCorrect && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="mt-8 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/30 dark:to-teal-900/30 border-2 border-emerald-200 dark:border-emerald-800 rounded-2xl shadow-sm"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="bg-emerald-500 p-3 rounded-full shadow-lg shadow-emerald-500/30">
-                              <Award className="w-8 h-8 text-white" />
-                            </div>
-                            <div>
-                              <h4 className="font-extrabold text-xl text-emerald-800 dark:text-emerald-300 mb-1">Holat muvaffaqiyatli yechildi!</h4>
-                              <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                                To'g'ri huquqiy tahlil uchun +100 XP hisobingizga qo'shildi.
-                              </p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-    </div>
-  );
-}
+                                </motion.
