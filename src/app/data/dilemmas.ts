@@ -10,42 +10,42 @@ export const dailyDilemmas: DailyDilemma[] = [
   {
     id: "1",
     date: "2026-03-27",
-    title: "School Dress Code Dilemma",
-    scenario: "Your school has a strict dress code that prohibits students from wearing any political messages on clothing. A student wears a shirt supporting environmental protection. Should the school be allowed to enforce the dress code in this case?",
+    title: "Maktab formasi (kiyinish tartibi) muammosi",
+    scenario: "Maktabingizda o'quvchilarga kiyimda har qanday siyosiy xabarlarni olib yurishni taqiqlovchi qat'iy kiyinish tartibi mavjud. Bir o'quvchi atrof-muhitni muhofaza qilishni qo'llab-quvvatlovchi yozuvi bor futbolka kiyib keldi. Bunday holda maktab ma'muriyatiga kiyinish tartibini qo'llashga ruxsat berilishi kerakmi?",
     options: [
-      "Yes, schools can enforce dress codes to maintain order",
-      "No, this is protected political speech",
-      "It depends on whether it disrupts learning",
-      "The student should be allowed to explain their choice first"
+      "Ha, maktablar tartibni saqlash uchun kiyinish qoidalarini talab qilishi mumkin",
+      "Yo'q, bu himoyalangan siyosiy ifodadir (so'z erkinligi)",
+      "Bu ta'lim jarayoniga xalaqit berish-bermasligiga bog'liq",
+      "Avval o'quvchiga o'z tanlovini tushuntirishiga ruxsat berish kerak"
     ]
   },
   {
     id: "2",
     date: "2026-03-28",
-    title: "Privacy vs. Safety in Schools",
-    scenario: "After several incidents of students bringing prohibited items to school, the administration proposes installing security cameras in all hallways and common areas (but not in bathrooms or locker rooms). Should this be allowed?",
+    title: "Maktablarda Shaxsiy daxlsizlik va Xavfsizlik",
+    scenario: "O'quvchilar maktabga taqiqlangan narsalarni olib kelgan bir nechta hodisalardan so'ng, ma'muriyat barcha yo'laklar va umumiy joylarga (lekin hojatxona yoki kiyinish xonalariga emas) xavfsizlik kameralarini o'rnatishni taklif qilmoqda. Bunga ruxsat berilishi kerakmi?",
     options: [
-      "Yes, school safety should be the top priority",
-      "No, it violates students' privacy rights",
-      "Yes, but only in certain high-risk areas",
-      "No, there are less invasive alternatives"
+      "Ha, maktab xavfsizligi eng muhim ustuvor vazifa bo'lishi kerak",
+      "Yo'q, bu o'quvchilarning shaxsiy daxlsizlik huquqlarini buzadi",
+      "Ha, lekin faqat ma'lum bir yuqori xavfli hududlarda",
+      "Yo'q, bundanda zarari kamroq bo'lgan muqobil variantlar mavjud"
     ]
   },
   {
     id: "3",
     date: "2026-03-29",
-    title: "Social Media Evidence in School Discipline",
-    scenario: "Two students get into an argument at school that doesn't become physical. Later that night, one student posts threats against the other on social media from home. Should the school have the authority to discipline the student for the online post?",
+    title: "Maktab intizomida ijtimoiy tarmoqlardagi dalillar",
+    scenario: "Ikki o'quvchi maktabda jismoniy to'qnashuvga aylanmagan holda o'zaro tortishib qoldi. O'sha kuni kechasi bir o'quvchi uyidan turib ijtimoiy tarmoqlarda ikkinchisiga qarshi tahdidli xabarlar joylashtirdi. Maktab ushbu onlayn xabar uchun o'quvchini jazolash vakolatiga ega bo'lishi kerakmi?",
     options: [
-      "Yes, threats affect school safety even if made off-campus",
-      "No, schools shouldn't control student behavior outside school",
-      "Yes, but only if parents agree to the discipline",
-      "No, this should be a matter for police, not schools"
+      "Ha, tahdidlar maktabdan tashqarida qilingan bo'lsa ham maktab xavfsizligiga ta'sir qiladi",
+      "Yo'q, maktablar o'quvchilarning maktabdan tashqaridagi xatti-harakatlarini nazorat qilmasligi kerak",
+      "Ha, lekin faqat ota-onalar jazolashga rozi bo'lsagina",
+      "Yo'q, bu maktabning emas, balki huquq-tartibot idoralarining (politsiyaning) ishi bo'lishi kerak"
     ]
   }
 ];
 
-// Mock voting results (would come from database in real app)
+// Ovoz berish natijalari (Haqiqiy dasturda bu ma'lumotlar bazasidan keladi)
 export const dilemmaResults = {
   "1": {
     votes: [245, 189, 312, 154],
