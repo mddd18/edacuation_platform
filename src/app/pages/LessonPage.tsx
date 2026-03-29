@@ -26,12 +26,12 @@ export function LessonPage() {
 
   if (!lesson) {
     return (
-      <div className="p-8 max-w-4xl mx-auto">
-        <Card>
+      <div className="p-8 max-w-4xl mx-auto dark:bg-slate-900 min-h-screen">
+        <Card className="dark:bg-slate-800 dark:border-slate-700">
           <CardContent className="pt-6">
-            <p>Lesson not found</p>
+            <p className="dark:text-white">Dars topilmadi</p>
             <Link to="/">
-              <Button className="mt-4">Return to Dashboard</Button>
+              <Button className="mt-4 dark:bg-primary dark:text-white">Asosiy panelga qaytish</Button>
             </Link>
           </CardContent>
         </Card>
@@ -43,7 +43,7 @@ export function LessonPage() {
     setSelectedAnswer(index);
     setShowFeedback(true);
     
-    // Show level up modal if answer is correct
+    // To'g'ri topsa Level Up modalini chiqarish
     if (index === lesson.comprehension.correctAnswer) {
       setTimeout(() => {
         setShowLevelUpModal(true);
@@ -53,14 +53,14 @@ export function LessonPage() {
 
   const isCorrect = selectedAnswer === lesson.comprehension.correctAnswer;
 
-  // Find next lesson
+  // Keyingi darsni topish
   const currentIndex = lessons.findIndex(l => l.id === id);
   const nextLesson = lessons[currentIndex + 1];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 transition-colors duration-300">
       {/* Header */}
-      <div className="bg-white/80 backdrop-blur-lg border-b border-slate-200 sticky top-0 z-10 shadow-sm">
+      <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800 sticky top-0 z-10 shadow-sm transition-colors duration-300">
         <div className="max-w-5xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -69,53 +69,53 @@ export function LessonPage() {
                   whileHover={{ scale: 1.05, x: -5 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Button variant="ghost" size="sm" className="rounded-xl">
+                  <Button variant="ghost" size="sm" className="rounded-xl dark:text-slate-300 dark:hover:bg-slate-800">
                     <ArrowLeft className="w-4 h-4 mr-2" />
-                    Dashboard
+                    Asosiy panel
                   </Button>
                 </motion.div>
               </Link>
-              <div className="h-6 w-px bg-border" />
+              <div className="h-6 w-px bg-border dark:bg-slate-700" />
               <div>
                 <Badge 
-                  className="mb-1 shadow-md"
+                  className="mb-1 shadow-md border-none text-white"
                   style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
                 >
                   {lesson.module}
                 </Badge>
-                <h1 className="font-semibold">{lesson.title}</h1>
+                <h1 className="font-semibold text-slate-900 dark:text-white">{lesson.title}</h1>
               </div>
             </div>
             <motion.div
               whileHover={{ rotate: 360 }}
               transition={{ duration: 0.5 }}
             >
-              <BookOpen className="w-5 h-5 text-primary" />
+              <BookOpen className="w-5 h-5 text-primary dark:text-blue-400" />
             </motion.div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Asosiy Kontent */}
       <div className="max-w-4xl mx-auto px-8 py-8">
         <div className="space-y-8">
-          {/* Lesson Content */}
+          {/* O'quv materiali */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="border-0 shadow-xl">
+            <Card className="border-0 shadow-xl dark:bg-slate-800 transition-colors duration-300">
               <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-3">
+                <CardTitle className="text-2xl flex items-center gap-3 dark:text-white">
                   <div className="bg-gradient-to-br from-blue-500 to-purple-500 p-2 rounded-xl shadow-lg">
                     <BookOpen className="w-6 h-6 text-white" />
                   </div>
-                  Reading Material
+                  O'quv Materiali
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="prose prose-slate max-w-none">
+                <div className="prose prose-slate dark:prose-invert max-w-none text-slate-800 dark:text-slate-300">
                   {lesson.content.paragraphs.map((paragraph, index) => (
                     <motion.div 
                       key={index} 
@@ -137,23 +137,23 @@ export function LessonPage() {
             </Card>
           </motion.div>
 
-          {/* Key Terms Reference */}
+          {/* Asosiy Atamalar */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <Card 
-              className="border-0 shadow-xl relative overflow-hidden"
+              className="border-0 shadow-xl relative overflow-hidden dark:bg-slate-800 transition-colors duration-300"
             >
               <div 
-                className="absolute inset-0 opacity-5"
+                className="absolute inset-0 opacity-5 dark:opacity-10"
                 style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }}
               />
               <CardHeader>
-                <CardTitle className="text-xl flex items-center gap-2 relative z-10">
-                  <Sparkles className="w-5 h-5 text-purple-500" />
-                  Key Legal Terms
+                <CardTitle className="text-xl flex items-center gap-2 relative z-10 dark:text-white">
+                  <Sparkles className="w-5 h-5 text-purple-500 dark:text-purple-400" />
+                  Asosiy Huquqiy Atamalar
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
@@ -165,10 +165,10 @@ export function LessonPage() {
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ duration: 0.3, delay: 0.3 + index * 0.1 }}
                       whileHover={{ scale: 1.05, y: -5 }}
-                      className="bg-white p-5 rounded-xl border-2 border-slate-200 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
+                      className="bg-white dark:bg-slate-700 p-5 rounded-xl border-2 border-slate-200 dark:border-slate-600 shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer"
                     >
-                      <h4 className="font-bold text-purple-600 mb-2 text-lg">{term.term}</h4>
-                      <p className="text-sm text-slate-700">{term.definition}</p>
+                      <h4 className="font-bold text-purple-600 dark:text-purple-300 mb-2 text-lg">{term.term}</h4>
+                      <p className="text-sm text-slate-700 dark:text-slate-300">{term.definition}</p>
                     </motion.div>
                   ))}
                 </div>
@@ -176,49 +176,49 @@ export function LessonPage() {
             </Card>
           </motion.div>
 
-          {/* Reading Comprehension */}
+          {/* O'qib Tushunish (Test) */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
           >
-            <Card className="border-0 shadow-2xl relative overflow-hidden">
+            <Card className="border-0 shadow-2xl relative overflow-hidden dark:bg-slate-800 transition-colors duration-300">
               <div 
-                className="absolute inset-0 opacity-5"
+                className="absolute inset-0 opacity-5 dark:opacity-10"
                 style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}
               />
               <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-3 relative z-10">
+                <CardTitle className="text-2xl flex items-center gap-3 relative z-10 dark:text-white">
                   <div className="bg-gradient-to-br from-green-400 to-emerald-500 p-2 rounded-xl shadow-lg">
                     <Award className="w-6 h-6 text-white" />
                   </div>
-                  Reading Comprehension
+                  O'qib Tushunish
                 </CardTitle>
               </CardHeader>
               <CardContent className="relative z-10">
                 <div className="space-y-4">
-                  <div className="bg-white/70 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 shadow-md">
-                    <p className="font-semibold text-lg mb-4">{lesson.comprehension.question}</p>
+                  <div className="bg-white/70 dark:bg-slate-700/70 backdrop-blur-sm p-6 rounded-2xl border border-slate-200 dark:border-slate-600 shadow-md">
+                    <p className="font-semibold text-lg mb-4 dark:text-white">{lesson.comprehension.question}</p>
                     
                     <div className="space-y-3">
                       {lesson.comprehension.options.map((option, index) => {
                         const isSelected = selectedAnswer === index;
                         const isCorrectAnswer = index === lesson.comprehension.correctAnswer;
                         
-                        let borderColor = "border-slate-200";
-                        let bgColor = "bg-white hover:bg-purple-50";
+                        let borderColor = "border-slate-200 dark:border-slate-600";
+                        let bgColor = "bg-white dark:bg-slate-800 hover:bg-purple-50 dark:hover:bg-slate-700";
                         
                         if (showFeedback && isSelected) {
                           if (isCorrect) {
-                            borderColor = "border-green-400";
-                            bgColor = "bg-green-50";
+                            borderColor = "border-green-400 dark:border-green-500";
+                            bgColor = "bg-green-50 dark:bg-green-900/30";
                           } else {
-                            borderColor = "border-red-400";
-                            bgColor = "bg-red-50";
+                            borderColor = "border-red-400 dark:border-red-500";
+                            bgColor = "bg-red-50 dark:bg-red-900/30";
                           }
                         } else if (showFeedback && isCorrectAnswer) {
-                          borderColor = "border-green-400";
-                          bgColor = "bg-green-50";
+                          borderColor = "border-green-400 dark:border-green-500";
+                          bgColor = "bg-green-50 dark:bg-green-900/30";
                         }
 
                         return (
@@ -229,7 +229,7 @@ export function LessonPage() {
                             whileHover={!showFeedback ? { scale: 1.02, x: 5 } : {}}
                             whileTap={!showFeedback ? { scale: 0.98 } : {}}
                             className={`w-full text-left p-5 rounded-xl border-2 transition-all duration-300 ${borderColor} ${bgColor} ${
-                              showFeedback ? "cursor-default" : "cursor-pointer hover:shadow-lg hover:border-purple-400"
+                              showFeedback ? "cursor-default" : "cursor-pointer hover:shadow-lg hover:border-purple-400 dark:hover:border-purple-500"
                             }`}
                           >
                             <div className="flex items-center justify-between gap-3">
@@ -240,14 +240,16 @@ export function LessonPage() {
                                       ? isCorrectAnswer
                                         ? "bg-gradient-to-br from-green-400 to-emerald-500 text-white"
                                         : "bg-gradient-to-br from-red-400 to-red-500 text-white"
-                                      : "bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700"
+                                      : "bg-gradient-to-br from-slate-100 to-slate-200 dark:from-slate-600 dark:to-slate-700 text-slate-700 dark:text-slate-200"
                                   }`}
                                   animate={showFeedback && isSelected ? { scale: [1, 1.2, 1] } : {}}
                                   transition={{ duration: 0.5 }}
                                 >
                                   {String.fromCharCode(65 + index)}
                                 </motion.div>
-                                <span className="text-base font-medium">{option}</span>
+                                <span className={`text-base font-medium ${showFeedback && isSelected ? (isCorrect ? 'text-green-900 dark:text-green-200' : 'text-red-900 dark:text-red-200') : 'text-slate-800 dark:text-slate-200'}`}>
+                                  {option}
+                                </span>
                               </div>
                               {showFeedback && isSelected && (
                                 <motion.div
@@ -256,9 +258,9 @@ export function LessonPage() {
                                   transition={{ duration: 0.5, type: "spring" }}
                                 >
                                   {isCorrect ? (
-                                    <CheckCircle2 className="w-7 h-7 text-green-500 flex-shrink-0" />
+                                    <CheckCircle2 className="w-7 h-7 text-green-500 dark:text-green-400 flex-shrink-0" />
                                   ) : (
-                                    <XCircle className="w-7 h-7 text-red-500 flex-shrink-0" />
+                                    <XCircle className="w-7 h-7 text-red-500 dark:text-red-400 flex-shrink-0" />
                                   )}
                                 </motion.div>
                               )}
@@ -268,7 +270,7 @@ export function LessonPage() {
                                   animate={{ scale: 1 }}
                                   transition={{ duration: 0.5, delay: 0.2 }}
                                 >
-                                  <CheckCircle2 className="w-7 h-7 text-green-500 flex-shrink-0" />
+                                  <CheckCircle2 className="w-7 h-7 text-green-500 dark:text-green-400 flex-shrink-0" />
                                 </motion.div>
                               )}
                             </div>
@@ -278,13 +280,13 @@ export function LessonPage() {
                     </div>
                   </div>
 
-                  {/* Feedback */}
+                  {/* Fikr-mulohaza (Feedback) */}
                   {showFeedback && (
                     <motion.div 
                       className={`p-6 rounded-2xl border-2 shadow-lg ${
                         isCorrect 
-                          ? "bg-gradient-to-br from-green-50 to-emerald-50 border-green-200" 
-                          : "bg-gradient-to-br from-red-50 to-pink-50 border-red-200"
+                          ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-green-200 dark:border-green-800" 
+                          : "bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30 border-red-200 dark:border-red-800"
                       }`}
                       initial={{ opacity: 0, y: 20, scale: 0.9 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -303,10 +305,10 @@ export function LessonPage() {
                           )}
                         </div>
                         <div className="flex-1">
-                          <h4 className="text-xl font-bold mb-2">
-                            {isCorrect ? "Excellent Work! 🎉" : "Not Quite Right"}
+                          <h4 className={`text-xl font-bold mb-2 ${isCorrect ? 'text-green-800 dark:text-green-300' : 'text-red-800 dark:text-red-300'}`}>
+                            {isCorrect ? "Ajoyib Natija! 🎉" : "Unchalik To'g'ri Emas"}
                           </h4>
-                          <p className="text-base text-slate-700 leading-relaxed mb-3">
+                          <p className={`text-base leading-relaxed mb-3 ${isCorrect ? 'text-green-700 dark:text-green-200' : 'text-red-700 dark:text-red-200'}`}>
                             {lesson.comprehension.explanation}
                           </p>
                           {isCorrect && (
@@ -322,7 +324,7 @@ export function LessonPage() {
                               transition={{ duration: 0.5, delay: 0.3, type: "spring" }}
                             >
                               <Award className="w-5 h-5 text-emerald-500" />
-                              +50 XP Earned
+                              +50 XP Berildi
                             </motion.div>
                           )}
                         </div>
@@ -330,7 +332,7 @@ export function LessonPage() {
                     </motion.div>
                   )}
 
-                  {/* Navigation */}
+                  {/* Navigatsiya */}
                   {showFeedback && (
                     <motion.div 
                       className="flex gap-3"
@@ -341,9 +343,9 @@ export function LessonPage() {
                       <Link to="/" className="flex-1">
                         <Button 
                           variant="outline" 
-                          className="w-full h-12 text-base font-semibold rounded-xl border-2 hover:bg-slate-50 transition-all duration-300"
+                          className="w-full h-12 text-base font-semibold rounded-xl border-2 dark:border-slate-600 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all duration-300"
                         >
-                          Back to Dashboard
+                          Asosiy panelga qaytish
                         </Button>
                       </Link>
                       {nextLesson && (
@@ -353,10 +355,10 @@ export function LessonPage() {
                             whileTap={{ scale: 0.98 }}
                           >
                             <Button 
-                              className="w-full h-12 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                              className="w-full h-12 text-base font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 text-slate-900 border-none"
                               style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }}
                             >
-                              Next Lesson
+                              Keyingi Dars
                               <ArrowRight className="w-5 h-5 ml-2" />
                             </Button>
                           </motion.div>
@@ -371,7 +373,7 @@ export function LessonPage() {
         </div>
       </div>
 
-      {/* Level Up Modal */}
+      {/* Level Up Modali */}
       <LevelUpModal
         isOpen={showLevelUpModal}
         onClose={() => setShowLevelUpModal(false)}
