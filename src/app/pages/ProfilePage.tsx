@@ -20,13 +20,12 @@ import {
 import { userProgress, Badge as BadgeType } from "../data/user";
 import { motion, AnimatePresence } from "motion/react";
 
-// Animatsiya variantlari
 const containerVariants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
     transition: {
-      staggerChildren: 0.1 // Bolalar elementlari ketma-ket chiqadi
+      staggerChildren: 0.1 
     }
   }
 };
@@ -54,38 +53,36 @@ export function ProfilePage() {
   const lockedBadges = userProgress.badges.filter(b => !b.earned);
   const progressPercentage = (userProgress.xp / userProgress.xpToNextLevel) * 100;
 
-  // Statistika kartochkalari uchun ma'lumotlar arrayi
   const stats = [
-    { label: "Darslar", value: userProgress.completedLessons.length, icon: BookOpen, color: "text-blue-500", bg: "bg-blue-100" },
-    { label: "Holatlar", value: userProgress.completedCases.length, icon: Scale, color: "text-purple-500", bg: "bg-purple-100" },
-    { label: "Kunlik seriya", value: `${userProgress.streak} kun`, icon: Flame, color: "text-orange-500", bg: "bg-orange-100" },
-    { label: "Reyting", value: "#4", icon: Trophy, color: "text-yellow-600", bg: "bg-yellow-100" },
+    { label: "Darslar", value: userProgress.completedLessons.length, icon: BookOpen, color: "text-blue-500 dark:text-blue-400", bg: "bg-blue-100 dark:bg-blue-900/30" },
+    { label: "Holatlar", value: userProgress.completedCases.length, icon: Scale, color: "text-purple-500 dark:text-purple-400", bg: "bg-purple-100 dark:bg-purple-900/30" },
+    { label: "Kunlik seriya", value: `${userProgress.streak} kun`, icon: Flame, color: "text-orange-500 dark:text-orange-400", bg: "bg-orange-100 dark:bg-orange-900/30" },
+    { label: "Reyting", value: "#4", icon: Trophy, color: "text-yellow-600 dark:text-yellow-400", bg: "bg-yellow-100 dark:bg-yellow-900/30" },
   ];
 
   return (
-    // Asosiy konteynerga gradient fon
-    <div className="min-h-screen p-6 md:p-10 bg-gradient-to-br from-slate-50 via-gray-100 to-blue-50/50">
+    <div className="min-h-screen p-6 md:p-10 bg-gradient-to-br from-slate-50 via-gray-100 to-blue-50/50 dark:from-slate-900 dark:via-slate-800 dark:to-blue-900/20 transition-colors duration-300">
       
       {/* Yuqori Header Qismi */}
       <motion.div 
-        className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pb-6 border-b border-gray-200"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-10 pb-6 border-b border-gray-200 dark:border-slate-700/50"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <div>
           <div className="flex items-center gap-3">
-            <Zap className="w-8 h-8 text-accent animate-pulse" />
-            <h1 className="text-4xl font-bold tracking-tight text-gray-950">Shaxsiy Kabinet</h1>
+            <Zap className="w-8 h-8 text-accent dark:text-blue-400 animate-pulse" />
+            <h1 className="text-4xl font-bold tracking-tight text-gray-950 dark:text-white">Shaxsiy Kabinet</h1>
           </div>
-          <p className="text-muted-foreground mt-1 text-lg">O'quv jarayoni va yutuqlaringiz markazi</p>
+          <p className="text-muted-foreground dark:text-slate-400 mt-1 text-lg">O'quv jarayoni va yutuqlaringiz markazi</p>
         </div>
         <div className="flex items-center gap-3">
-          <Button variant="outline" className="gap-2 rounded-full shadow-sm hover:bg-gray-100">
+          <Button variant="outline" className="gap-2 rounded-full shadow-sm hover:bg-gray-100 dark:hover:bg-slate-800 dark:border-slate-600 dark:text-slate-200">
             <Settings className="w-4 h-4" />
             Sozlamalar
           </Button>
-          <Button className="gap-2 rounded-full bg-primary hover:bg-primary/90 shadow-md">
+          <Button className="gap-2 rounded-full bg-primary hover:bg-primary/90 text-white shadow-md border-none">
             <Edit2 className="w-4 h-4" />
             Profilni tahrirlash
           </Button>
@@ -99,46 +96,45 @@ export function ProfilePage() {
         initial="hidden"
         animate="visible"
       >
-        
         {/* CHAP KOLONKA: Profil va Daraja */}
         <motion.div className="xl:col-span-1 space-y-8" variants={itemVariants}>
-          {/* Asosiy Profil Kartochkasi (Glassmorphism effekti) */}
-          <Card className="overflow-hidden border-none shadow-xl bg-white/70 backdrop-blur-lg relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 pointer-events-none" />
+          {/* Asosiy Profil Kartochkasi */}
+          <Card className="overflow-hidden border-none shadow-xl bg-white/70 dark:bg-slate-800/70 backdrop-blur-lg relative transition-colors duration-300">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 dark:from-primary/10 dark:to-accent/10 pointer-events-none" />
             <CardContent className="pt-10 pb-8 relative z-10">
               <div className="text-center">
                 <motion.div 
-                  className="inline-flex items-center justify-center w-28 h-28 bg-gradient-to-tr from-primary to-accent rounded-full mb-5 p-1 shadow-lg"
+                  className="inline-flex items-center justify-center w-28 h-28 bg-gradient-to-tr from-primary to-accent dark:from-blue-500 dark:to-purple-500 rounded-full mb-5 p-1 shadow-lg"
                   whileHover={{ scale: 1.05, rotate: 5 }}
                 >
-                  <div className="w-full h-full bg-white rounded-full flex items-center justify-center">
-                    <User className="w-14 h-14 text-primary" />
+                  <div className="w-full h-full bg-white dark:bg-slate-800 rounded-full flex items-center justify-center">
+                    <User className="w-14 h-14 text-primary dark:text-blue-400" />
                   </div>
                 </motion.div>
-                <h2 className="text-2xl font-bold text-gray-950">Azizbek Temirov</h2>
-                <p className="text-sm font-medium text-accent bg-accent/10 px-3 py-1 rounded-full inline-block mt-1 mb-6">Kelajak Huquqshunosi</p>
+                <h2 className="text-2xl font-bold text-gray-950 dark:text-white">Azizbek Temirov</h2>
+                <p className="text-sm font-medium text-accent dark:text-blue-300 bg-accent/10 dark:bg-blue-500/20 px-3 py-1 rounded-full inline-block mt-1 mb-6">Kelajak Huquqshunosi</p>
                 
                 {/* Asosiy yutuqlar raqamlarda */}
-                <div className="grid grid-cols-3 gap-2 border border-gray-100 rounded-2xl p-4 bg-gray-50/50">
+                <div className="grid grid-cols-3 gap-2 border border-gray-100 dark:border-slate-700/50 rounded-2xl p-4 bg-gray-50/50 dark:bg-slate-900/50">
                   <div className="text-center">
-                    <p className="text-3xl font-extrabold text-primary">{userProgress.level}</p>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Daraja</p>
+                    <p className="text-3xl font-extrabold text-primary dark:text-blue-400">{userProgress.level}</p>
+                    <p className="text-xs font-semibold text-muted-foreground dark:text-slate-400 uppercase tracking-wider">Daraja</p>
                   </div>
-                  <div className="text-center border-x border-gray-100">
-                    <p className="text-3xl font-extrabold text-secondary">{earnedBadges.length}</p>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Nishonlar</p>
+                  <div className="text-center border-x border-gray-100 dark:border-slate-700/50">
+                    <p className="text-3xl font-extrabold text-secondary dark:text-purple-400">{earnedBadges.length}</p>
+                    <p className="text-xs font-semibold text-muted-foreground dark:text-slate-400 uppercase tracking-wider">Nishonlar</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-3xl font-extrabold text-orange-500">{userProgress.streak}</p>
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Seriya</p>
+                    <p className="text-3xl font-extrabold text-orange-500 dark:text-orange-400">{userProgress.streak}</p>
+                    <p className="text-xs font-semibold text-muted-foreground dark:text-slate-400 uppercase tracking-wider">Seriya</p>
                   </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          {/* Daraja Progress Kartochkasi (To'liq yorqin rangda) */}
-          <Card className="bg-gradient-to-br from-primary via-primary/90 to-accent text-white shadow-lg border-none overflow-hidden relative group">
+          {/* Daraja Progress Kartochkasi */}
+          <Card className="bg-gradient-to-br from-primary via-primary/90 to-accent dark:from-blue-600 dark:via-indigo-600 dark:to-purple-600 text-white shadow-lg border-none overflow-hidden relative group transition-colors duration-300">
             <motion.div 
               className="absolute -bottom-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"
               animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3] }}
@@ -157,7 +153,6 @@ export function ProfilePage() {
               <Progress 
                 value={progressPercentage} 
                 className="h-3 bg-white/20" 
-                // indicatorClassName="bg-yellow-300" // Agar progress bar rangini o'zgartirmoqchi bo'lsangiz
               />
               <p className="text-sm text-center text-blue-100 font-medium bg-white/10 py-1.5 rounded-lg">
                 Keyingi darajagacha yana <span className="font-bold text-yellow-300">{userProgress.xpToNextLevel - userProgress.xp} XP</span> kerak
@@ -175,14 +170,14 @@ export function ProfilePage() {
               const Icon = stat.icon;
               return (
                 <motion.div key={stat.label} variants={itemVariants} whileHover={{ y: -5, scale: 1.02 }}>
-                  <Card className="border-none shadow-md hover:shadow-lg transition-all duration-300">
+                  <Card className="border-none shadow-md hover:shadow-lg transition-all duration-300 bg-white dark:bg-slate-800">
                     <CardContent className="p-6 flex items-center gap-4">
                       <div className={`${stat.bg} p-3 rounded-xl`}>
                         <Icon className={`w-6 h-6 ${stat.color}`} />
                       </div>
                       <div>
-                        <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-                        <p className="text-2xl font-bold text-gray-950">{stat.value}</p>
+                        <p className="text-sm font-medium text-muted-foreground dark:text-slate-400">{stat.label}</p>
+                        <p className="text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -191,25 +186,24 @@ export function ProfilePage() {
             })}
           </motion.div>
 
-          {/* Nishonlar Kolleksiyasi (Eng muhim vizual qism) */}
+          {/* Nishonlar Kolleksiyasi */}
           <motion.div variants={itemVariants}>
-            <Card className="border-none shadow-xl bg-white/80 backdrop-blur-sm">
-              <CardHeader className="border-b border-gray-100 pb-4 mb-6">
+            <Card className="border-none shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm transition-colors duration-300">
+              <CardHeader className="border-b border-gray-100 dark:border-slate-700/50 pb-4 mb-6">
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-2xl font-bold flex items-center gap-3">
-                    <Award className="w-7 h-7 text-secondary" />
+                  <CardTitle className="text-2xl font-bold flex items-center gap-3 dark:text-white">
+                    <Award className="w-7 h-7 text-secondary dark:text-purple-400" />
                     Yutuqlar Kolleksiyasi
                   </CardTitle>
-                  <div className="text-sm font-medium text-muted-foreground bg-gray-100 px-4 py-1.5 rounded-full">
-                    Jami olingan: <span className="font-bold text-secondary text-base">{earnedBadges.length}</span> / {userProgress.badges.length}
+                  <div className="text-sm font-medium text-muted-foreground dark:text-slate-300 bg-gray-100 dark:bg-slate-700 px-4 py-1.5 rounded-full">
+                    Jami olingan: <span className="font-bold text-secondary dark:text-purple-400 text-base">{earnedBadges.length}</span> / {userProgress.badges.length}
                   </div>
                 </div>
               </CardHeader>
               <CardContent>
-                {/* Nishonlar Gridi */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <AnimatePresence>
-                    {/* Olingan nishonlar - Yorqin rangda */}
+                    {/* Olingan nishonlar */}
                     {earnedBadges.map((badge, index) => {
                       const Icon = badgeIcons[badge.icon] || Award;
                       return (
@@ -221,27 +215,26 @@ export function ProfilePage() {
                           exit={{ opacity: 0, scale: 0.8 }}
                           transition={{ duration: 0.3, delay: index * 0.05 }}
                           whileHover={{ scale: 1.03, y: -2 }}
-                          className="group flex items-start gap-4 p-5 bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md hover:border-secondary/20 transition-all duration-300 cursor-pointer relative overflow-hidden"
+                          className="group flex items-start gap-4 p-5 bg-white dark:bg-slate-800 border border-gray-100 dark:border-slate-700 rounded-2xl shadow-sm hover:shadow-md hover:border-secondary/20 dark:hover:border-purple-500/30 transition-all duration-300 cursor-pointer relative overflow-hidden"
                         >
-                          {/* Nurlanish effekti hover bo'lganda */}
-                          <div className="absolute inset-0 bg-gradient-to-r from-secondary/0 via-secondary/5 to-secondary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
+                          <div className="absolute inset-0 bg-gradient-to-r from-secondary/0 via-secondary/5 dark:via-secondary/10 to-secondary/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-1000 pointer-events-none" />
                           
-                          <div className="bg-secondary/10 p-4 rounded-xl flex-shrink-0 group-hover:bg-secondary/15 transition-colors">
-                            <Icon className="w-7 h-7 text-secondary" />
+                          <div className="bg-secondary/10 dark:bg-purple-900/30 p-4 rounded-xl flex-shrink-0 transition-colors">
+                            <Icon className="w-7 h-7 text-secondary dark:text-purple-400" />
                           </div>
                           <div className="flex-1 min-w-0 relative z-10">
                             <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <h4 className="font-bold text-lg text-gray-950 truncate">{badge.name}</h4>
-                              <div className="bg-secondary/10 p-1 rounded-full flex-shrink-0">
-                                <CheckCircle2 className="w-4 h-4 text-secondary" />
+                              <h4 className="font-bold text-lg text-gray-950 dark:text-white truncate">{badge.name}</h4>
+                              <div className="bg-secondary/10 dark:bg-purple-900/30 p-1 rounded-full flex-shrink-0">
+                                <CheckCircle2 className="w-4 h-4 text-secondary dark:text-purple-400" />
                               </div>
                             </div>
-                            <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                            <p className="text-sm text-muted-foreground dark:text-slate-400 mb-3 line-clamp-2">
                               {badge.description}
                             </p>
                             {badge.earnedDate && (
-                              <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground bg-gray-50 px-2.5 py-1 rounded-full inline-flex">
-                                <Calendar className="w-3.5 h-3.5 text-secondary" />
+                              <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground dark:text-slate-400 bg-gray-50 dark:bg-slate-900/50 px-2.5 py-1 rounded-full inline-flex">
+                                <Calendar className="w-3.5 h-3.5 text-secondary dark:text-purple-400" />
                                 {new Date(badge.earnedDate).toLocaleDateString('uz-UZ', { year: 'numeric', month: 'long', day: 'numeric' })} da olindi
                               </div>
                             )}
@@ -250,7 +243,7 @@ export function ProfilePage() {
                       );
                     })}
 
-                    {/* Qulflangan nishonlar - Xira rangda */}
+                    {/* Qulflangan nishonlar */}
                     {lockedBadges.map((badge) => {
                       const Icon = badgeIcons[badge.icon] || Award;
                       return (
@@ -260,17 +253,17 @@ export function ProfilePage() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 0.6 }}
                           whileHover={{ opacity: 1, scale: 1.01 }}
-                          className="flex items-start gap-4 p-5 bg-gray-50/50 border-2 border-dashed border-gray-200 rounded-2xl"
+                          className="flex items-start gap-4 p-5 bg-gray-50/50 dark:bg-slate-900/30 border-2 border-dashed border-gray-200 dark:border-slate-700 rounded-2xl"
                         >
-                          <div className="bg-gray-100 p-4 rounded-xl flex-shrink-0 border border-gray-200">
-                            <Icon className="w-7 h-7 text-muted-foreground" />
+                          <div className="bg-gray-100 dark:bg-slate-800 p-4 rounded-xl flex-shrink-0 border border-gray-200 dark:border-slate-700">
+                            <Icon className="w-7 h-7 text-muted-foreground dark:text-slate-500" />
                           </div>
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center justify-between gap-2 mb-1.5">
-                              <h4 className="font-semibold text-lg text-gray-700 truncate">{badge.name}</h4>
-                              <Lock className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                              <h4 className="font-semibold text-lg text-gray-700 dark:text-slate-300 truncate">{badge.name}</h4>
+                              <Lock className="w-4 h-4 text-muted-foreground dark:text-slate-500 flex-shrink-0" />
                             </div>
-                            <p className="text-sm text-muted-foreground">
+                            <p className="text-sm text-muted-foreground dark:text-slate-500">
                               {badge.description}
                             </p>
                           </div>
