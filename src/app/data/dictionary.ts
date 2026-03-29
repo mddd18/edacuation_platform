@@ -10,167 +10,167 @@ export interface DictionaryEntry {
 export const dictionary: DictionaryEntry[] = [
   {
     id: "1",
-    term: "Constitution",
-    definition: "The supreme law of the United States that establishes the structure of government and protects individual rights. It was ratified in 1788 and has been amended 27 times.",
-    category: "Constitutional Law",
+    term: "Konstitutsiya",
+    definition: "Davlatning tuzilishini belgilaydigan va shaxs huquqlarini himoya qiladigan eng oliy qonun. (Masalan, AQSh Konstitutsiyasi 1788-yilda ratifikatsiya qilingan va 27 marta o'zgartirish kiritilgan).",
+    category: "Konstitutsiyaviy huquq",
     examples: [
-      "The Constitution divides power among three branches of government.",
-      "Constitutional rights cannot be violated by federal or state governments."
+      "Konstitutsiya hokimiyatni hukumatning uchta shoxiga ajratadi.",
+      "Konstitutsiyaviy huquqlar hukumat tomonidan buzilishi mumkin emas."
     ],
-    relatedTerms: ["Bill of Rights", "Amendment", "Ratification"]
+    relatedTerms: ["Huquqlar to'g'risidagi bill", "Tuzatish (Qo'shimcha)", "Ratifikatsiya"]
   },
   {
     id: "2",
-    term: "Bill of Rights",
-    definition: "The first ten amendments to the Constitution that guarantee specific rights and freedoms to individuals, including freedom of speech, religion, and the right to a fair trial.",
-    category: "Constitutional Law",
+    term: "Huquqlar to'g'risidagi bill",
+    definition: "Konstitutsiyaga kiritilgan dastlabki o'nta tuzatish bo'lib, u shaxslarga o'ziga xos huquq va erkinliklarni, jumladan, so'z, din va adolatli sud muhokamasi huquqini kafolatlaydi.",
+    category: "Konstitutsiyaviy huquq",
     examples: [
-      "The First Amendment in the Bill of Rights protects freedom of speech.",
-      "The Bill of Rights was added to the Constitution in 1791."
+      "Huquqlar to'g'risidagi billdagi Birinchi tuzatish so'z erkinligini himoya qiladi.",
+      "Huquqlar to'g'risidagi bill Konstitutsiyaga 1791-yilda qo'shilgan."
     ],
-    relatedTerms: ["Constitution", "Amendment", "First Amendment"]
+    relatedTerms: ["Konstitutsiya", "Tuzatish", "Birinchi tuzatish"]
   },
   {
     id: "3",
-    term: "Due Process",
-    definition: "The legal requirement that the government must respect all legal rights owed to a person according to law. It ensures fair treatment through the judicial system.",
-    category: "Constitutional Law",
+    term: "Odil sudlov jarayoni",
+    definition: "Hukumat qonunga muvofiq shaxsga tegishli bo'lgan barcha qonuniy huquqlarni hurmat qilishi kerakligi haqidagi qonuniy talab. U sud tizimi orqali adolatli munosabatni ta'minlaydi.",
+    category: "Konstitutsiyaviy huquq",
     examples: [
-      "Due process requires that you be notified of charges against you.",
-      "The right to due process protects against arbitrary government action."
+      "Odil sudlov jarayoni sizga qarshi qo'yilgan ayblovlar haqida xabardor qilinishingizni talab qiladi.",
+      "Odil sudlov jarayoni huquqi hukumatning o'zboshimchalik bilan harakat qilishidan himoya qiladi."
     ],
-    relatedTerms: ["Fifth Amendment", "Fourteenth Amendment", "Fair Trial"]
+    relatedTerms: ["Beshinchi tuzatish", "O'n to'rtinchi tuzatish", "Adolatli sud muhokamasi"]
   },
   {
     id: "4",
-    term: "Equal Protection",
-    definition: "A constitutional guarantee that all people must be treated equally by the law and government. It prohibits discrimination based on race, religion, gender, or other protected characteristics.",
-    category: "Constitutional Law",
+    term: "Teng himoya",
+    definition: "Barcha odamlar qonun va hukumat tomonidan teng munosabatda bo'lishi kerakligi haqidagi konstitutsiyaviy kafolat. U irqi, dini, jinsi yoki boshqa himoyalangan xususiyatlariga ko'ra kamsitishni taqiqlaydi.",
+    category: "Konstitutsiyaviy huquq",
     examples: [
-      "Equal protection ensures that laws apply to everyone fairly.",
-      "The Fourteenth Amendment's Equal Protection Clause prohibits discrimination."
+      "Teng himoya qonunlarning barchaga adolatli qo'llanilishini ta'minlaydi.",
+      "O'n to'rtinchi tuzatishning 'Teng himoya qilish' to'g'risidagi bandi kamsitishni taqiqlaydi."
     ],
-    relatedTerms: ["Fourteenth Amendment", "Discrimination", "Civil Rights"]
+    relatedTerms: ["O'n to'rtinchi tuzatish", "Diskriminatsiya (Kamsitish)", "Fuqarolik huquqlari"]
   },
   {
     id: "5",
-    term: "First Amendment",
-    definition: "Constitutional protection for freedom of speech, religion, press, assembly, and petition. It prevents the government from restricting these fundamental rights.",
-    category: "Constitutional Law",
+    term: "Birinchi tuzatish",
+    definition: "So'z, din, matbuot, yig'ilishlar va murojaat qilish erkinliklarini konstitutsiyaviy himoya qilish. U hukumatning ushbu asosiy huquqlarni cheklashiga yo'l qo'ymaydi.",
+    category: "Konstitutsiyaviy huquq",
     examples: [
-      "The First Amendment protects your right to criticize the government.",
-      "Schools must respect students' First Amendment rights with some limitations."
+      "Birinchi tuzatish hukumatni tanqid qilish huquqingizni himoya qiladi.",
+      "Maktablar ma'lum cheklovlar bilan o'quvchilarning Birinchi tuzatish huquqlarini hurmat qilishlari kerak."
     ],
-    relatedTerms: ["Freedom of Speech", "Freedom of Religion", "Bill of Rights"]
+    relatedTerms: ["So'z erkinligi", "Din erkinligi", "Huquqlar to'g'risidagi bill"]
   },
   {
     id: "6",
-    term: "Fourth Amendment",
-    definition: "Constitutional protection against unreasonable searches and seizures. It generally requires law enforcement to obtain a warrant before searching private property.",
-    category: "Constitutional Law",
+    term: "To'rtinchi tuzatish",
+    definition: "Asossiz tintuv va musodaralarga qarshi konstitutsiyaviy himoya. U odatda huquqni muhofaza qilish organlaridan xususiy mulkni tintuv qilishdan oldin order olishni talab qiladi.",
+    category: "Konstitutsiyaviy huquq",
     examples: [
-      "The Fourth Amendment protects your home from warrantless searches.",
-      "School locker searches have different Fourth Amendment standards than home searches."
+      "To'rtinchi tuzatish uyingizni ordersiz tintuv qilishdan himoya qiladi.",
+      "Maktab shkaflarini tintuv qilish uyni tintuv qilishdan ko'ra boshqacha To'rtinchi tuzatish standartlariga ega."
     ],
-    relatedTerms: ["Search Warrant", "Probable Cause", "Reasonable Suspicion"]
+    relatedTerms: ["Tintuv orderi", "Yetarli asos", "Asosli shubha"]
   },
   {
     id: "7",
-    term: "Fifth Amendment",
-    definition: "Constitutional protection that includes the right against self-incrimination, double jeopardy, and guarantees due process. It allows individuals to refuse to answer questions that might incriminate them.",
-    category: "Constitutional Law",
+    term: "Beshinchi tuzatish",
+    definition: "O'ziga qarshi ko'rsatma bermaslik, ikki marta jazolanmaslik huquqini o'z ichiga olgan va odil sudlov jarayonini kafolatlaydigan konstitutsiyaviy himoya. U shaxslarga o'zlarini ayblashi mumkin bo'lgan savollarga javob berishni rad etishga ruxsat beradi.",
+    category: "Konstitutsiyaviy huquq",
     examples: [
-      "You can 'plead the Fifth' and refuse to answer police questions.",
-      "The Fifth Amendment prevents trying someone twice for the same crime."
+      "Siz politsiya savollariga javob berishni rad etish huquqidan foydalanishingiz mumkin.",
+      "Beshinchi tuzatish kimnidir bir xil jinoyat uchun ikki marta sud qilishning oldini oladi."
     ],
-    relatedTerms: ["Self-Incrimination", "Due Process", "Double Jeopardy"]
+    relatedTerms: ["O'ziga qarshi ko'rsatma bermaslik", "Odil sudlov jarayoni", "Ikki marta jazolanmaslik"]
   },
   {
     id: "8",
-    term: "Probable Cause",
-    definition: "A reasonable belief, based on facts, that a crime has been or is being committed. It's the standard required for police to obtain a search warrant or make an arrest.",
-    category: "Criminal Law",
+    term: "Yetarli asos (Probable Cause)",
+    definition: "Jinoyat sodir etilganligi yoki sodir etilayotganligiga faktlarga asoslangan oqilona ishonch. Bu politsiya uchun tintuv orderini olish yoki hibsga olish uchun zarur bo'lgan standartdir.",
+    category: "Jinoyat huquqi",
     examples: [
-      "Police need probable cause to arrest someone.",
-      "A judge will only issue a warrant if there is probable cause."
+      "Politsiya kimnidir hibsga olishi uchun yetarli asosga ega bo'lishi kerak.",
+      "Sudya faqat yetarli asos bo'lsagina order beradi."
     ],
-    relatedTerms: ["Fourth Amendment", "Search Warrant", "Reasonable Suspicion"]
+    relatedTerms: ["To'rtinchi tuzatish", "Tintuv orderi", "Asosli shubha"]
   },
   {
     id: "9",
-    term: "Reasonable Suspicion",
-    definition: "A lower standard than probable cause, based on specific facts that suggest criminal activity. School officials can search with reasonable suspicion rather than probable cause.",
-    category: "Criminal Law",
+    term: "Asosli shubha (Reasonable Suspicion)",
+    definition: "Jinoiy faoliyatni ko'rsatadigan aniq faktlarga asoslangan, 'Yetarli asos'dan pastroq standart. Maktab ma'muriyati yetarli asos o'rniga asosli shubha bilan tintuv o'tkazishi mumkin.",
+    category: "Jinoyat huquqi",
     examples: [
-      "A teacher's reasonable suspicion allowed the locker search.",
-      "Reasonable suspicion requires more than a hunch but less proof than probable cause."
+      "O'qituvchining asosli shubhasi shkafni tintuv qilishga imkon berdi.",
+      "Asosli shubha oddiy taxmindan ko'proq, ammo yetarli asosdan kamroq isbotni talab qiladi."
     ],
-    relatedTerms: ["Probable Cause", "Fourth Amendment", "School Searches"]
+    relatedTerms: ["Yetarli asos", "To'rtinchi tuzatish", "Maktabdagi tintuvlar"]
   },
   {
     id: "10",
-    term: "Warranty",
-    definition: "A guarantee from a seller that a product will meet certain standards of quality and performance. Warranties can be express (written/stated) or implied (assumed by law).",
-    category: "Consumer Law",
+    term: "Kafolat",
+    definition: "Sotuvchi tomonidan mahsulot ma'lum sifat va ishlash standartlariga javob berishi haqidagi kafolat. Kafolatlar aniq (yozma/og'zaki) yoki ko'zda tutilgan (qonun tomonidan qabul qilingan) bo'lishi mumkin.",
+    category: "Iste'molchilar huquqi",
     examples: [
-      "Most electronics come with a one-year manufacturer's warranty.",
-      "An implied warranty guarantees that products will work for their intended purpose."
+      "Aksariyat elektronika qurilmalari bir yillik ishlab chiqaruvchi kafolati bilan keladi.",
+      "Ko'zda tutilgan kafolat mahsulotlarning o'z maqsadiga muvofiq ishlashini kafolatlaydi."
     ],
-    relatedTerms: ["Consumer Protection", "Refund", "Defective Product"]
+    relatedTerms: ["Iste'molchilar huquqlarini himoya qilish", "Pulni qaytarish", "Nuqsonli mahsulot"]
   },
   {
     id: "11",
-    term: "Consumer Protection",
-    definition: "Laws and regulations designed to safeguard buyers from unfair business practices, fraud, and dangerous products. These laws ensure fair treatment in the marketplace.",
-    category: "Consumer Law",
+    term: "Iste'molchilar huquqlarini himoya qilish",
+    definition: "Xaridorlarni adolatsiz biznes amaliyotlaridan, firibgarlikdan va xavfli mahsulotlardan himoya qilishga qaratilgan qonunlar va qoidalar. Ushbu qonunlar bozorda adolatli munosabatni ta'minlaydi.",
+    category: "Iste'molchilar huquqi",
     examples: [
-      "Consumer protection laws require truth in advertising.",
-      "The Federal Trade Commission enforces consumer protection regulations."
+      "Iste'molchilar huquqlarini himoya qilish qonunlari reklamada haqiqatni talab qiladi.",
+      "Iste'molchilar huquqlarini himoya qilish agentliklari ushbu qoidalarni amalga oshiradi."
     ],
-    relatedTerms: ["Warranty", "Fraud", "Federal Trade Commission"]
+    relatedTerms: ["Kafolat", "Firibgarlik", "Iste'molchi huquqlari"]
   },
   {
     id: "12",
-    term: "Fraud",
-    definition: "Intentional deception for personal gain or to damage another individual. In consumer contexts, it includes false advertising, identity theft, and scams.",
-    category: "Consumer Law",
+    term: "Firibgarlik",
+    definition: "Shaxsiy manfaat uchun yoki boshqa shaxsga zarar yetkazish uchun qilingan qasddan aldash. Iste'molchilar kontekstida u soxta reklama, shaxsni tasdiqlovchi hujjatlarni o'g'irlash va qalloblikni o'z ichiga oladi.",
+    category: "Iste'molchilar huquqi",
     examples: [
-      "Selling fake products online is consumer fraud.",
-      "Credit card fraud is a serious criminal offense."
+      "Internetda soxta mahsulotlarni sotish iste'molchilarga nisbatan firibgarlikdir.",
+      "Kredit karta firibgarligi jiddiy jinoiy huquqbuzarlikdir."
     ],
-    relatedTerms: ["Consumer Protection", "Deception", "Identity Theft"]
+    relatedTerms: ["Iste'molchilar huquqlarini himoya qilish", "Aldov", "Shaxsni o'g'irlash"]
   },
   {
     id: "13",
-    term: "Defamation",
-    definition: "False statements that harm someone's reputation. Includes libel (written defamation) and slander (spoken defamation). Truth is a complete defense against defamation claims.",
-    category: "Civil Law",
+    term: "Tuhmat (Defamation)",
+    definition: "Birovning obro'siga putur yetkazadigan yolg'on bayonotlar. U yozma tuhmat (libel) va og'zaki tuhmat (slander) ni o'z ichiga oladi. Haqiqat tuhmat haqidagi da'volarga qarshi to'liq himoyadir.",
+    category: "Fuqarolik huquqi",
     examples: [
-      "Posting false accusations on social media could be defamation.",
-      "Public figures must prove actual malice to win defamation cases."
+      "Ijtimoiy tarmoqlarda yolg'on ayblovlarni e'lon qilish tuhmat bo'lishi mumkin.",
+      "Jamoat arboblari tuhmat ishlari bo'yicha g'alaba qozonish uchun haqiqiy g'arazni isbotlashlari kerak."
     ],
-    relatedTerms: ["Libel", "Slander", "First Amendment"]
+    relatedTerms: ["Yozma tuhmat (Libel)", "Og'zaki tuhmat (Slander)", "Birinchi tuzatish"]
   },
   {
     id: "14",
-    term: "Liability",
-    definition: "Legal responsibility for one's actions or omissions. If you are liable, you may be required to pay damages or face other legal consequences.",
-    category: "Civil Law",
+    term: "Javobgarlik (Majburiyat)",
+    definition: "O'z xatti-harakatlari yoki harakatsizligi uchun qonuniy javobgarlik. Agar siz javobgar bo'lsangiz, sizdan zararni to'lash yoki boshqa qonuniy oqibatlarga duch kelish talab qilinishi mumkin.",
+    category: "Fuqarolik huquqi",
     examples: [
-      "Drivers are liable for accidents they cause through negligence.",
-      "Product manufacturers can be held liable for defective products."
+      "Haydovchilar ehtiyotsizlik oqibatida sodir bo'lgan baxtsiz hodisalar uchun javobgardirlar.",
+      "Mahsulot ishlab chiqaruvchilari nuqsonli mahsulotlar uchun javobgar bo'lishi mumkin."
     ],
-    relatedTerms: ["Negligence", "Damages", "Tort"]
+    relatedTerms: ["Ehtiyotsizlik", "Zarar", "Delikt (Tort)"]
   },
   {
     id: "15",
-    term: "Miranda Rights",
-    definition: "Constitutional rights that police must inform you of when placing you under arrest, including the right to remain silent and the right to an attorney.",
-    category: "Criminal Law",
+    term: "Miranda huquqlari",
+    definition: "Politsiya sizni hibsga olayotganda ma'lum qilishi kerak bo'lgan konstitutsiyaviy huquqlar, jumladan sukut saqlash huquqi va advokat yollash huquqi.",
+    category: "Jinoyat huquqi",
     examples: [
-      "Police read Miranda rights: 'You have the right to remain silent...'",
-      "Failure to read Miranda rights can make statements inadmissible in court."
+      "Politsiya Miranda huquqlarini o'qiydi: 'Siz sukut saqlash huquqiga egasiz...'",
+      "Miranda huquqlarini o'qimaslik sudda berilgan ko'rsatmalarni yaroqsiz holatga keltirishi mumkin."
     ],
-    relatedTerms: ["Fifth Amendment", "Sixth Amendment", "Right to Counsel"]
+    relatedTerms: ["Beshinchi tuzatish", "Oltinchi tuzatish", "Advokat huquqi"]
   }
 ];
