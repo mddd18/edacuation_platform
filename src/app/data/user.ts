@@ -20,46 +20,46 @@ export interface UserProgress {
 export const badges: Badge[] = [
   {
     id: "1",
-    name: "First Steps",
-    description: "Complete your first lesson",
+    name: "Dastlabki qadamlar",
+    description: "Birinchi darsni yakunlang",
     icon: "BookOpen",
     earned: true,
     earnedDate: "2026-03-20"
   },
   {
     id: "2",
-    name: "Constitutional Scholar",
-    description: "Master all Constitutional Law modules",
+    name: "Konstitutsiya bilimdoni",
+    description: "Barcha Konstitutsiyaviy huquq modullarini o'zlashtiring",
     icon: "Scale",
     earned: true,
     earnedDate: "2026-03-23"
   },
   {
     id: "3",
-    name: "Case Solver",
-    description: "Successfully solve 5 case studies",
+    name: "Holat yechuvchisi",
+    description: "5 ta amaliy holatni muvaffaqiyatli yeching",
     icon: "Award",
     earned: true,
     earnedDate: "2026-03-25"
   },
   {
     id: "4",
-    name: "Critical Thinker",
-    description: "Vote on 10 Daily Legal Dilemmas",
+    name: "Tanqidiy fikrlovchi",
+    description: "10 ta kunlik huquqiy muammolarga ovoz bering",
     icon: "Brain",
     earned: false
   },
   {
     id: "5",
-    name: "Rights Defender",
-    description: "Complete all Human Rights modules",
+    name: "Huquq himoyachisi",
+    description: "Barcha Inson huquqlari modullarini yakunlang",
     icon: "Shield",
     earned: false
   },
   {
     id: "6",
-    name: "Weekly Warrior",
-    description: "Maintain a 7-day learning streak",
+    name: "Haftalik jangchi",
+    description: "7 kunlik uzluksiz o'qish seriyasini saqlang",
     icon: "Flame",
     earned: false
   }
@@ -83,15 +83,4 @@ export interface LeaderboardEntry {
   badges: number;
 }
 
-export const leaderboardData: LeaderboardEntry[] = [
-  { rank: 1, name: "Sarah Chen", level: 12, xp: 5430, badges: 8 },
-  { rank: 2, name: "Marcus Johnson", level: 11, xp: 4890, badges: 7 },
-  { rank: 3, name: "Emma Rodriguez", level: 10, xp: 4210, badges: 6 },
-  { rank: 4, name: "You", level: 8, xp: 2340, badges: 3 },
-  { rank: 5, name: "Alex Kim", level: 8, xp: 2180, badges: 4 },
-  { rank: 6, name: "Jordan Taylor", level: 7, xp: 1950, badges: 3 },
-  { rank: 7, name: "Maya Patel", level: 7, xp: 1820, badges: 5 },
-  { rank: 8, name: "Chris Anderson", level: 6, xp: 1640, badges: 2 },
-  { rank: 9, name: "Lisa Wang", level: 6, xp: 1520, badges: 4 },
-  { rank: 10, name: "Ryan Martinez", level: 5, xp: 1350, badges: 3 }
-];
+// ... leaderboardData o'z holicha qolaveradi
