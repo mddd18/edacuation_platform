@@ -20,8 +20,8 @@ export interface UserProgress {
 export const badges: Badge[] = [
   {
     id: "1",
-    name: "Dastlabki qadamlar",
-    description: "Birinchi darsni yakunlang",
+    name: "Ilk qadamlar",
+    description: "Birinchi darsingizni yakunlang",
     icon: "BookOpen",
     earned: true,
     earnedDate: "2026-03-20"
@@ -83,4 +83,15 @@ export interface LeaderboardEntry {
   badges: number;
 }
 
-// ... leaderboardData o'z holicha qolaveradi
+export const leaderboardData: LeaderboardEntry[] = [
+  { rank: 1, name: "Sarah Chen", level: 12, xp: 5430, badges: 8 },
+  { rank: 2, name: "Marcus Johnson", level: 11, xp: 4890, badges: 7 },
+  { rank: 3, name: "Emma Rodriguez", level: 10, xp: 4210, badges: 6 },
+  { rank: 4, name: "Siz", level: 8, xp: 2340, badges: 3 },
+  { rank: 5, name: "Alex Kim", level: 8, xp: 2180, badges: 4 },
+  { rank: 6, name: "Jordan Taylor", level: 7, xp: 1950, badges: 3 },
+  { rank: 7, name: "Maya Patel", level: 7, xp: 1820, badges: 5 },
+  { rank: 8, name: "Chris Anderson", level: 6, xp: 1640, badges: 2 },
+  { rank: 9, name: "Lisa Wang", level: 6, xp: 1520, badges: 4 },
+  { rank: 10, name: "Ryan Martinez", level: 5, xp: 1350, badges: 3 }
+];
