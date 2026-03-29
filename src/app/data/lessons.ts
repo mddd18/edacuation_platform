@@ -22,125 +22,125 @@ export interface Lesson {
 export const lessons: Lesson[] = [
   {
     id: "1",
-    title: "Introduction to Constitutional Rights",
-    module: "Constitutional Law",
+    title: "Konstitutsiyaviy huquqlarga kirish",
+    module: "Konstitutsiyaviy huquq",
     content: {
       paragraphs: [
-        "The Constitution of the United States establishes the fundamental framework of our government and guarantees certain basic rights to all citizens. These rights are designed to protect individuals from government overreach and ensure fairness in legal proceedings.",
-        "The Bill of Rights, comprising the first ten amendments to the Constitution, outlines specific protections for individual liberties. These include freedom of speech, religion, and assembly, as well as the right to due process and equal protection under the law.",
-        "Understanding constitutional rights is essential for every citizen. These rights form the foundation of our democratic system and ensure that all individuals are treated fairly under the law, regardless of their background or circumstances."
+        "Qo'shma Shtatlar Konstitutsiyasi hukumatimizning asosiy tizimini belgilaydi va barcha fuqarolarga ma'lum bir asosiy huquqlarni kafolatlaydi. Bu huquqlar shaxslarni hukumatning ortiqcha aralashuvidan himoya qilish va sud jarayonlarida adolatni ta'minlash uchun mo'ljallangan.",
+        "Konstitutsiyaga kiritilgan dastlabki o'nta tuzatishdan iborat bo'lgan Huquqlar to'g'risidagi bill shaxs erkinliklari uchun o'ziga xos himoyalarni belgilaydi. Ularga so'z, din va yig'ilishlar erkinligi, shuningdek qonun doirasida odil sudlov jarayoni va teng himoya qilinish huquqi kiradi.",
+        "Konstitutsiyaviy huquqlarni tushunish har bir fuqaro uchun zarur. Bu huquqlar demokratik tizimimizning asosini tashkil etadi va barcha shaxslarning kelib chiqishi yoki sharoitidan qat'i nazar, qonun oldida adolatli munosabatda bo'lishini ta'minlaydi."
       ],
       terms: [
         {
-          term: "Constitution",
-          definition: "The supreme law of the United States that establishes the structure of government and protects individual rights"
+          term: "Konstitutsiya",
+          definition: "Hukumat tuzilishini belgilaydigan va shaxs huquqlarini himoya qiladigan eng oliy qonun"
         },
         {
-          term: "Bill of Rights",
-          definition: "The first ten amendments to the Constitution that guarantee specific rights and freedoms to individuals"
+          term: "Huquqlar to'g'risidagi bill",
+          definition: "Shaxslarga o'ziga xos huquq va erkinliklarni kafolatlaydigan Konstitutsiyaning dastlabki o'nta tuzatishi"
         },
         {
-          term: "Due Process",
-          definition: "The legal requirement that the government must respect all legal rights owed to a person according to law"
+          term: "Odil sudlov jarayoni",
+          definition: "Hukumat qonunga muvofiq shaxsga tegishli bo'lgan barcha qonuniy huquqlarni hurmat qilishi kerakligi haqidagi qonuniy talab"
         },
         {
-          term: "Equal Protection",
-          definition: "The guarantee that all people must be treated equally by the law and government"
+          term: "Teng himoya",
+          definition: "Barcha odamlar qonun va hukumat tomonidan teng munosabatda bo'lishi kerakligi haqidagi kafolat"
         }
       ]
     },
     comprehension: {
-      question: "What is the primary purpose of the Bill of Rights?",
+      question: "Huquqlar to'g'risidagi billning asosiy maqsadi nima?",
       options: [
-        "To establish the three branches of government",
-        "To protect individual liberties and limit government power",
-        "To create laws for criminal behavior",
-        "To define the duties of citizens"
+        "Hukumatning uchta shoxini yaratish",
+        "Shaxs erkinliklarini himoya qilish va hukumat hokimiyatini cheklash",
+        "Jinoiy xatti-harakatlar uchun qonunlar yaratish",
+        "Fuqarolarning majburiyatlarini belgilash"
       ],
       correctAnswer: 1,
-      explanation: "The Bill of Rights was specifically designed to protect individual liberties and limit government power by guaranteeing fundamental rights such as freedom of speech, religion, and due process."
+      explanation: "Huquqlar to'g'risidagi bill aynan shaxs erkinliklarini himoya qilish va so'z erkinligi, din va odil sudlov jarayoni kabi asosiy huquqlarni kafolatlash orqali hukumat hokimiyatini cheklash uchun mo'ljallangan."
     }
   },
   {
     id: "2",
-    title: "Freedom of Speech and Expression",
-    module: "First Amendment",
+    title: "So'z va o'z fikrini bildirish erkinligi",
+    module: "Birinchi tuzatish",
     content: {
       paragraphs: [
-        "The First Amendment to the United States Constitution protects several fundamental freedoms, with freedom of speech being one of the most celebrated. This protection allows individuals to express their opinions, ideas, and beliefs without fear of government censorship or punishment.",
-        "However, freedom of speech is not absolute. The Supreme Court has recognized certain limitations, such as speech that incites immediate violence, constitutes defamation, or creates a clear and present danger. Schools also have some authority to regulate student speech in certain contexts.",
-        "Understanding the scope and limits of free speech is crucial for young citizens. While you have the right to express controversial or unpopular opinions, this right comes with the responsibility to respect the rights of others and understand when speech may cross legal boundaries."
+        "Qo'shma Shtatlar Konstitutsiyasiga kiritilgan Birinchi tuzatish bir nechta asosiy erkinliklarni himoya qiladi, so'z erkinligi esa ularning eng mashhurlaridan biridir. Ushbu himoya shaxslarga hukumat senzurasidan yoki jazolanishdan qo'rqmasdan o'z fikrlari, g'oyalari va e'tiqodlarini ifoda etish imkonini beradi.",
+        "Biroq, so'z erkinligi mutlaq emas. Oliy sud darhol zo'ravonlikni keltirib chiqaradigan, tuhmat hisoblanadigan yoki aniq va mavjud xavf tug'diradigan nutq kabi ma'lum cheklovlarni tan olgan. Maktablar ham ma'lum vaziyatlarda o'quvchilarning nutqini tartibga solish bo'yicha qandaydir vakolatlarga ega.",
+        "So'z erkinligining doirasi va chegaralarini tushunish yosh fuqarolar uchun juda muhimdir. Siz munozarali yoki mashhur bo'lmagan fikrlarni bildirish huquqiga ega bo'lsangiz-da, bu huquq boshqalarning huquqlarini hurmat qilish va nutq qachon qonuniy chegaralardan o'tishi mumkinligini tushunish mas'uliyati bilan birga keladi."
       ],
       terms: [
         {
-          term: "First Amendment",
-          definition: "Constitutional protection for freedom of speech, religion, press, assembly, and petition"
+          term: "Birinchi tuzatish",
+          definition: "So'z, din, matbuot, yig'ilishlar va murojaat qilish erkinliklarini konstitutsiyaviy himoya qilish"
         },
         {
-          term: "Censorship",
-          definition: "The suppression or prohibition of speech or writing deemed objectionable by the government or other authorities"
+          term: "Senzura",
+          definition: "Hukumat yoki boshqa idoralar tomonidan nomaqbul deb topilgan nutq yoki yozuvlarni bostirish yoki taqiqlash"
         },
         {
-          term: "Defamation",
-          definition: "False statements that harm someone's reputation; includes both libel (written) and slander (spoken)"
+          term: "Tuhmat",
+          definition: "Birovning obro'siga putur yetkazadigan yolg'on bayonotlar; u yozma (libel) va og'zaki (slander) tuhmatni o'z ichiga oladi"
         },
         {
-          term: "Clear and Present Danger",
-          definition: "A legal standard that allows government to limit speech if it poses an immediate threat to public safety"
+          term: "Aniq va mavjud xavf",
+          definition: "Agar nutq jamoat xavfsizligiga bevosita tahdid solsa, hukumatga uni cheklash imkonini beruvchi huquqiy standart"
         }
       ]
     },
     comprehension: {
-      question: "According to the passage, which statement about freedom of speech is TRUE?",
+      question: "Matnga ko'ra, so'z erkinligi haqidagi qaysi tasdiq TO'G'RI?",
       options: [
-        "Freedom of speech is completely unlimited in all circumstances",
-        "Schools have no authority to regulate student speech",
-        "Speech that incites immediate violence may be restricted",
-        "Only popular opinions are protected by the First Amendment"
+        "So'z erkinligi barcha sharoitlarda mutlaqo cheklanmagan",
+        "Maktablar o'quvchilar nutqini tartibga solish vakolatiga ega emas",
+        "Darhol zo'ravonlikni keltirib chiqaradigan nutq cheklanishi mumkin",
+        "Birinchi tuzatish faqat mashhur fikrlarni himoya qiladi"
       ],
       correctAnswer: 2,
-      explanation: "While freedom of speech is a fundamental right, it is not absolute. The Supreme Court has recognized that speech inciting immediate violence, among other limited categories, may be restricted to protect public safety."
+      explanation: "So'z erkinligi asosiy huquq bo'lsa-da, u mutlaq emas. Oliy sud darhol zo'ravonlikni keltirib chiqaradigan nutq, cheklangan toifalar qatorida, jamoat xavfsizligini himoya qilish maqsadida cheklanishi mumkinligini tan olgan."
     }
   },
   {
     id: "3",
-    title: "Consumer Rights and Responsibilities",
-    module: "Consumer Law",
+    title: "Iste'molchilarning huquq va majburiyatlari",
+    module: "Iste'molchilar huquqi",
     content: {
       paragraphs: [
-        "As a consumer, you have important legal rights when you purchase goods or services. Consumer protection laws exist to ensure fair business practices and protect buyers from fraud, deception, and unfair treatment by sellers.",
-        "Key consumer rights include the right to receive accurate information about products, the right to safe products, the right to choose among competing products, and the right to seek redress when problems occur. Many purchases also come with warranties that guarantee certain standards of quality and performance.",
-        "Understanding your rights as a consumer empowers you to make informed decisions and take action when those rights are violated. Whether you're buying a phone, ordering food, or making an online purchase, knowing what protections exist can help you navigate the marketplace confidently."
+        "Iste'molchi sifatida tovarlar yoki xizmatlarni sotib olayotganda muhim qonuniy huquqlarga egasiz. Iste'molchilar huquqlarini himoya qilish qonunlari adolatli biznes amaliyotlarini ta'minlash va xaridorlarni firibgarlik, aldov va sotuvchilar tomonidan adolatsiz munosabatdan himoya qilish uchun mavjud.",
+        "Asosiy iste'molchi huquqlariga mahsulotlar haqida aniq ma'lumot olish huquqi, xavfsiz mahsulotlarga ega bo'lish huquqi, raqobatdosh mahsulotlar orasidan tanlash huquqi va muammolar yuzaga kelganda zararni qoplashni talab qilish huquqi kiradi. Ko'pgina xaridlar o'ziga xos sifat va ishlash standartlarini kafolatlaydigan kafolatlar bilan birga keladi.",
+        "Iste'molchi sifatidagi huquqlaringizni tushunish sizga ongli qarorlar qabul qilishga va bu huquqlar buzilganda chora ko'rishga imkon beradi. Telefon sotib olayotganda, ovqat buyurtma qilganda yoki onlayn xaridni amalga oshirayotganda, qanday himoyalar mavjudligini bilish bozorda o'zingizni ishonchli his qilishga yordam beradi."
       ],
       terms: [
         {
-          term: "Consumer Protection",
-          definition: "Laws and regulations designed to safeguard buyers from unfair business practices"
+          term: "Iste'molchilar huquqlarini himoya qilish",
+          definition: "Xaridorlarni adolatsiz biznes amaliyotlaridan himoya qilishga qaratilgan qonunlar va qoidalar"
         },
         {
-          term: "Warranty",
-          definition: "A guarantee from a seller that a product will meet certain standards of quality and performance"
+          term: "Kafolat",
+          definition: "Sotuvchi tomonidan mahsulot ma'lum sifat va ishlash standartlariga javob berishi haqidagi kafolat"
         },
         {
-          term: "Fraud",
-          definition: "Intentional deception for personal gain or to damage another individual"
+          term: "Firibgarlik",
+          definition: "Shaxsiy manfaat uchun yoki boshqa shaxsga zarar yetkazish uchun qilingan qasddan aldash"
         },
         {
-          term: "Redress",
-          definition: "Compensation or remedy for a wrong or grievance"
+          term: "Zararni qoplash",
+          definition: "Huquqbuzarlik yoki shikoyat uchun kompensatsiya yoki huquqiy chora"
         }
       ]
     },
     comprehension: {
-      question: "What is the main purpose of consumer protection laws?",
+      question: "Iste'molchilar huquqlarini himoya qilish qonunlarining asosiy maqsadi nima?",
       options: [
-        "To help businesses make more profit",
-        "To ensure fair business practices and protect buyers from unfair treatment",
-        "To prevent people from returning purchased items",
-        "To increase the price of consumer goods"
+        "Korxonalarga ko'proq foyda keltirishga yordam berish",
+        "Adolatli biznes amaliyotlarini ta'minlash va xaridorlarni adolatsiz munosabatdan himoya qilish",
+        "Odamlarning sotib olingan narsalarni qaytarishini oldini olish",
+        "Iste'mol tovarlari narxini oshirish"
       ],
       correctAnswer: 1,
-      explanation: "Consumer protection laws are specifically designed to ensure fair business practices and protect buyers from fraud, deception, and unfair treatment by sellers, giving consumers important legal rights in the marketplace."
+      explanation: "Iste'molchilar huquqlarini himoya qilish qonunlari bozorda adolatli biznes amaliyotlarini ta'minlash hamda xaridorlarni firibgarlik, aldov va sotuvchilarning adolatsiz munosabatidan himoya qilish uchun maxsus ishlab chiqilgan bo'lib, iste'molchilarga muhim qonuniy huquqlarni taqdim etadi."
     }
   }
 ];
