@@ -12,7 +12,7 @@ export const videoGuides: VideoGuide[] = [
     title: "OneID (Yagona identifikatsiya tizimi) dan ro'yxatdan o'tish tartibi",
     category: "OneID",
     description: "Davlat xizmatlaridan onlayn foydalanish uchun eng muhim qadam — OneID tizimida to'g'ri ro'yxatdan o'tish va akkauntni tasdiqlash bo'yicha to'liq qo'llanma.",
-    youtubeId: "T7y_Zt4qRbw" // Namuna (Almashtirishingiz mumkin)
+    youtubeId: "https://youtu.be/iJ488a0WFME?si=PtRfEJrJGRS7AHiM" // Namuna (Almashtirishingiz mumkin)
   },
   {
     id: "2",
