@@ -238,4 +238,43 @@ export function CaseStudiesPage() {
                                   <p className="text-sm leading-relaxed font-medium">
                                     {action.feedback}
                                   </p>
-                                </motion.
+                                </motion.div>
+                              )}
+                            </AnimatePresence>
+                          </div>
+                        );
+                      })}
+                    </div>
+
+                    {/* Muvaffaqiyat xabari */}
+                    <AnimatePresence>
+                      {showFeedback && currentCase.actions[selectedAction!]?.isCorrect && (
+                        <motion.div 
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          className="mt-8 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/20 border-2 border-emerald-200 dark:border-emerald-800/50 rounded-2xl shadow-sm"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="bg-emerald-500 p-3 rounded-full shadow-lg shadow-emerald-500/30">
+                              <Award className="w-8 h-8 text-white" />
+                            </div>
+                            <div>
+                              <h4 className="font-extrabold text-xl text-emerald-800 dark:text-emerald-300 mb-1">Holat muvaffaqiyatli yechildi!</h4>
+                              <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
+                                To'g'ri huquqiy tahlil uchun +100 XP hisobingizga qo'shildi.
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    </div>
+  );
+}
