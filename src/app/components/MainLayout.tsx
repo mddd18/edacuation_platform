@@ -14,11 +14,11 @@ export function MainLayout() {
   const location = useLocation();
 
   const navItems = [
-    { path: "/", icon: Home, label: "Dashboard" },
-    { path: "/cases", icon: Scale, label: "Case Studies" },
-    { path: "/dictionary", icon: Book, label: "Dictionary" },
-    { path: "/leaderboard", icon: Trophy, label: "Leaderboard" },
-    { path: "/profile", icon: User, label: "Profile" },
+    { path: "/", icon: Home, label: "Asosiy panel" },
+    { path: "/cases", icon: Scale, label: "Amaliy holatlar" },
+    { path: "/dictionary", icon: Book, label: "Lug'at" },
+    { path: "/leaderboard", icon: Trophy, label: "Reyting" },
+    { path: "/profile", icon: User, label: "Profil" },
   ];
 
   const isActive = (path: string) => {
@@ -48,10 +48,10 @@ export function MainLayout() {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="font-bold text-lg text-white">Law & Rights</h1>
+                <h1 className="font-bold text-lg text-white">Qonun va Huquq</h1>
                 <Sparkles className="w-4 h-4 text-yellow-300" />
               </div>
-              <p className="text-xs text-white/80">Level Up Your Knowledge</p>
+              <p className="text-xs text-white/80">Bilimingizni oshiring</p>
             </div>
           </div>
         </div>
@@ -97,9 +97,9 @@ export function MainLayout() {
           >
             <p className="text-xs text-white/90 mb-1 flex items-center gap-2">
               <Sparkles className="w-3 h-3 text-yellow-300" />
-              Pro Tip
+              Foydali maslahat
             </p>
-            <p className="text-sm text-white">Complete daily lessons to maintain your streak!</p>
+            <p className="text-sm text-white">Seriyani saqlab qolish uchun har kuni darslarni bajaring!</p>
           </div>
         </div>
       </aside>
