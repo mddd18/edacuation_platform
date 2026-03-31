@@ -19,7 +19,7 @@ export const videoGuides: VideoGuide[] = [
     title: "My.gov.uz orqali bolani bog'chaga navbatga qo'yish",
     category: "My.gov.uz",
     description: "Yagona interaktiv davlat xizmatlari portali (My.gov.uz) orqali uydan chiqmasdan farzandingizni davlat maktabgacha ta'lim tashkilotiga navbatga qo'yishni o'rganing.",
-    youtubeId: "4J7wH-m6hFk" 
+    youtubeId: "Ao1XCal6yR8" 
   },
   {
     id: "3",
@@ -30,7 +30,7 @@ export const videoGuides: VideoGuide[] = [
   },
   {
     id: "4",
-    title: "My.gov.uz orqali sudlanganlik/sudlanmaganlik haqida ma'lumotnoma olish",
+    title: "2GLcmf1is6M",
     category: "My.gov.uz",
     description: "Ishga kirish yoki boshqa hujjatlar uchun kerak bo'ladigan sudlanganlik haqidagi ma'lumotnomani 3 daqiqada onlayn olish usuli.",
     youtubeId: "Y3W5b_J1m-k"
