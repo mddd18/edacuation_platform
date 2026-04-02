@@ -80,7 +80,7 @@ export const videoGuides: VideoGuide[] = [
     title: "My.uzbmb.uz orqali OTMga hujjat topshirish",
     category: "O'qishga topshirish",
     description: "Abituriyentlar uchun 5 ta yo'nalishni tanlash va test uchun to'lov qilish.",
-    youtubeId: "EGSdxSJu4IM&t=23s"
+    youtubeId: "t4YiLqpheBo"
   },
   {
     id: "11",
