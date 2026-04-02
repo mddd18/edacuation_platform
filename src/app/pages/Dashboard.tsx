@@ -177,28 +177,7 @@ export function Dashboard() {
             </Card>
           </motion.div>
 
-          {/* O'quv Yo'li */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.2 }}
-          >
-            <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl transition-colors duration-300">
-              <CardHeader>
-                <CardTitle className="text-2xl flex items-center gap-3 dark:text-white">
-                  <div className="bg-gradient-to-br from-emerald-400 to-teal-500 p-2.5 rounded-xl shadow-lg">
-                    <BookOpen className="w-6 h-6 text-white" />
-                  </div>
-                  Sizning O'quv Yo'lingiz
-                </CardTitle>
-                <CardDescription className="text-base font-medium dark:text-slate-400">Huquqni mukammal o'zlashtirish uchun darslarni yakunlang</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <LearningJourney />
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
+        
 
         {/* O'ng Panel - Progress va Statistika */}
         <div className="space-y-8">
