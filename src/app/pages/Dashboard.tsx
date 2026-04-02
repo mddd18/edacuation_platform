@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import { dailyDilemmas, dilemmaResults } from "../data/dilemmas";
 import { userProgress } from "../data/user";
-import { LearningJourney } from "../components/LearningJourney";
 import { motion } from "motion/react";
 
 export function Dashboard() {
@@ -177,7 +176,7 @@ export function Dashboard() {
             </Card>
           </motion.div>
 
-        
+        </div>
 
         {/* O'ng Panel - Progress va Statistika */}
         <div className="space-y-8">
