@@ -69,7 +69,7 @@ export const userProgress: UserProgress = {
   level: 8,
   xp: 2340,
   xpToNextLevel: 3000,
-  completedLessons: ["1", "2"],
+  completedLessons: [],
   completedCases: ["1", "2", "3"],
   badges: badges,
   streak: 5
