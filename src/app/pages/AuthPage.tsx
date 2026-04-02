@@ -20,9 +20,14 @@ export function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Formani yuborish (vaqtinchalik Asosiy panelga o'tkazadi)
+  // Formani yuborish (Tizimga kirish mantiqiy qismi)
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Foydalanuvchini xotirada "kirdi" deb belgilaymiz
+    localStorage.setItem("isAuthenticated", "true");
+    
+    // Asosiy panelga qaytaramiz
     navigate("/");
   };
 
@@ -66,12 +71,14 @@ export function AuthPage() {
               transition={{ type: "spring", stiffness: 400, damping: 30 }}
             />
             <button
+              type="button"
               onClick={() => setIsLogin(true)}
               className={`flex-1 py-2.5 text-sm font-bold z-10 transition-colors ${isLogin ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}
             >
               Kirish
             </button>
             <button
+              type="button"
               onClick={() => setIsLogin(false)}
               className={`flex-1 py-2.5 text-sm font-bold z-10 transition-colors ${!isLogin ? 'text-blue-600 dark:text-blue-400' : 'text-slate-500 dark:text-slate-400'}`}
             >
@@ -111,24 +118,25 @@ export function AuthPage() {
                   <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                     <User className="w-5 h-5 text-slate-400" />
                   </div>
-                  <Input required type="text" placeholder="Elektron pochta yoki Login" className="pl-11 h-12 rounded-xl bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700" />
+                  <Input required type="text" placeholder="Login yarating" className="pl-11 h-12 rounded-xl bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700" />
                 </div>
 
                 {!isLogin && (
-                  /* Sinfni tanlash - Faqat ro'yxatdan o'tishda */
+                  /* Sinfni tanlash - FAQAT MAKTAB O'QUVCHILARI UCHUN */
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 flex items-center pl-3.5 pointer-events-none">
                       <BookOpen className="w-5 h-5 text-slate-400" />
                     </div>
-                    <select required className="flex h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm pl-11 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none">
-                      <option value="" disabled selected>O'qiyotgan sinfingizni tanlang</option>
+                    {/* defaultValue="" orqali xatolik yo'qotildi */}
+                    <select required defaultValue="" className="flex h-12 w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm pl-11 dark:border-slate-700 dark:bg-slate-800/50 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all appearance-none cursor-pointer">
+                      <option value="" disabled>O'qiyotgan sinfingizni tanlang</option>
+                      <option value="5">5-sinf</option>
+                      <option value="6">6-sinf</option>
+                      <option value="7">7-sinf</option>
                       <option value="8">8-sinf</option>
                       <option value="9">9-sinf</option>
                       <option value="10">10-sinf</option>
                       <option value="11">11-sinf</option>
-                      <option value="lyceum">Akademik litsey / Kollej</option>
-                      <option value="university">Universitet talabasi</option>
-                      <option value="other">Boshqa</option>
                     </select>
                   </div>
                 )}
