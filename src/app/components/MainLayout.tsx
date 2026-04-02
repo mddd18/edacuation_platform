@@ -4,6 +4,7 @@ import {
   Scale, 
   Trophy, 
   Book, 
+  BookOpen, // <-- DARSLAR UCHUN IKONKA QO'SHILDI
   User, 
   Home,
   GraduationCap,
@@ -45,9 +46,10 @@ export function MainLayout() {
 
   const navItems = [
     { path: "/", icon: Home, label: "Asosiy panel" },
+    { path: "/lessons", icon: BookOpen, label: "Darslar" }, // <-- YANGI SAHIFA MENYUGA QO'SHILDI
     { path: "/cases", icon: Scale, label: "Amaliy holatlar" },
     { path: "/dictionary", icon: Book, label: "Bosqichli Lug'at" },
-    { path: "/videos", icon: PlaySquare, label: "Video Qo'llanmalar" }, // VIDEO QO'LLANMALAR QO'SHILDI
+    { path: "/videos", icon: PlaySquare, label: "Video Qo'llanmalar" },
     { path: "/leaderboard", icon: Trophy, label: "Reyting" },
     { path: "/profile", icon: User, label: "Profil" },
   ];
