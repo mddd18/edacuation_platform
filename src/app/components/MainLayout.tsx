@@ -4,7 +4,7 @@ import {
   Scale, 
   Trophy, 
   Book, 
-  BookOpen, // <-- DARSLAR UCHUN IKONKA QO'SHILDI
+  BookOpen, 
   User, 
   Home,
   GraduationCap,
@@ -46,11 +46,19 @@ export function MainLayout() {
 
   const navItems = [
     { path: "/", icon: Home, label: "Asosiy panel" },
-    { path: "/lessons", icon: BookOpen, label: "Darslar" }, // <-- YANGI SAHIFA MENYUGA QO'SHILDI
+    { path: "/lessons", icon: BookOpen, label: "Darslar" },
     { path: "/cases", icon: Scale, label: "Amaliy holatlar" },
     { path: "/dictionary", icon: Book, label: "Bosqichli Lug'at" },
     { path: "/videos", icon: PlaySquare, label: "Video Qo'llanmalar" },
     { path: "/leaderboard", icon: Trophy, label: "Reyting" },
+    { path: "/profile", icon: User, label: "Profil" },
+  ];
+
+  // MOBIL PASTKI MENYU UCHUN ASOSIY 4 TA SAHIFA
+  const mobileBottomNav = [
+    { path: "/", icon: Home, label: "Asosiy" },
+    { path: "/lessons", icon: BookOpen, label: "Darslar" },
+    { path: "/cases", icon: Scale, label: "Holatlar" },
     { path: "/profile", icon: User, label: "Profil" },
   ];
 
@@ -59,13 +67,13 @@ export function MainLayout() {
     return location.pathname.startsWith(path);
   };
 
-  // Telefonda menyuni yopish (biron sahifaga o'tganda)
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden">
+    // select-none orqali mobilda tugmalarni bosganda matn belgilanishini oldini olamiz
+    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden select-none md:select-auto">
       
       {/* MOBIL UCHUN QORONG'U ORQA FON (OVERLAY) */}
       <AnimatePresence>
@@ -75,14 +83,14 @@ export function MainLayout() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setIsMobileMenuOpen(false)}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] md:hidden"
           />
         )}
       </AnimatePresence>
 
-      {/* YON PANEL (SIDEBAR) */}
+      {/* YON PANEL (SIDEBAR) - Mobilda Drawer sifatida chiqadi */}
       <aside 
-        className={`fixed md:static inset-y-0 left-0 z-50 w-72 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl ${
+        className={`fixed md:static inset-y-0 left-0 z-[70] w-72 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         }`}
         style={{
@@ -105,7 +113,7 @@ export function MainLayout() {
             </div>
           </div>
           {/* Mobil menyuni yopish tugmasi */}
-          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 bg-white/10 rounded-lg text-white">
+          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 bg-white/10 rounded-lg text-white active:scale-90 transition-transform">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -135,8 +143,8 @@ export function MainLayout() {
           </div>
         </nav>
 
-        {/* Tungi Rejim tugmasi va Footer */}
-        <div className="p-5 border-t border-white/10 relative z-10">
+        {/* Tungi Rejim tugmasi va Footer (Faqat Kompyuter uchun) */}
+        <div className="p-5 border-t border-white/10 relative z-10 hidden md:block">
           <button 
             onClick={toggleTheme}
             className="w-full flex items-center justify-between px-4 py-3 mb-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all text-white font-medium"
@@ -145,7 +153,7 @@ export function MainLayout() {
             {isDarkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-blue-200" />}
           </button>
 
-          <div className="rounded-2xl p-4 bg-black/20 backdrop-blur-md border border-white/10 shadow-inner hidden md:block">
+          <div className="rounded-2xl p-4 bg-black/20 backdrop-blur-md border border-white/10 shadow-inner">
             <p className="text-xs font-bold text-white/90 mb-1.5 flex items-center gap-2 uppercase tracking-wider">
               <Sparkles className="w-3.5 h-3.5 text-yellow-300" /> Maslahat
             </p>
@@ -155,27 +163,80 @@ export function MainLayout() {
       </aside>
 
       {/* ASOSIY KONTENT QISMI */}
-      <div className="flex-1 flex flex-col h-screen relative">
-        {/* MOBIL UCHUN TEPADAGI NAVBAR */}
-        <div className="md:hidden flex items-center justify-between p-4 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 z-30 transition-colors duration-300 shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className="bg-primary/10 dark:bg-blue-500/20 p-1.5 rounded-lg">
-              <GraduationCap className="w-5 h-5 text-primary dark:text-blue-400" />
+      <div className="flex-1 flex flex-col h-screen relative w-full">
+        
+        {/* MOBIL UCHUN APP BAR (Yuqori panel - Native ilovadek) */}
+        <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-slate-800 z-30 transition-colors duration-300 sticky top-0">
+          <div className="flex items-center gap-2.5">
+            <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-1.5 rounded-lg shadow-sm">
+              <GraduationCap className="w-5 h-5 text-white" />
             </div>
-            <h1 className="font-extrabold text-lg text-gray-900 dark:text-white">Qonun va Huquq</h1>
+            <h1 className="font-extrabold text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
+              Qonun va Huquq
+            </h1>
           </div>
+          
+          {/* Tungi rejim tugmasi endi mobilda tepada turadi */}
           <button 
-            onClick={() => setIsMobileMenuOpen(true)} 
-            className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg text-gray-700 dark:text-slate-200"
+            onClick={toggleTheme}
+            className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 active:scale-90 transition-transform"
           >
-            <Menu className="w-6 h-6" />
+            {isDarkMode ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-indigo-500" />}
           </button>
         </div>
 
         {/* SAHIFALAR CHIQADIGAN JOY */}
-        <main className="flex-1 overflow-auto bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+        {/* pb-20 (padding-bottom) qo'shildi, toki pastki menyu darslarni yopib qo'ymasin */}
+        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-300 pb-20 md:pb-0">
           <Outlet />
         </main>
+
+        {/* MOBIL UCHUN PASTKI MENYU (BOTTOM NAVIGATION BAR) */}
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 pb-1 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)]">
+          <div className="flex items-center justify-around px-1 py-1">
+            
+            {/* Asosiy 4 ta tab */}
+            {mobileBottomNav.map((item) => {
+              const Icon = item.icon;
+              const active = isActive(item.path);
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="flex flex-col items-center justify-center w-16 h-14 relative"
+                >
+                  <div className={`flex flex-col items-center justify-center transition-all duration-300 ${active ? '-translate-y-1' : ''}`}>
+                    <Icon className={`w-6 h-6 mb-1 ${active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`} />
+                    <span className={`text-[10px] font-bold transition-all duration-300 ${active ? 'text-blue-600 dark:text-blue-400 opacity-100' : 'text-slate-400 dark:text-slate-500 opacity-80'}`}>
+                      {item.label}
+                    </span>
+                  </div>
+                  {active && (
+                    <motion.div 
+                      layoutId="bottomNavIndicator"
+                      className="absolute bottom-0 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"
+                    />
+                  )}
+                </Link>
+              );
+            })}
+            
+            {/* KO'PROQ (MENYU) TUGMASI - Qolgan sahifalarni ochish uchun */}
+            <button
+              onClick={() => setIsMobileMenuOpen(true)}
+              className="flex flex-col items-center justify-center w-16 h-14 active:scale-95 transition-transform"
+            >
+              <div className="flex flex-col items-center justify-center">
+                <Menu className="w-6 h-6 mb-1 text-slate-400 dark:text-slate-500" />
+                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 opacity-80">
+                  Ko'proq
+                </span>
+              </div>
+            </button>
+            
+          </div>
+        </div>
+        
       </div>
     </div>
   );
