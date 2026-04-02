@@ -1,7 +1,7 @@
-import { createBrowserRouter } from "react-router";
+import { createHashRouter } from "react-router"; // <-- DIQQAT: createBrowserRouter o'rniga createHashRouter import qilindi
 import { MainLayout } from "./components/MainLayout";
 import { Dashboard } from "./pages/Dashboard";
-import { LessonsPage } from "./pages/LessonsPage"; // YANGI SAHIFANI IMPORT QILDIK
+import { LessonsPage } from "./pages/LessonsPage";
 import { LessonPage } from "./pages/LessonPage";
 import { CaseStudiesPage } from "./pages/CaseStudiesPage";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
@@ -10,13 +10,13 @@ import { ProfilePage } from "./pages/ProfilePage";
 import { VideoGuidesPage } from "./pages/VideoGuidesPage"; 
 import { NotFound } from "./pages/NotFound";
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([ // <-- DIQQAT: Shu yerda ham o'zgardi
   {
     path: "/",
     Component: MainLayout,
     children: [
       { index: true, Component: Dashboard },
-      { path: "lessons", Component: LessonsPage }, // YANGI MARSHRUT QO'SHILDI
+      { path: "lessons", Component: LessonsPage },
       { path: "lesson/:id", Component: LessonPage },
       { path: "cases", Component: CaseStudiesPage },
       { path: "leaderboard", Component: LeaderboardPage },
