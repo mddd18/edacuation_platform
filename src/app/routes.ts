@@ -1,4 +1,4 @@
-import { createHashRouter } from "react-router"; // <-- DIQQAT: createBrowserRouter o'rniga createHashRouter import qilindi
+import { createBrowserRouter } from "react-router"; 
 import { MainLayout } from "./components/MainLayout";
 import { Dashboard } from "./pages/Dashboard";
 import { LessonsPage } from "./pages/LessonsPage";
@@ -9,8 +9,13 @@ import { DictionaryPage } from "./pages/DictionaryPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { VideoGuidesPage } from "./pages/VideoGuidesPage"; 
 import { NotFound } from "./pages/NotFound";
+import { AuthPage } from "./pages/AuthPage"; // <-- YANGI SAHIFA IMPORT QILINDI
 
-export const router = createHashRouter([ // <-- DIQQAT: Shu yerda ham o'zgardi
+export const router = createBrowserRouter([
+  {
+    path: "/login", // <-- LOGIN MARSHRUTI QO'SHILDI
+    Component: AuthPage,
+  },
   {
     path: "/",
     Component: MainLayout,
