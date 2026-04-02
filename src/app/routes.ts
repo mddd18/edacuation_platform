@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router"; 
+import { createHashRouter } from "react-router"; 
 import { MainLayout } from "./components/MainLayout";
 import { Dashboard } from "./pages/Dashboard";
 import { LessonsPage } from "./pages/LessonsPage";
@@ -9,11 +9,11 @@ import { DictionaryPage } from "./pages/DictionaryPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { VideoGuidesPage } from "./pages/VideoGuidesPage"; 
 import { NotFound } from "./pages/NotFound";
-import { AuthPage } from "./pages/AuthPage"; // <-- YANGI SAHIFA IMPORT QILINDI
+import { AuthPage } from "./pages/AuthPage"; 
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
-    path: "/login", // <-- LOGIN MARSHRUTI QO'SHILDI
+    path: "/login",
     Component: AuthPage,
   },
   {
