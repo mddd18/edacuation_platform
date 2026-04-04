@@ -1,7 +1,15 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
 import { supabase } from "../../lib/supabase";
-import { BookOpen, Star, ChevronRight, Loader2, GraduationCap } from "lucide-react";
+import { 
+  BookOpen, 
+  Star, 
+  ChevronRight, 
+  Loader2, 
+  GraduationCap, 
+  Lock, 
+  CheckCircle2 
+} from "lucide-react";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { motion } from "motion/react";
@@ -11,25 +19,51 @@ export function LessonsPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchAllLessons = async () => {
+    const fetchLessonsWithProgress = async () => {
       setLoading(true);
-      
-      // Filtrlarsiz barcha darslarni bazadan olamiz
-      const { data, error } = await supabase
+      const savedUser = localStorage.getItem("user");
+      if (!savedUser) return;
+      const user = JSON.parse(savedUser);
+
+      // 1. Barcha darslarni olamiz
+      const { data: allLessons, error: lessonError } = await supabase
         .from('lessons')
         .select('*')
-        .order('grade', { ascending: true }) // Sinf bo'yicha tartiblaymiz (5, 6, 7...)
+        .order('grade', { ascending: true })
         .order('created_at', { ascending: true });
 
-      if (error) {
-        console.error("Darslarni yuklashda xato:", error.message);
-      } else {
-        setLessons(data || []);
+      // 2. O'quvchi tugatgan darslarni olamiz
+      const { data: completedData, error: progressError } = await supabase
+        .from('user_progress')
+        .select('lesson_id')
+        .eq('user_id', user.id)
+        .eq('is_completed', true);
+
+      if (!lessonError) {
+        const completedIds = completedData?.map(item => item.lesson_id) || [];
+        
+        // 3. Qulflash logikasini hisoblaymiz
+        const processedLessons = allLessons?.map((lesson, index) => {
+          const isCompleted = completedIds.includes(lesson.id);
+          
+          // Mantiq: 1-dars doim ochiq. Qolganlari esa o'zidan oldingi dars bitgan bo'lsa ochiq.
+          let isLocked = false;
+          if (index > 0) {
+            const previousLessonId = allLessons[index - 1].id;
+            if (!completedIds.includes(previousLessonId)) {
+              isLocked = true;
+            }
+          }
+
+          return { ...lesson, isCompleted, isLocked };
+        });
+
+        setLessons(processedLessons || []);
       }
       setLoading(false);
     };
 
-    fetchAllLessons();
+    fetchLessonsWithProgress();
   }, []);
 
   if (loading) return (
@@ -48,10 +82,10 @@ export function LessonsPage() {
           <BookOpen className="w-8 h-8 text-white" />
         </div>
         <h1 className="text-3xl md:text-5xl font-black dark:text-white tracking-tight">
-          Barcha Darslar
+          Darslar va Progress
         </h1>
         <p className="text-slate-500 dark:text-slate-400 font-medium text-lg">
-          O'zingizga qiziq bo'lgan har qanday sinf mavzusini tanlang va o'rganing.
+          Keyingi darslarni ochish uchun joriy mavzularni muvaffaqiyatli yakunlang.
         </p>
       </header>
 
@@ -64,32 +98,63 @@ export function LessonsPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              <Link to={`/lessons/${lesson.id}`}>
-                <Card className="hover:border-blue-500 hover:shadow-xl hover:shadow-blue-500/5 transition-all cursor-pointer group bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 overflow-hidden rounded-3xl">
+              {/* Agar dars qulflangan bo'lsa Link ishlamaydi */}
+              <Link 
+                to={lesson.isLocked ? "#" : `/lessons/${lesson.id}`}
+                className={lesson.isLocked ? "cursor-not-allowed" : ""}
+              >
+                <Card className={`transition-all overflow-hidden rounded-3xl border-2 ${
+                  lesson.isLocked 
+                    ? "opacity-60 bg-slate-100 dark:bg-slate-900/50 border-transparent" 
+                    : "hover:border-blue-500 hover:shadow-xl bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                }`}>
                   <CardContent className="p-6 flex items-center justify-between">
                     <div className="flex items-center gap-6">
-                      <div className="w-16 h-16 bg-slate-100 dark:bg-slate-700 rounded-2xl flex flex-col items-center justify-center group-hover:bg-blue-600 transition-colors">
-                        <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 group-hover:text-blue-200 uppercase leading-none mb-1">Sinf</span>
-                        <span className="text-2xl font-black text-slate-700 dark:text-white group-hover:text-white leading-none">
-                          {lesson.grade}
-                        </span>
+                      <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center transition-colors ${
+                        lesson.isLocked 
+                          ? "bg-slate-200 dark:bg-slate-800" 
+                          : "bg-slate-100 dark:bg-slate-700 group-hover:bg-blue-600"
+                      }`}>
+                        {lesson.isLocked ? (
+                          <Lock className="w-6 h-6 text-slate-400" />
+                        ) : (
+                          <>
+                            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase leading-none mb-1">Sinf</span>
+                            <span className="text-2xl font-black text-slate-700 dark:text-white leading-none">
+                              {lesson.grade}
+                            </span>
+                          </>
+                        )}
                       </div>
                       <div>
-                        <h3 className="font-bold text-xl dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                        <h3 className={`font-bold text-xl ${lesson.isLocked ? "text-slate-400" : "dark:text-white"}`}>
                           {lesson.title}
                         </h3>
                         <div className="flex items-center gap-3 mt-2">
-                          <Badge className="bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-500 border-0 font-bold px-3">
+                          <Badge className={`${
+                            lesson.isLocked 
+                            ? "bg-slate-200 text-slate-400 dark:bg-slate-800" 
+                            : "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-500"
+                          } border-0 font-bold px-3`}>
                             <Star className="w-3 h-3 mr-1 fill-current" /> {lesson.xp_reward} XP
                           </Badge>
-                          <span className="text-sm text-slate-400 font-medium hidden sm:inline-block">
-                            {lesson.description?.substring(0, 60)}...
-                          </span>
                         </div>
                       </div>
                     </div>
-                    <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/30 transition-all">
-                      <ChevronRight className="text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
+
+                    <div className="flex items-center gap-4">
+                      {lesson.isCompleted ? (
+                        <div className="flex flex-col items-center gap-1">
+                          <CheckCircle2 className="w-8 h-8 text-green-500" />
+                          <span className="text-[10px] font-black text-green-500 uppercase">Tugatildi</span>
+                        </div>
+                      ) : lesson.isLocked ? (
+                        <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter italic">Qulflangan</span>
+                      ) : (
+                        <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-full">
+                          <ChevronRight className="text-blue-600 w-6 h-6" />
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                 </Card>
@@ -100,9 +165,6 @@ export function LessonsPage() {
           <div className="text-center py-24 bg-white dark:bg-slate-800/50 rounded-[40px] border-2 border-dashed border-slate-200 dark:border-slate-700">
             <GraduationCap className="w-20 h-20 text-slate-300 dark:text-slate-600 mx-auto mb-6" />
             <h3 className="text-2xl font-bold dark:text-white mb-2">Darslar topilmadi</h3>
-            <p className="text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
-              Hozircha bazada darslar mavjud emas. Supabase panelidan yangi darslar qo'shishingizni kutyapmiz.
-            </p>
           </div>
         )}
       </div>
