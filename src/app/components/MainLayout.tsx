@@ -1,5 +1,6 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabase"; // <-- SUPABASE IMPORT QILINDI
 import { 
   Scale, 
   Trophy, 
@@ -24,19 +25,36 @@ export function MainLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  // DASTURGA KIRGANLIGINI TEKSHIRISH (AUTH GUARD)
+  // --- HAQIQIY SUPABASE AUTH GUARD ---
   useEffect(() => {
-    const checkAuth = () => {
-      const isAuth = localStorage.getItem("isAuthenticated");
-      if (!isAuth) {
+    const checkUser = async () => {
+      // 1. Supabase'dan joriy foydalanuvchi sessiyasini so'raymiz
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        // Agar sessiya bo'lmasa, loginga otamiz
         navigate("/login", { replace: true });
       } else {
+        // Agar tizimga kirgan bo'lsa, ruxsat beramiz
         setIsAuthChecked(true);
       }
     };
-    checkAuth();
+
+    checkUser();
+
+    // 2. Foydalanuvchi tizimdan chiqib ketsa (Logout), darhol sezish uchun quloq solamiz
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_OUT' || !session) {
+        navigate("/login", { replace: true });
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
   }, [navigate]);
 
+  // Qorong'u rejim sozlamalari
   useEffect(() => {
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       setIsDarkMode(true);
@@ -85,7 +103,7 @@ export function MainLayout() {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Agar tekshiruv tugamagan bo'lsa, chiroyli yuklanish (loading) aylanib turadi
+  // Yuklanish ekrani
   if (!isAuthChecked) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
@@ -94,11 +112,10 @@ export function MainLayout() {
     );
   }
 
-  // Tizimga kirganlar uchun asosiy oyna
+  // Asosiy dizayn (Hech narsa o'zgarmadi, faqat himoya haqiqiylashdi)
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden select-none md:select-auto">
       
-      {/* MOBIL UCHUN QORONG'U ORQA FON (OVERLAY) */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
@@ -111,7 +128,6 @@ export function MainLayout() {
         )}
       </AnimatePresence>
 
-      {/* YON PANEL (SIDEBAR) */}
       <aside 
         className={`fixed md:static inset-y-0 left-0 z-[70] w-72 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -124,7 +140,6 @@ export function MainLayout() {
       >
         <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none" />
         
-        {/* Logo qismi */}
         <div className="p-6 border-b border-white/10 relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 backdrop-blur-xl p-2.5 rounded-xl shadow-lg border border-white/20">
@@ -140,7 +155,6 @@ export function MainLayout() {
           </button>
         </div>
 
-        {/* Menyu ro'yxati */}
         <nav className="flex-1 p-5 relative z-10 overflow-y-auto">
           <div className="space-y-2.5">
             {navItems.map((item) => {
@@ -165,7 +179,6 @@ export function MainLayout() {
           </div>
         </nav>
 
-        {/* Tungi Rejim tugmasi va Footer (Faqat Kompyuter uchun) */}
         <div className="p-5 border-t border-white/10 relative z-10 hidden md:block">
           <button 
             onClick={toggleTheme}
@@ -184,10 +197,8 @@ export function MainLayout() {
         </div>
       </aside>
 
-      {/* ASOSIY KONTENT QISMI */}
       <div className="flex-1 flex flex-col h-screen relative w-full">
         
-        {/* MOBIL UCHUN APP BAR (Yuqori panel) */}
         <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-slate-800 z-30 transition-colors duration-300 sticky top-0">
           <div className="flex items-center gap-2.5">
             <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-1.5 rounded-lg shadow-sm">
@@ -206,12 +217,10 @@ export function MainLayout() {
           </button>
         </div>
 
-        {/* SAHIFALAR CHIQADIGAN JOY */}
         <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-300 pb-20 md:pb-0">
           <Outlet />
         </main>
 
-        {/* MOBIL UCHUN PASTKI MENYU */}
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 pb-1 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)]">
           <div className="flex items-center justify-around px-1 py-1">
             
@@ -240,7 +249,6 @@ export function MainLayout() {
               );
             })}
             
-            {/* KO'PROQ TUGMASI */}
             <button
               onClick={() => setIsMobileMenuOpen(true)}
               className="flex flex-col items-center justify-center w-16 h-14 active:scale-95 transition-transform"
