@@ -8,7 +8,7 @@ import {
   Loader2, 
   Award,
   ChevronRight,
-  BookOpen
+  AlertCircle
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
@@ -56,20 +56,41 @@ export function LessonDetail() {
         setCurrentQuestion(c => c + 1);
         setSelectedOption(null);
       } else {
+        // Test yakunlandi
         setQuizFinished(true);
-        // Test tugaganda XP qo'shish
-        const savedUser = localStorage.getItem("user");
-        if (savedUser) {
-          const user = JSON.parse(savedUser);
-          const newXp = (user.xp || 0) + (lesson.xp_reward || 200);
-          await supabase.from('users').update({ xp: newXp }).eq('id', user.id);
-          localStorage.setItem("user", JSON.stringify({ ...user, xp: newXp }));
+        
+        // --- PROGRESS VA XP LOGIKASI ---
+        const finalScore = isCorrect ? score + 1 : score;
+        const totalQuestions = lesson.quiz_data.length;
+        const isPassed = finalScore === totalQuestions; // 100% natija talab qilinadi
+
+        if (isPassed) {
+          const savedUser = localStorage.getItem("user");
+          if (savedUser) {
+            const user = JSON.parse(savedUser);
+            const newXp = (user.xp || 0) + (lesson.xp_reward || 200);
+
+            // 1. User XP ni yangilash
+            await supabase.from('users').update({ xp: newXp }).eq('id', user.id);
+            
+            // 2. Progressni saqlash (Keyingi dars ochilishi uchun)
+            await supabase.from('user_progress').upsert({ 
+              user_id: user.id, 
+              lesson_id: lesson.id, 
+              is_completed: true 
+            });
+
+            // LocalStorage yangilash
+            localStorage.setItem("user", JSON.stringify({ ...user, xp: newXp }));
+          }
         }
       }
     }, 1000);
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center dark:bg-slate-950"><Loader2 className="animate-spin text-blue-500" /></div>;
+  if (loading) return <div className="min-h-screen flex items-center justify-center dark:bg-slate-950"><Loader2 className="animate-spin text-blue-500 w-10 h-10" /></div>;
+
+  const isPassed = score === lesson.quiz_data.length;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 pb-20">
@@ -82,7 +103,7 @@ export function LessonDetail() {
       <main className="max-w-3xl mx-auto px-4 mt-8">
         {!showQuiz ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            <h1 className="text-3xl md:text-4xl font-black dark:text-white mb-6">{lesson.title}</h1>
+            <h1 className="text-3xl md:text-4xl font-black dark:text-white mb-6 leading-tight">{lesson.title}</h1>
             <div className="bg-white dark:bg-slate-900 p-6 md:p-10 rounded-[32px] border dark:border-slate-800 shadow-sm mb-8 text-lg leading-relaxed dark:text-slate-300 whitespace-pre-wrap">
               {lesson.content}
             </div>
@@ -94,33 +115,83 @@ export function LessonDetail() {
           <div className="py-4">
             {!quizFinished ? (
               <div className="space-y-6">
-                <h2 className="text-center font-bold text-slate-400 uppercase tracking-widest">Savol {currentQuestion + 1} / {lesson.quiz_data.length}</h2>
-                <Card className="rounded-[32px] border-0 shadow-2xl dark:bg-slate-800">
+                <div className="flex justify-between items-center px-2">
+                   <h2 className="font-bold text-slate-400 uppercase tracking-widest text-xs">Savol {currentQuestion + 1} / {lesson.quiz_data.length}</h2>
+                   <Badge color="blue">{score} To'g'ri</Badge>
+                </div>
+                <Card className="rounded-[32px] border-0 shadow-2xl dark:bg-slate-800 overflow-hidden">
                   <CardContent className="p-8">
                     <h3 className="text-2xl font-bold dark:text-white mb-8">{lesson.quiz_data[currentQuestion].question}</h3>
                     <div className="grid gap-3">
-                      {lesson.quiz_data[currentQuestion].options.map((opt: string, i: number) => (
-                        <button key={i} onClick={() => handleAnswer(i)} className={`p-5 rounded-2xl border-2 text-left font-bold transition-all ${selectedOption === i ? (i === lesson.quiz_data[currentQuestion].correct ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-red-500 bg-red-50 dark:bg-red-900/20') : 'border-slate-100 dark:border-slate-700 dark:text-white'}`}>
-                          {opt}
-                        </button>
-                      ))}
+                      {lesson.quiz_data[currentQuestion].options.map((opt: string, i: number) => {
+                        const isSelected = selectedOption === i;
+                        const isCorrectOpt = i === lesson.quiz_data[currentQuestion].correct;
+                        
+                        let borderClass = "border-slate-100 dark:border-slate-700";
+                        if (isSelected) {
+                          borderClass = isCorrectOpt ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-red-500 bg-red-50 dark:bg-red-900/20";
+                        }
+
+                        return (
+                          <button 
+                            key={i} 
+                            onClick={() => handleAnswer(i)} 
+                            className={`p-5 rounded-2xl border-2 text-left font-bold transition-all flex justify-between items-center ${borderClass} dark:text-white`}
+                          >
+                            {opt}
+                            {isSelected && (isCorrectOpt ? <CheckCircle2 className="text-green-500" /> : <XCircle className="text-red-500" />)}
+                          </button>
+                        );
+                      })}
                     </div>
                   </CardContent>
                 </Card>
               </div>
             ) : (
-              <div className="text-center py-10 space-y-6">
-                <div className="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center mx-auto shadow-xl"><Award className="text-white w-10 h-10" /></div>
-                <h2 className="text-3xl font-black dark:text-white">Dars tamomlandi!</h2>
-                <div className="bg-blue-600 p-8 rounded-[32px] text-white">
-                  <p className="text-5xl font-black">+{lesson.xp_reward} XP</p>
-                </div>
-                <Button onClick={() => navigate("/lessons")} className="w-full h-14 rounded-2xl bg-slate-900 text-white font-bold">Darslar ro'yxatiga qaytish</Button>
-              </div>
+              <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="text-center py-10 space-y-6">
+                {isPassed ? (
+                  <>
+                    <div className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-yellow-500/40 animate-bounce">
+                      <Award className="text-white w-12 h-12" />
+                    </div>
+                    <h2 className="text-4xl font-black dark:text-white">Ajoyib natija!</h2>
+                    <p className="text-slate-500 text-lg">Siz barcha savollarga to'g'ri javob berdingiz va keyingi darsni ochdingiz!</p>
+                    <div className="bg-green-500 p-8 rounded-[32px] text-white shadow-lg">
+                      <p className="text-sm font-bold uppercase opacity-80 mb-1">Mukofot</p>
+                      <p className="text-5xl font-black">+{lesson.xp_reward} XP</p>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mx-auto">
+                      <AlertCircle className="text-red-500 w-12 h-12" />
+                    </div>
+                    <h2 className="text-3xl font-black dark:text-white">Natija yetarli emas</h2>
+                    <p className="text-slate-500">XP olish va keyingi darsni ochish uchun hamma savollarga to'g'ri javob berishingiz kerak.</p>
+                    <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-[32px]">
+                      <p className="text-2xl font-bold dark:text-white">{score} / {lesson.quiz_data.length}</p>
+                      <p className="text-xs text-slate-400 uppercase font-bold">To'g'ri javoblar</p>
+                    </div>
+                    <Button onClick={() => { setShowQuiz(false); setQuizFinished(false); setCurrentQuestion(0); setScore(0); setSelectedOption(null); }} variant="outline" className="w-full h-14 rounded-2xl font-bold">
+                      Qayta o'qish va urinish
+                    </Button>
+                  </>
+                )}
+                <Button onClick={() => navigate("/lessons")} className="w-full h-14 rounded-2xl bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold">
+                  Darslar ro'yxatiga qaytish
+                </Button>
+              </motion.div>
             )}
           </div>
         )}
       </main>
     </div>
   );
+}
+
+function Badge({ children, color }: any) {
+  const colors: any = {
+    blue: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+  };
+  return <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${colors[color]}`}>{children}</span>;
 }
