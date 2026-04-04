@@ -8,12 +8,12 @@ import {
   User, 
   Home,
   GraduationCap,
-  Sparkles,
   PlaySquare,
   Sun,
   Moon,
   Menu,
-  X
+  X,
+  LogOut
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -24,20 +24,17 @@ export function MainLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  // --- YANGI AUTH GUARD (LOCALSTORAGE ORQALI) ---
+  // AUTH TEKSHIRUVI
   useEffect(() => {
     const user = localStorage.getItem("user");
-    
     if (!user) {
-      // Agar xotirada foydalanuvchi bo'lmasa, login sahifasiga yuboramiz
       navigate("/login", { replace: true });
     } else {
-      // Agar bo'lsa, platformaga kirishga ruxsat beramiz
       setIsAuthChecked(true);
     }
   }, [navigate]);
 
-  // Qorong'u rejim sozlamalari
+  // QORONG'U REJIM
   useEffect(() => {
     if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
       setIsDarkMode(true);
@@ -70,6 +67,7 @@ export function MainLayout() {
     { path: "/profile", icon: User, label: "Profil" },
   ];
 
+  // Telefonda pastda ko'rinadigan qisqa menyu
   const mobileBottomNav = [
     { path: "/", icon: Home, label: "Asosiy" },
     { path: "/lessons", icon: BookOpen, label: "Darslar" },
@@ -86,7 +84,11 @@ export function MainLayout() {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Yuklanish ekrani (Auth tekshirilayotganda)
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
   if (!isAuthChecked) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
@@ -96,8 +98,9 @@ export function MainLayout() {
   }
 
   return (
-    <div className="flex h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden select-none md:select-auto">
+    <div className="flex h-[100dvh] bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden select-none md:select-auto">
       
+      {/* 📱 MOBILE SIDEBAR BACKDROP */}
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div 
@@ -110,9 +113,10 @@ export function MainLayout() {
         )}
       </AnimatePresence>
 
+      {/* 💻 SIDEBAR (Kompyuter va Mobile Menyu) */}
       <aside 
-        className={`fixed md:static inset-y-0 left-0 z-[70] w-72 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl ${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+        className={`fixed md:static inset-y-0 left-0 z-[70] w-72 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl md:translate-x-0 ${
+          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{
           background: isDarkMode 
@@ -120,7 +124,6 @@ export function MainLayout() {
             : 'linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%)'
         }}
       >
-        {/* Sidebar dizayni o'zgarmasdan qoladi */}
         <div className="p-6 border-b border-white/10 relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 backdrop-blur-xl p-2.5 rounded-xl shadow-lg border border-white/20">
@@ -131,7 +134,7 @@ export function MainLayout() {
               <p className="text-[11px] font-bold text-white/70 uppercase tracking-widest mt-0.5">Bilim — bu kuch</p>
             </div>
           </div>
-          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 bg-white/10 rounded-lg text-white active:scale-90">
+          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 bg-white/10 rounded-lg text-white active:scale-90 transition-transform">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -159,19 +162,68 @@ export function MainLayout() {
           </div>
         </nav>
         
-        {/* Tungi rejim tugmasi pastda */}
-        <div className="p-5 border-t border-white/10 relative z-10">
-          <button onClick={toggleTheme} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/10 text-white">
-             <span className="text-sm">Rejimni o'zgartirish</span>
-             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        {/* Sidebar pastki qismi: Tema va Chiqish */}
+        <div className="p-5 border-t border-white/10 relative z-10 space-y-3">
+          <button onClick={toggleTheme} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
+             <span className="text-sm font-medium">Rejimni o'zgartirish</span>
+             {isDarkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5" />}
+          </button>
+          
+          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/20 text-red-100 hover:bg-red-500/40 transition-colors">
+             <LogOut className="w-5 h-5" />
+             <span className="text-sm font-bold">Tizimdan chiqish</span>
           </button>
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col h-screen relative w-full overflow-hidden">
-        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 pb-20 md:pb-0">
+      <div className="flex-1 flex flex-col h-[100dvh] relative w-full overflow-hidden">
+        
+        {/* 📱 MOBILE HEADER (Tepada FAQAT telefonda ko'rinadi) */}
+        <header className="md:hidden flex items-center justify-between p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
+           <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-slate-600 dark:text-slate-300 active:scale-95 transition-transform">
+             <Menu className="w-6 h-6" />
+           </button>
+           <h2 className="font-black text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
+             Qonun va Huquq
+           </h2>
+           <div className="w-6" /> {/* Bo'shliq (Center qilish uchun) */}
+        </header>
+
+        {/* ASOSIY QISM (Dashboard, Lessons va h.k.) */}
+        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 pb-24 md:pb-0 relative z-0">
           <Outlet />
         </main>
+
+        {/* 📱 MOBILE BOTTOM NAVIGATION (FAQAT telefonda ko'rinadi) */}
+        <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-t border-slate-200 dark:border-slate-800 z-50 px-2 py-2 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.05)] rounded-t-[24px]">
+          <div className="flex items-center justify-around">
+            {mobileBottomNav.map((item) => {
+              const active = isActive(item.path);
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className="flex flex-col items-center gap-1 p-2 min-w-[64px]"
+                >
+                  <div className={`p-2 rounded-xl transition-all duration-300 ${
+                    active 
+                    ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 scale-110 -translate-y-1' 
+                    : 'text-slate-400 dark:text-slate-500'
+                  }`}>
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <span className={`text-[10px] font-black uppercase tracking-widest transition-colors ${
+                    active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'
+                  }`}>
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+
       </div>
     </div>
   );
