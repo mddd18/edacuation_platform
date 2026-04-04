@@ -1,279 +1,96 @@
-import { useState } from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
-import { Button } from "../components/ui/button";
+import { useState, useEffect } from "react";
+import { Link } from "react-router";
+import { supabase } from "../../lib/supabase";
+import { Scale, Loader2, CheckCircle2, ChevronRight, ShieldAlert } from "lucide-react";
+import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { 
-  Scale, 
-  CheckCircle2, 
-  XCircle, 
-  Award,
-  RotateCcw,
-  ArrowRight
-} from "lucide-react";
-import { caseStudies } from "../data/cases";
-import { motion, AnimatePresence } from "motion/react";
+import { motion } from "motion/react";
 
-export function CaseStudiesPage() {
-  const [selectedCase, setSelectedCase] = useState<string | null>(null);
-  const [selectedAction, setSelectedAction] = useState<number | null>(null);
-  const [showFeedback, setShowFeedback] = useState(false);
+export function CasesPage() {
+  const [cases, setCases] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleCaseSelect = (caseId: string) => {
-    setSelectedCase(caseId);
-    setSelectedAction(null);
-    setShowFeedback(false);
-  };
+  useEffect(() => {
+    const fetchCases = async () => {
+      setLoading(true);
+      const savedUser = localStorage.getItem("user");
+      if (!savedUser) return;
+      const user = JSON.parse(savedUser);
 
-  const handleActionSelect = (actionIndex: number) => {
-    setSelectedAction(actionIndex);
-    setShowFeedback(true);
-  };
+      // Holatlar va o'quvchi yechganlarini olamiz
+      const { data: allCases } = await supabase.from('cases').select('*').order('created_at', { ascending: false });
+      const { data: progressData } = await supabase.from('user_case_progress').select('case_id').eq('user_id', user.id).eq('is_solved', true);
 
-  const handleReset = () => {
-    setSelectedAction(null);
-    setShowFeedback(false);
-  };
+      if (allCases) {
+        const solvedIds = progressData?.map(p => p.case_id) || [];
+        const processedCases = allCases.map(c => ({
+          ...c,
+          isSolved: solvedIds.includes(c.id)
+        }));
+        setCases(processedCases);
+      }
+      setLoading(false);
+    };
+    fetchCases();
+  }, []);
 
-  const currentCase = caseStudies.find(c => c.id === selectedCase);
+  if (loading) return <div className="min-h-[100dvh] flex items-center justify-center"><Loader2 className="w-8 h-8 text-purple-600 animate-spin" /></div>;
 
   return (
-    <div className="p-6 md:p-10 max-w-7xl mx-auto min-h-screen dark:bg-slate-900 transition-colors duration-300">
-      {/* Header */}
-      <motion.div 
-        className="mb-10"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <h1 className="text-4xl mb-3 font-extrabold text-gray-900 dark:text-white flex items-center gap-4">
-          <div className="p-3 bg-primary/10 dark:bg-blue-500/20 rounded-2xl">
-            <Scale className="w-10 h-10 text-primary dark:text-blue-400" />
-          </div>
-          Amaliy Holatlar va Mashqlar
+    <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 pb-28 w-full overflow-x-hidden">
+      <header className="space-y-2">
+        <div className="inline-flex p-2.5 bg-purple-600 rounded-xl shadow-lg shadow-purple-500/20">
+          <Scale className="w-6 h-6 text-white" />
+        </div>
+        <h1 className="text-2xl md:text-4xl font-black dark:text-white tracking-tight break-words">
+          Amaliy Holatlar
         </h1>
-        <p className="text-lg text-muted-foreground dark:text-slate-400 font-medium max-w-2xl">
-          Huquqiy bilimlaringizni real hayotiy vaziyatlarda sinab ko'ring va tahlil qilish qobiliyatingizni oshiring.
+        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+          Haqiqiy yuristdek fikrlang. Holatni tahlil qiling va qaror chiqaring.
         </p>
-      </motion.div>
+      </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Chap Panel - Holatlar Ro'yxati */}
-        <div className="lg:col-span-1">
-          <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/90 backdrop-blur-md h-full transition-colors duration-300">
-            <CardHeader className="border-b border-gray-100 dark:border-slate-700/50 pb-4">
-              <CardTitle className="text-xl font-bold dark:text-white">Holatni Tanlang</CardTitle>
-              <CardDescription className="font-medium dark:text-slate-400">Mashq qilish uchun vaziyatni tanlang</CardDescription>
-            </CardHeader>
-            <CardContent className="p-4">
-              <div className="space-y-3">
-                {caseStudies.map((caseStudy, index) => {
-                  const isSelected = selectedCase === caseStudy.id;
-                  
-                  return (
-                    <motion.button
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.3, delay: index * 0.1 }}
-                      key={caseStudy.id}
-                      onClick={() => handleCaseSelect(caseStudy.id)}
-                      className={`w-full text-left p-4 rounded-xl border-2 transition-all duration-300 group ${
-                        isSelected
-                          ? "border-primary dark:border-blue-500 bg-primary/5 dark:bg-blue-500/20 shadow-md scale-[1.02]"
-                          : "border-gray-100 dark:border-slate-700 hover:border-primary/30 dark:hover:border-blue-400/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 hover:shadow-sm"
-                      }`}
-                    >
-                      <div className="space-y-2.5">
-                        <Badge variant="secondary" className={`${isSelected ? 'bg-primary/20 dark:bg-blue-500/30 text-primary dark:text-blue-300' : 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-300'} text-xs font-bold px-2.5 py-1 border-none`}>
-                          {caseStudy.category}
-                        </Badge>
-                        <h4 className={`font-bold leading-snug ${isSelected ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-slate-200'}`}>{caseStudy.title}</h4>
+      <div className="grid gap-3 w-full">
+        {cases.length > 0 ? (
+          cases.map((caseItem, index) => (
+            <motion.div key={caseItem.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
+              <Link to={`/cases/${caseItem.id}`} className="block w-full">
+                <Card className="transition-all overflow-hidden rounded-[20px] border-2 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm hover:border-purple-500 hover:shadow-xl w-full">
+                  <CardContent className="p-4 flex items-center justify-between gap-3 w-full">
+                    
+                    <div className="flex items-center gap-3.5 flex-1 min-w-0">
+                      <div className={`w-14 h-14 rounded-[14px] flex flex-col items-center justify-center shrink-0 ${caseItem.isSolved ? "bg-green-50 dark:bg-green-900/20" : "bg-purple-50 dark:bg-slate-700"}`}>
+                        {caseItem.isSolved ? <CheckCircle2 className="w-6 h-6 text-green-500" /> : <ShieldAlert className="w-6 h-6 text-purple-500 dark:text-purple-400" />}
                       </div>
-                    </motion.button>
-                  );
-                })}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* O'ng Panel - Holat Tafsilotlari */}
-        <div className="lg:col-span-2">
-          <AnimatePresence mode="wait">
-            {!currentCase ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="h-full"
-              >
-                <Card className="h-full border-0 shadow-lg bg-gray-50/50 dark:bg-slate-800/50 border-2 border-dashed border-gray-200 dark:border-slate-700 transition-colors duration-300">
-                  <CardContent className="flex flex-col items-center justify-center h-[500px] text-center p-10">
-                    <div className="w-24 h-24 bg-white dark:bg-slate-700/50 rounded-full shadow-sm flex items-center justify-center mb-6">
-                      <Scale className="w-12 h-12 text-gray-300 dark:text-slate-500" />
-                    </div>
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-slate-200 mb-2">Mashqni boshlashga tayyormisiz?</h3>
-                    <p className="text-base text-gray-500 dark:text-slate-400 max-w-sm">
-                      Chap tomondagi ro'yxatdan o'zingizga qiziq bo'lgan huquqiy vaziyatni tanlang va yechim toping.
-                    </p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="content"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="space-y-6"
-              >
-                {/* Ssenariy Kartasi */}
-                <Card className="border-0 shadow-xl overflow-hidden relative dark:bg-slate-800 transition-colors duration-300">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-primary dark:bg-blue-500" />
-                  <CardHeader className="bg-white dark:bg-slate-800 pb-4 border-b border-gray-50 dark:border-slate-700/50">
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <Badge variant="secondary" className="mb-3 bg-primary/10 dark:bg-blue-500/20 text-primary dark:text-blue-400 font-bold border-none">
-                          {currentCase.category}
-                        </Badge>
-                        <CardTitle className="text-2xl font-bold leading-tight text-gray-900 dark:text-white">{currentCase.title}</CardTitle>
+                      
+                      <div className="flex-1 min-w-0 pr-2">
+                        <h3 className="font-bold text-sm sm:text-base line-clamp-2 dark:text-white">
+                          {caseItem.title}
+                        </h3>
+                        <div className="mt-1.5 flex items-center gap-2">
+                          <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-0 px-2 py-0.5 text-[10px]">
+                            {caseItem.xp_reward} XP
+                          </Badge>
+                          {caseItem.isSolved && <span className="text-[10px] font-bold text-green-500 uppercase">Yechilgan</span>}
+                        </div>
                       </div>
-                      {showFeedback && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={handleReset}
-                          className="font-bold border-2 hover:bg-gray-50 dark:hover:bg-slate-700 dark:border-slate-600 dark:text-slate-200 dark:bg-slate-800"
-                        >
-                          <RotateCcw className="w-4 h-4 mr-2" />
-                          Qayta urinish
-                        </Button>
-                      )}
-                    </div>
-                  </CardHeader>
-                  <CardContent className="bg-gray-50/50 dark:bg-slate-900/30 pt-6">
-                    <h4 className="font-extrabold text-primary dark:text-blue-400 mb-3 flex items-center gap-2">
-                      <ArrowRight className="w-5 h-5" />
-                      Ssenariy:
-                    </h4>
-                    <p className="text-base leading-relaxed text-gray-700 dark:text-slate-200 bg-white dark:bg-slate-800 p-5 rounded-xl border border-gray-100 dark:border-slate-700 shadow-sm">
-                      {currentCase.scenario}
-                    </p>
-                  </CardContent>
-                </Card>
-
-                {/* Variantlar Kartasi */}
-                <Card className="border-0 shadow-xl dark:bg-slate-800 transition-colors duration-300">
-                  <CardHeader className="border-b border-gray-100 dark:border-slate-700/50 pb-4">
-                    <CardTitle className="text-xl font-bold dark:text-white">Nima qilish kerak?</CardTitle>
-                    <CardDescription className="text-base font-medium dark:text-slate-400">
-                      Ushbu vaziyatda eng to'g'ri huquqiy yechimni tanlang
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      {currentCase.actions.map((action, index) => {
-                        const isSelected = selectedAction === index;
-                        const isCorrect = action.isCorrect;
-                        
-                        let stateStyles = "border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 hover:border-primary/50 dark:hover:border-blue-500/50 hover:bg-gray-50 dark:hover:bg-slate-700/50 text-gray-800 dark:text-slate-200";
-                        
-                        if (showFeedback) {
-                          if (isSelected) {
-                            stateStyles = isCorrect 
-                              ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-900/40 text-emerald-900 dark:text-emerald-100 shadow-md" 
-                              : "border-red-500 bg-red-50 dark:bg-red-900/40 text-red-900 dark:text-red-100 shadow-md";
-                          } else if (isCorrect) {
-                            // To'g'ri javobni ko'rsatib qo'yish (agar xato tanlagan bo'lsa)
-                            stateStyles = "border-emerald-200 dark:border-emerald-800/50 bg-emerald-50/30 dark:bg-emerald-900/20 text-emerald-800 dark:text-emerald-300 opacity-80";
-                          } else {
-                            stateStyles = "border-gray-100 dark:border-slate-800 bg-gray-50 dark:bg-slate-900/50 text-gray-500 dark:text-slate-500 opacity-40";
-                          }
-                        }
-
-                        return (
-                          <div key={index} className="relative">
-                            <button
-                              onClick={() => !showFeedback && handleActionSelect(index)}
-                              disabled={showFeedback}
-                              className={`w-full text-left p-5 rounded-xl border-2 transition-all duration-300 ${stateStyles} ${
-                                showFeedback ? "cursor-default" : "cursor-pointer hover:shadow-sm"
-                              }`}
-                            >
-                              <div className="flex items-start justify-between gap-4">
-                                <p className="text-base font-medium flex-1">
-                                  {action.text}
-                                </p>
-                                {showFeedback && (isSelected || isCorrect) && (
-                                  <motion.div
-                                    initial={{ scale: 0 }}
-                                    animate={{ scale: 1 }}
-                                    className="flex-shrink-0"
-                                  >
-                                    {isCorrect ? (
-                                      <CheckCircle2 className="w-6 h-6 text-emerald-500 dark:text-emerald-400" />
-                                    ) : isSelected ? (
-                                      <XCircle className="w-6 h-6 text-red-500 dark:text-red-400" />
-                                    ) : null}
-                                  </motion.div>
-                                )}
-                              </div>
-                            </button>
-
-                            {/* Fikr-mulohaza (Feedback) */}
-                            <AnimatePresence>
-                              {showFeedback && isSelected && (
-                                <motion.div 
-                                  initial={{ opacity: 0, height: 0, y: -10 }}
-                                  animate={{ opacity: 1, height: 'auto', y: 0 }}
-                                  className={`mt-3 p-5 rounded-xl border-l-4 ${
-                                    isCorrect 
-                                      ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-500 text-emerald-900 dark:text-emerald-200" 
-                                      : "bg-red-50 dark:bg-red-900/20 border-red-500 text-red-900 dark:text-red-200"
-                                  }`}
-                                >
-                                  <h4 className={`font-extrabold mb-2 text-lg ${isCorrect ? "text-emerald-700 dark:text-emerald-400" : "text-red-700 dark:text-red-400"}`}>
-                                    {isCorrect ? "Javobingiz To'g'ri! 🎉" : "Noto'g'ri javob"}
-                                  </h4>
-                                  <p className="text-sm leading-relaxed font-medium">
-                                    {action.feedback}
-                                  </p>
-                                </motion.div>
-                              )}
-                            </AnimatePresence>
-                          </div>
-                        );
-                      })}
                     </div>
 
-                    {/* Muvaffaqiyat xabari */}
-                    <AnimatePresence>
-                      {showFeedback && currentCase.actions[selectedAction!]?.isCorrect && (
-                        <motion.div 
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          className="mt-8 p-6 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/40 dark:to-teal-900/20 border-2 border-emerald-200 dark:border-emerald-800/50 rounded-2xl shadow-sm"
-                        >
-                          <div className="flex items-center gap-4">
-                            <div className="bg-emerald-500 p-3 rounded-full shadow-lg shadow-emerald-500/30">
-                              <Award className="w-8 h-8 text-white" />
-                            </div>
-                            <div>
-                              <h4 className="font-extrabold text-xl text-emerald-800 dark:text-emerald-300 mb-1">Holat muvaffaqiyatli yechildi!</h4>
-                              <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                                To'g'ri huquqiy tahlil uchun +100 XP hisobingizga qo'shildi.
-                              </p>
-                            </div>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <div className="shrink-0 flex items-center p-2 bg-purple-50 dark:bg-purple-900/30 rounded-full">
+                      <ChevronRight className="text-purple-600 w-5 h-5" />
+                    </div>
+
                   </CardContent>
                 </Card>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
+              </Link>
+            </motion.div>
+          ))
+        ) : (
+          <div className="text-center py-16 bg-white dark:bg-slate-800/50 rounded-[24px] border-2 border-dashed border-slate-200 dark:border-slate-700">
+            <Scale className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+            <h3 className="text-xl font-bold dark:text-white mb-2">Holatlar topilmadi</h3>
+          </div>
+        )}
       </div>
     </div>
   );
