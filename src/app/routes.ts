@@ -1,34 +1,29 @@
-import { createHashRouter } from "react-router"; 
-import { MainLayout } from "./components/MainLayout";
-import { Dashboard } from "./pages/Dashboard";
-import { LessonsPage } from "./pages/LessonsPage";
-import { LessonPage } from "./pages/LessonPage";
-import { CaseStudiesPage } from "./pages/CaseStudiesPage";
-import { LeaderboardPage } from "./pages/LeaderboardPage";
-import { DictionaryPage } from "./pages/DictionaryPage";
-import { ProfilePage } from "./pages/ProfilePage";
-import { VideoGuidesPage } from "./pages/VideoGuidesPage"; 
-import { NotFound } from "./pages/NotFound";
-import { AuthPage } from "./pages/AuthPage"; 
+import { createBrowserRouter } from "react-router";
+import { MainLayout } from "./app/components/MainLayout";
+import { AuthPage } from "./app/pages/AuthPage";
+import { Dashboard } from "./app/pages/Dashboard";
+import { LessonsPage } from "./app/pages/LessonsPage"; // Yangi import
+// Boshqa sahifalarni ham shu yerda import qilasiz...
 
-export const router = createHashRouter([
+export const router = createBrowserRouter([
   {
     path: "/login",
-    Component: AuthPage,
+    element: <AuthPage />,
   },
   {
     path: "/",
-    Component: MainLayout,
+    element: <MainLayout />, // MainLayout hamma sahifani Auth'dan tekshiradi
     children: [
-      { index: true, Component: Dashboard },
-      { path: "lessons", Component: LessonsPage },
-      { path: "lesson/:id", Component: LessonPage },
-      { path: "cases", Component: CaseStudiesPage },
-      { path: "leaderboard", Component: LeaderboardPage },
-      { path: "dictionary", Component: DictionaryPage },
-      { path: "videos", Component: VideoGuidesPage }, 
-      { path: "profile", Component: ProfilePage },
-      { path: "*", Component: NotFound },
+      {
+        path: "/",
+        element: <Dashboard />,
+      },
+      {
+        path: "/lessons",
+        element: <LessonsPage />, // Darslar ro'yxati
+      },
+      // Keyinchalik darsning ichki qismi uchun:
+      // { path: "/lessons/:id", element: <LessonDetail /> },
     ],
   },
 ]);
