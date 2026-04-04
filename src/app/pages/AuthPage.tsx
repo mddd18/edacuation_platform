@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
-import { supabase } from "../lib/supabase"; // Supabase'ni chaqirib oldik
+import { supabase } from "../../lib/supabase";
 
 export function AuthPage() {
   const [isLogin, setIsLogin] = useState(true);
