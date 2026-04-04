@@ -11,7 +11,7 @@ import {
   ShieldCheck,
   BookOpen,
   UserCheck,
-  AlertCircle // Xatoliklarni ko'rsatish uchun yangi ikonka
+  AlertCircle
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Input } from "../components/ui/input";
@@ -22,18 +22,15 @@ export function AuthPage() {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
-  // Forma inputlari uchun state'lar
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [grade, setGrade] = useState("");
 
-  // Yuklanish va xatoliklar uchun state'lar
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Formani yuborish (Supabase orqali ro'yxatdan o'tish yoki kirish)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -41,7 +38,7 @@ export function AuthPage() {
 
     try {
       if (isLogin) {
-        // --- 1. TIZIMGA KIRISH (SIGN IN) ---
+        // --- 1. TIZIMGA KIRISH ---
         const { data, error: signInError } = await supabase.auth.signInWithPassword({
           email,
           password,
@@ -49,13 +46,13 @@ export function AuthPage() {
 
         if (signInError) throw signInError;
 
-        if (data.user) {
-          localStorage.setItem("isAuthenticated", "true");
-          navigate("/"); // Asosiy panelga o'tish
+        // MUHIM O'ZGARISH: data.session borligini tekshiramiz!
+        if (data.session) {
+          navigate("/"); 
         }
 
       } else {
-        // --- 2. RO'YXATDAN O'TISH (SIGN UP) ---
+        // --- 2. RO'YXATDAN O'TISH ---
         const { data, error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -70,13 +67,16 @@ export function AuthPage() {
 
         if (signUpError) throw signUpError;
 
-        if (data.user) {
-          localStorage.setItem("isAuthenticated", "true");
-          navigate("/"); // Asosiy panelga o'tish
+        // MUHIM O'ZGARISH: Email tasdiqlashni aqlli tekshiramiz
+        if (data.session) {
+          // Agar Confirm Email o'chiq bo'lsa, sessiya darhol beriladi va ichkariga kiramiz
+          navigate("/"); 
+        } else if (data.user) {
+          // Agar Confirm Email yoqiq bo'lsa, sessiya berilmaydi, foydalanuvchini ogohlantiramiz
+          setError("Pochtangizga tasdiqlash xati yuborildi! Iltimos, email pochtangizga kirib tasdiqlang.");
         }
       }
     } catch (err: any) {
-      // Xatoliklarni o'zbek tilida chiroyli qilib ko'rsatish
       if (err.message.includes("Invalid login credentials")) {
         setError("Pochta yoki parol noto'g'ri kiritildi.");
       } else if (err.message.includes("already registered")) {
@@ -142,7 +142,6 @@ export function AuthPage() {
             </button>
           </div>
 
-          {/* XATOLIKLARNI KO'RSATISH UCHUN QISM */}
           <AnimatePresence>
             {error && (
               <motion.div
