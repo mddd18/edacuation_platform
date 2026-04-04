@@ -1,6 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabase"; // <-- SUPABASE IMPORT QILINDI
 import { 
   Scale, 
   Trophy, 
@@ -25,33 +24,17 @@ export function MainLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  // --- HAQIQIY SUPABASE AUTH GUARD ---
+  // --- YANGI AUTH GUARD (LOCALSTORAGE ORQALI) ---
   useEffect(() => {
-    const checkUser = async () => {
-      // 1. Supabase'dan joriy foydalanuvchi sessiyasini so'raymiz
-      const { data: { session } } = await supabase.auth.getSession();
-      
-      if (!session) {
-        // Agar sessiya bo'lmasa, loginga otamiz
-        navigate("/login", { replace: true });
-      } else {
-        // Agar tizimga kirgan bo'lsa, ruxsat beramiz
-        setIsAuthChecked(true);
-      }
-    };
-
-    checkUser();
-
-    // 2. Foydalanuvchi tizimdan chiqib ketsa (Logout), darhol sezish uchun quloq solamiz
-    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
-      if (event === 'SIGNED_OUT' || !session) {
-        navigate("/login", { replace: true });
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
+    const user = localStorage.getItem("user");
+    
+    if (!user) {
+      // Agar xotirada foydalanuvchi bo'lmasa, login sahifasiga yuboramiz
+      navigate("/login", { replace: true });
+    } else {
+      // Agar bo'lsa, platformaga kirishga ruxsat beramiz
+      setIsAuthChecked(true);
+    }
   }, [navigate]);
 
   // Qorong'u rejim sozlamalari
@@ -103,7 +86,7 @@ export function MainLayout() {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
 
-  // Yuklanish ekrani
+  // Yuklanish ekrani (Auth tekshirilayotganda)
   if (!isAuthChecked) {
     return (
       <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex items-center justify-center">
@@ -112,7 +95,6 @@ export function MainLayout() {
     );
   }
 
-  // Asosiy dizayn (Hech narsa o'zgarmadi, faqat himoya haqiqiylashdi)
   return (
     <div className="flex h-screen bg-slate-50 dark:bg-slate-950 transition-colors duration-300 overflow-hidden select-none md:select-auto">
       
@@ -138,8 +120,7 @@ export function MainLayout() {
             : 'linear-gradient(135deg, #4f46e5 0%, #7e22ce 100%)'
         }}
       >
-        <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 pointer-events-none" />
-        
+        {/* Sidebar dizayni o'zgarmasdan qoladi */}
         <div className="p-6 border-b border-white/10 relative z-10 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="bg-white/20 backdrop-blur-xl p-2.5 rounded-xl shadow-lg border border-white/20">
@@ -150,7 +131,7 @@ export function MainLayout() {
               <p className="text-[11px] font-bold text-white/70 uppercase tracking-widest mt-0.5">Bilim — bu kuch</p>
             </div>
           </div>
-          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 bg-white/10 rounded-lg text-white active:scale-90 transition-transform">
+          <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 bg-white/10 rounded-lg text-white active:scale-90">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -164,106 +145,33 @@ export function MainLayout() {
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 group relative overflow-hidden ${
+                  className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 ${
                     active
-                      ? "bg-white/20 backdrop-blur-md shadow-lg text-white font-bold border border-white/20"
-                      : "text-white/70 hover:bg-white/10 hover:backdrop-blur-sm hover:text-white font-medium"
+                      ? "bg-white/20 backdrop-blur-md shadow-lg text-white font-bold"
+                      : "text-white/70 hover:bg-white/10 hover:text-white font-medium"
                   }`}
                 >
-                  <Icon className={`w-5 h-5 relative z-10 ${active ? "animate-pulse" : ""}`} />
-                  <span className="relative z-10 text-[15px]">{item.label}</span>
-                  {active && <div className="ml-auto w-1.5 h-1.5 bg-yellow-300 rounded-full shadow-[0_0_10px_rgba(253,224,71,0.8)]" />}
+                  <Icon className="w-5 h-5" />
+                  <span className="text-[15px]">{item.label}</span>
                 </Link>
               );
             })}
           </div>
         </nav>
-
-        <div className="p-5 border-t border-white/10 relative z-10 hidden md:block">
-          <button 
-            onClick={toggleTheme}
-            className="w-full flex items-center justify-between px-4 py-3 mb-4 rounded-xl bg-white/10 hover:bg-white/20 border border-white/10 transition-all text-white font-medium"
-          >
-            <span className="text-sm">{isDarkMode ? "Kunduzgi rejim" : "Tungi rejim"}</span>
-            {isDarkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5 text-blue-200" />}
+        
+        {/* Tungi rejim tugmasi pastda */}
+        <div className="p-5 border-t border-white/10 relative z-10">
+          <button onClick={toggleTheme} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/10 text-white">
+             <span className="text-sm">Rejimni o'zgartirish</span>
+             {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
           </button>
-
-          <div className="rounded-2xl p-4 bg-black/20 backdrop-blur-md border border-white/10 shadow-inner">
-            <p className="text-xs font-bold text-white/90 mb-1.5 flex items-center gap-2 uppercase tracking-wider">
-              <Sparkles className="w-3.5 h-3.5 text-yellow-300" /> Maslahat
-            </p>
-            <p className="text-sm text-white/80 leading-relaxed font-medium">Davlat xizmatlaridan uydan turib foydalanishni o'rganing!</p>
-          </div>
         </div>
       </aside>
 
-      <div className="flex-1 flex flex-col h-screen relative w-full">
-        
-        <div className="md:hidden flex items-center justify-between px-4 py-3 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-gray-200 dark:border-slate-800 z-30 transition-colors duration-300 sticky top-0">
-          <div className="flex items-center gap-2.5">
-            <div className="bg-gradient-to-br from-blue-500 to-purple-600 p-1.5 rounded-lg shadow-sm">
-              <GraduationCap className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="font-extrabold text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400">
-              Qonun va Huquq
-            </h1>
-          </div>
-          
-          <button 
-            onClick={toggleTheme}
-            className="p-2 bg-slate-100 dark:bg-slate-800 rounded-full text-slate-600 dark:text-slate-300 active:scale-90 transition-transform"
-          >
-            {isDarkMode ? <Sun className="w-5 h-5 text-yellow-500" /> : <Moon className="w-5 h-5 text-indigo-500" />}
-          </button>
-        </div>
-
-        <main className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-300 pb-20 md:pb-0">
+      <div className="flex-1 flex flex-col h-screen relative w-full overflow-hidden">
+        <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-900 pb-20 md:pb-0">
           <Outlet />
         </main>
-
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl border-t border-gray-200 dark:border-slate-800 pb-1 shadow-[0_-5px_15px_-5px_rgba(0,0,0,0.1)]">
-          <div className="flex items-center justify-around px-1 py-1">
-            
-            {mobileBottomNav.map((item) => {
-              const Icon = item.icon;
-              const active = isActive(item.path);
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className="flex flex-col items-center justify-center w-16 h-14 relative"
-                >
-                  <div className={`flex flex-col items-center justify-center transition-all duration-300 ${active ? '-translate-y-1' : ''}`}>
-                    <Icon className={`w-6 h-6 mb-1 ${active ? 'text-blue-600 dark:text-blue-400' : 'text-slate-400 dark:text-slate-500'}`} />
-                    <span className={`text-[10px] font-bold transition-all duration-300 ${active ? 'text-blue-600 dark:text-blue-400 opacity-100' : 'text-slate-400 dark:text-slate-500 opacity-80'}`}>
-                      {item.label}
-                    </span>
-                  </div>
-                  {active && (
-                    <motion.div 
-                      layoutId="bottomNavIndicator"
-                      className="absolute bottom-0 w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full"
-                    />
-                  )}
-                </Link>
-              );
-            })}
-            
-            <button
-              onClick={() => setIsMobileMenuOpen(true)}
-              className="flex flex-col items-center justify-center w-16 h-14 active:scale-95 transition-transform"
-            >
-              <div className="flex flex-col items-center justify-center">
-                <Menu className="w-6 h-6 mb-1 text-slate-400 dark:text-slate-500" />
-                <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 opacity-80">
-                  Ko'proq
-                </span>
-              </div>
-            </button>
-            
-          </div>
-        </div>
-        
       </div>
     </div>
   );
