@@ -3,28 +3,32 @@ import { MainLayout } from "./components/MainLayout";
 import { AuthPage } from "./pages/AuthPage";
 import { Dashboard } from "./pages/Dashboard";
 import { LessonsPage } from "./pages/LessonsPage";
+import { LessonDetail } from "./pages/LessonDetail"; // Yangi import
 
 export const router = createBrowserRouter([
   {
-    // Tizimga kirish sahifasi (Layout'dan tashqarida)
+    // Tizimga kirish sahifasi
     path: "/login",
     element: <AuthPage />,
   },
   {
-    // Himoyalangan sahifalar (MainLayout ichida)
+    // Himoyalangan sahifalar
     path: "/",
     element: <MainLayout />,
     children: [
       {
-        index: true, // Asosiy yo'l (/) ochilganda Dashboard chiqadi
+        index: true,
         element: <Dashboard />,
       },
       {
         path: "lessons",
         element: <LessonsPage />,
       },
-      // Kelajakda darsning ichki qismini shu yerga qo'shasiz:
-      // { path: "lessons/:id", element: <LessonDetail /> },
+      {
+        // DARSNING ICHKI QISMI (ID bo'yicha)
+        path: "lessons/:id", 
+        element: <LessonDetail />,
+      },
     ],
   },
 ]);
