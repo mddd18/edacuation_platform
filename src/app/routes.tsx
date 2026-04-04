@@ -4,42 +4,38 @@ import { AuthPage } from "./pages/AuthPage";
 import { Dashboard } from "./pages/Dashboard";
 import { LessonsPage } from "./pages/LessonsPage";
 import { LessonDetail } from "./pages/LessonDetail";
-import { CasesPage } from "./pages/CasesPage";
+import { CaseStudiesPage } from "./pages/CaseStudiesPage"; // Fayl nomini to'g'riladik
 import { CaseDetail } from "./pages/CaseDetail";
 
 export const router = createBrowserRouter([
   {
-    // Tizimga kirish va Ro'yxatdan o'tish sahifasi
     path: "/login",
     element: <AuthPage />,
   },
   {
-    // Himoyalangan sahifalar (Faqat profilga kirganlar uchun)
     path: "/",
     element: <MainLayout />,
     children: [
       {
-        index: true, // Asosiy manzil (/)
+        index: true,
         element: <Dashboard />,
       },
       {
-        path: "lessons", // Darslar ro'yxati
+        path: "lessons",
         element: <LessonsPage />,
       },
       {
-        path: "lessons/:id", // Darsning o'zi va test (ID bo'yicha)
+        path: "lessons/:id",
         element: <LessonDetail />,
       },
       {
-        path: "cases", // Holatlar ro'yxati
-        element: <CasesPage />,
+        path: "cases", 
+        element: <CaseStudiesPage />, // Bu yerni ham to'g'riladik
       },
       {
-        path: "cases/:id", // Holatning o'zi va tahlil (ID bo'yicha)
+        path: "cases/:id", 
         element: <CaseDetail />,
       }
-      
-      // Kelajakda Profil yoki Reyting sahifalarini qilsak, xuddi shu yerga qator qilib qo'shib ketaveramiz.
     ],
   },
 ]);
