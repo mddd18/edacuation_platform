@@ -12,152 +12,178 @@ import {
   BookOpen,
   Scale,
   Award,
-  Loader2 // Yuklanish uchun yangi ikonka
+  Loader2,
+  AlertCircle
 } from "lucide-react";
-import { dailyDilemmas, dilemmaResults } from "../data/dilemmas";
-import { motion } from "motion/react";
-import { supabase } from "../../lib/supabase"; // Supabase ulanishi
+import { motion, AnimatePresence } from "motion/react";
+import { supabase } from "../../lib/supabase";
 
 export function Dashboard() {
-  const todaysDilemma = dailyDilemmas[0]; 
-  const results = dilemmaResults[todaysDilemma.id];
-  const [selectedOption, setSelectedOption] = useState<number | null>(null);
-  const [hasVoted, setHasVoted] = useState(false);
-
-  // --- HAQIQIY BAZA STATE'LARI ---
   const [user, setUser] = useState<any>(null);
+  const [weeklyDilemma, setWeeklyDilemma] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [hasVoted, setHasVoted] = useState(false);
+  const [userChoice, setUserChoice] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchLatestUserData = async () => {
+    const loadDashboardData = async () => {
       const savedUser = localStorage.getItem("user");
       if (savedUser) {
         const parsedUser = JSON.parse(savedUser);
         
-        // Supabase'dan eng so'nggi XP va ballarni olamiz
-        const { data, error } = await supabase
-          .from('users')
-          .select('*')
-          .eq('id', parsedUser.id)
-          .single();
+        // 1. Foydalanuvchi va Haftalik savolni parallel yuklaymiz
+        const [userRes, dilemmaRes] = await Promise.all([
+          supabase.from('users').select('*').eq('id', parsedUser.id).single(),
+          supabase.from('weekly_dilemmas').select('*').order('created_at', { ascending: false }).limit(1).single()
+        ]);
 
-        if (!error && data) {
-          setUser(data);
-          // LocalStorage'ni ham yangilab qo'yamiz
-          localStorage.setItem("user", JSON.stringify(data));
-        } else {
-          setUser(parsedUser);
+        if (userRes.data) setUser(userRes.data);
+        if (dilemmaRes.data) {
+          setWeeklyDilemma(dilemmaRes.data);
+          // Ovoz berganini tekshirish (LocalStorage orqali)
+          const voted = localStorage.getItem(`voted_week_${dilemmaRes.data.id}`);
+          if (voted) {
+            setHasVoted(true);
+            setUserChoice(voted);
+          }
         }
       }
       setLoading(false);
     };
 
-    fetchLatestUserData();
+    loadDashboardData();
   }, []);
 
-  const handleVote = (optionIndex: number) => {
-    if (!hasVoted) {
-      setSelectedOption(optionIndex);
-      setHasVoted(true);
-      // Bu yerda kelajakda ovoz berganlik uchun XP qo'shish kodini yozamiz
+  const handleVote = async (choice: string) => {
+    if (hasVoted || !weeklyDilemma) return;
+
+    setHasVoted(true);
+    setUserChoice(choice);
+    localStorage.setItem(`voted_week_${weeklyDilemma.id}`, choice);
+
+    // Agar javob to'g'ri bo'lsa, XP qo'shamiz
+    if (choice === weeklyDilemma.correct_option) {
+      const newXp = user.xp + (weeklyDilemma.xp_reward || 100);
+      const { error } = await supabase
+        .from('users')
+        .update({ xp: newXp })
+        .eq('id', user.id);
+
+      if (!error) {
+        setUser({ ...user, xp: newXp });
+      }
     }
   };
 
-  const getPercentage = (votes: number) => {
-    return ((votes / results.totalVotes) * 100).toFixed(1);
-  };
-
-  // --- DINAMIK HISOB-KITOBLAR ---
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-900">
+    <div className="min-h-screen flex items-center justify-center bg-slate-950">
       <Loader2 className="w-10 h-10 text-blue-500 animate-spin" />
     </div>
   );
 
   if (!user) return null;
 
-  // Har bir daraja uchun 1000 XP kerak deb hisoblaymiz
   const xpToNextLevel = user.level * 1000;
   const progressPercentage = (user.xp / xpToNextLevel) * 100;
 
   return (
-    <div className="p-4 md:p-10 max-w-7xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900 transition-colors duration-300 overflow-x-hidden">
+    <div className="p-4 md:p-10 max-w-7xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900 transition-colors duration-300">
       
-      {/* Header - ISMNI BAZADAN OLAMIZ */}
-      <motion.div 
-        className="mb-6 md:mb-10"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <h1 className="text-2xl md:text-4xl mb-2 md:mb-3 font-extrabold bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 dark:from-blue-400 dark:via-purple-400 dark:to-indigo-400 bg-clip-text text-transparent flex items-center gap-2 md:gap-3">
-          <Sparkles className="w-6 h-6 md:w-8 md:h-8 text-yellow-500 animate-pulse" />
+      {/* Header */}
+      <motion.div className="mb-6 md:mb-10" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+        <h1 className="text-2xl md:text-4xl mb-2 font-extrabold bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400 bg-clip-text text-transparent flex items-center gap-3">
+          <Sparkles className="w-8 h-8 text-yellow-500 animate-pulse" />
           Salom, {user.first_name}!
         </h1>
-        <p className="text-slate-500 dark:text-slate-400 text-sm md:text-lg font-medium">
-          Siz {user.grade}-sinf darslari bo'yicha {user.xp} ball to'pladingiz
+        <p className="text-slate-500 dark:text-slate-400 font-medium">
+          Sizda hozir {user.xp} XP bor. Keyingi darajaga intiling!
         </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 md:gap-8">
-        <div className="xl:col-span-2 space-y-5 md:space-y-8">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
+        <div className="xl:col-span-2 space-y-8">
           
-          {/* Kunlik Muammo (Dizayn o'zgarmadi, ma'lumotlar o'z o'rnida) */}
-          <Card className="border-0 shadow-xl relative overflow-hidden bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl">
-             {/* ... Oldingi Kunlik Muammo kodingiz shu yerda ... */}
-             {/* (Joyni tejash uchun ichki qismini qisqartirdim, o'zingiznikini qo'yib yuboring) */}
-          </Card>
+          {/* HAFTALIK MUAMMO SEKSIYASI */}
+          {weeklyDilemma && (
+            <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
+              <Card className="border-0 shadow-2xl overflow-hidden bg-white dark:bg-slate-800 rounded-3xl">
+                <div className="h-2 bg-gradient-to-r from-purple-500 to-blue-500" />
+                <CardHeader className="pb-4">
+                  <div className="flex justify-between items-start">
+                    <div>
+                      <Badge className="mb-2 bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-0">Hafta savoli</Badge>
+                      <CardTitle className="text-2xl font-bold dark:text-white">{weeklyDilemma.title}</CardTitle>
+                    </div>
+                    <Scale className="w-8 h-8 text-slate-300" />
+                  </div>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="p-6 rounded-2xl bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-lg leading-relaxed">
+                    {weeklyDilemma.scenario}
+                  </div>
 
-          {/* Tezkor Statistika - BAZADAGI HAQIQIY RAQAMLAR */}
-          <motion.div className="grid grid-cols-1 min-[400px]:grid-cols-3 gap-3 md:gap-4">
+                  <div className="grid gap-4">
+                    {!hasVoted ? (
+                      <>
+                        <DilemmaButton label="A" text={weeklyDilemma.option_a} onClick={() => handleVote('A')} />
+                        <DilemmaButton label="B" text={weeklyDilemma.option_b} onClick={() => handleVote('B')} />
+                      </>
+                    ) : (
+                      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className={`p-6 rounded-2xl border-2 ${userChoice === weeklyDilemma.correct_option ? 'border-green-500 bg-green-50 dark:bg-green-900/20' : 'border-red-500 bg-red-50 dark:bg-red-900/20'}`}>
+                        <div className="flex items-center gap-3 mb-3">
+                          {userChoice === weeklyDilemma.correct_option ? <CheckCircle2 className="text-green-500 w-6 h-6" /> : <AlertCircle className="text-red-500 w-6 h-6" />}
+                          <h4 className="font-bold text-xl dark:text-white">
+                            {userChoice === weeklyDilemma.correct_option ? "To'g'ri topdingiz!" : "Noto'g'ri javob"}
+                          </h4>
+                        </div>
+                        <p className="text-slate-600 dark:text-slate-300 leading-relaxed italic mb-4">"{weeklyDilemma.explanation}"</p>
+                        <div className="flex items-center gap-2 text-sm font-bold text-blue-600 dark:text-blue-400">
+                          <Zap className="w-4 h-4 fill-current" /> {userChoice === weeklyDilemma.correct_option ? `+${weeklyDilemma.xp_reward} XP qo'shildi` : "XP qo'shilmadi"}
+                        </div>
+                      </motion.div>
+                    )}
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Statistika */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatItem icon={BookOpen} label="Darslar" value="0" color="indigo" />
             <StatItem icon={Scale} label="Holatlar" value="0" color="purple" />
             <StatItem icon={Award} label="XP Ball" value={user.xp} color="pink" />
-          </motion.div>
+          </div>
         </div>
 
-        {/* O'ng Panel - DARAJA VA PROGRESS */}
-        <div className="space-y-5 md:space-y-8">
-          <Card 
-            className="border-0 shadow-xl text-white relative overflow-hidden group"
-            style={{ background: 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)' }}
-          >
-            <CardContent className="pt-6 pb-6 md:pt-8 md:pb-8 relative z-10">
-              <div className="text-center mb-5 md:mb-6">
-                <div className="inline-flex items-center justify-center w-20 h-20 md:w-28 md:h-28 bg-white/20 backdrop-blur-md rounded-full mb-3 md:mb-4 shadow-xl border-2 border-white/30">
-                  <span className="text-4xl md:text-5xl font-extrabold">{user.level}</span>
-                </div>
-                <h3 className="font-bold text-xl md:text-2xl mb-1">{user.level}-Daraja</h3>
-                <p className="text-xs md:text-sm font-medium text-blue-100 flex items-center justify-center gap-2 bg-black/20 w-max mx-auto px-4 py-1.5 rounded-full border border-white/10">
-                  Sinf: {user.grade}
-                </p>
+        {/* O'ng Panel */}
+        <div className="space-y-6">
+          <Card className="border-0 shadow-xl text-white overflow-hidden" style={{ background: 'linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%)' }}>
+            <CardContent className="p-8 text-center">
+              <div className="inline-flex items-center justify-center w-24 h-24 bg-white/20 backdrop-blur-lg rounded-full mb-4 border-2 border-white/30 shadow-2xl">
+                <span className="text-5xl font-black">{user.level}</span>
               </div>
-
-              <div className="space-y-2 bg-black/20 p-4 rounded-2xl border border-white/10">
+              <h3 className="text-2xl font-bold mb-1">{user.level}-Daraja</h3>
+              <p className="text-indigo-100 text-sm mb-6 opacity-80">{user.grade}-sinf o'quvchisi</p>
+              
+              <div className="space-y-2 bg-black/20 p-4 rounded-2xl border border-white/10 text-left">
                 <div className="flex justify-between text-xs font-bold">
                   <span>{user.xp} XP</span>
                   <span>{xpToNextLevel} XP</span>
                 </div>
-                <Progress value={progressPercentage} className="h-2.5 bg-white/20" />
-                <p className="text-[10px] text-center text-blue-100 mt-1">
-                  Keyingi darajagacha {xpToNextLevel - user.xp} XP qoldi
-                </p>
+                <Progress value={progressPercentage} className="h-2 bg-white/20" />
               </div>
             </CardContent>
           </Card>
 
-          {/* Seriya (Streak) - BAZADAN */}
-          <Card className="border-0 shadow-md bg-white/80 dark:bg-slate-800/80">
-            <CardContent className="p-4 md:p-6 flex items-center gap-5">
-              <div className="bg-gradient-to-br from-orange-400 to-red-500 p-3 rounded-2xl shadow-lg shadow-orange-500/20">
-                <Flame className="w-8 h-8 text-white" />
-              </div>
-              <div>
-                <p className="text-2xl md:text-3xl font-extrabold dark:text-white">
-                  {user.streak || 0} Kun
-                </p>
-                <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Uzluksiz ta'lim 🔥</p>
-              </div>
-            </CardContent>
+          <Card className="border-0 shadow-lg bg-white dark:bg-slate-800 p-6 flex items-center gap-5">
+            <div className="bg-orange-100 dark:bg-orange-900/30 p-4 rounded-2xl">
+              <Flame className="w-8 h-8 text-orange-600" />
+            </div>
+            <div>
+              <p className="text-3xl font-black dark:text-white">{user.streak || 0} Kun</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Seriya 🔥</p>
+            </div>
           </Card>
         </div>
       </div>
@@ -165,19 +191,31 @@ export function Dashboard() {
   );
 }
 
-// Yordamchi komponent - Statistika uchun
-function StatItem({ icon: Icon, label, value, color }: any) {
+// Yordamchi komponentlar
+function DilemmaButton({ label, text, onClick }: any) {
   return (
-    <Card className="border-0 shadow-md bg-white/80 dark:bg-slate-800/80 backdrop-blur-xl">
-      <CardContent className="p-4 flex items-center gap-4">
-        <div className={`p-3 bg-${color}-100 dark:bg-${color}-900/50 rounded-xl`}>
-          <Icon className={`w-6 h-6 text-${color}-600 dark:text-${color}-400`} />
-        </div>
-        <div>
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">{label}</p>
-          <p className="text-xl font-extrabold text-slate-800 dark:text-white">{value}</p>
-        </div>
-      </CardContent>
+    <button onClick={onClick} className="w-full text-left p-5 rounded-2xl border-2 border-slate-100 dark:border-slate-700 hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/10 transition-all group">
+      <span className="block text-blue-600 dark:text-blue-400 font-black text-sm mb-1">{label} VARIANT</span>
+      <span className="text-slate-700 dark:text-slate-200 font-medium">{text}</span>
+    </button>
+  );
+}
+
+function StatItem({ icon: Icon, label, value, color }: any) {
+  const colors: any = {
+    indigo: "bg-indigo-50 text-indigo-600",
+    purple: "bg-purple-50 text-purple-600",
+    pink: "bg-pink-50 text-pink-600"
+  };
+  return (
+    <Card className="border-0 shadow-md bg-white dark:bg-slate-800 p-4 flex items-center gap-4">
+      <div className={`p-3 rounded-xl ${colors[color] || ""}`}>
+        <Icon className="w-6 h-6" />
+      </div>
+      <div>
+        <p className="text-[10px] font-bold text-slate-400 uppercase">{label}</p>
+        <p className="text-xl font-black dark:text-white">{value}</p>
+      </div>
     </Card>
   );
 }
