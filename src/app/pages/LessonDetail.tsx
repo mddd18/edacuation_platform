@@ -56,32 +56,55 @@ export function LessonDetail() {
         setCurrentQuestion(c => c + 1);
         setSelectedOption(null);
       } else {
-        // Test yakunlandi
         setQuizFinished(true);
         
-        // --- PROGRESS VA XP LOGIKASI ---
         const finalScore = isCorrect ? score + 1 : score;
         const totalQuestions = lesson.quiz_data.length;
-        const isPassed = finalScore === totalQuestions; // 100% natija talab qilinadi
+        const isPassed = finalScore === totalQuestions; 
 
         if (isPassed) {
           const savedUser = localStorage.getItem("user");
           if (savedUser) {
             const user = JSON.parse(savedUser);
-            const newXp = (user.xp || 0) + (lesson.xp_reward || 200);
 
-            // 1. User XP ni yangilash
-            await supabase.from('users').update({ xp: newXp }).eq('id', user.id);
-            
-            // 2. Progressni saqlash (Keyingi dars ochilishi uchun)
-            await supabase.from('user_progress').upsert({ 
-              user_id: user.id, 
-              lesson_id: lesson.id, 
-              is_completed: true 
-            });
+            // 1. BU DARS OLDIN TUGATILGANMI YO'QMI TEKSHIRAMIZ
+            const { data: alreadyCompleted } = await supabase
+              .from('user_progress')
+              .select('is_completed')
+              .eq('user_id', user.id)
+              .eq('lesson_id', lesson.id)
+              .single();
 
-            // LocalStorage yangilash
-            localStorage.setItem("user", JSON.stringify({ ...user, xp: newXp }));
+            if (!alreadyCompleted) {
+              // AGAR BIRINCHI MARTA TUGATILAYOTGAN BO'LSA XP BERAMIZ
+              const newTotalXp = (user.xp || 0) + (lesson.xp_reward || 200);
+              
+              // DARAXA (LEVEL) HISOBLASH: HAR 1000 XP DA 1 POG'ONA OSHADI
+              const newLevel = Math.floor(newTotalXp / 1000) + 1;
+
+              // 2. BAZADA USER VA PROGRESSNI YANGILASH
+              await supabase.from('users').update({ 
+                xp: newTotalXp,
+                level: newLevel 
+              }).eq('id', user.id);
+              
+              await supabase.from('user_progress').upsert({ 
+                user_id: user.id, 
+                lesson_id: lesson.id, 
+                is_completed: true 
+              });
+
+              // LocalStorage yangilash
+              localStorage.setItem("user", JSON.stringify({ ...user, xp: newTotalXp, level: newLevel }));
+            } else {
+              // OLDIN TUGATILGAN BO'LSA FAQAT PROGRESSNI YANGILAYMIZ (XP BERILMAYDI)
+              await supabase.from('user_progress').upsert({ 
+                user_id: user.id, 
+                lesson_id: lesson.id, 
+                is_completed: true 
+              });
+              console.log("Bu dars uchun oldin XP olgan ekansiz.");
+            }
           }
         }
       }
@@ -126,18 +149,12 @@ export function LessonDetail() {
                       {lesson.quiz_data[currentQuestion].options.map((opt: string, i: number) => {
                         const isSelected = selectedOption === i;
                         const isCorrectOpt = i === lesson.quiz_data[currentQuestion].correct;
-                        
                         let borderClass = "border-slate-100 dark:border-slate-700";
                         if (isSelected) {
                           borderClass = isCorrectOpt ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-red-500 bg-red-50 dark:bg-red-900/20";
                         }
-
                         return (
-                          <button 
-                            key={i} 
-                            onClick={() => handleAnswer(i)} 
-                            className={`p-5 rounded-2xl border-2 text-left font-bold transition-all flex justify-between items-center ${borderClass} dark:text-white`}
-                          >
+                          <button key={i} onClick={() => handleAnswer(i)} className={`p-5 rounded-2xl border-2 text-left font-bold transition-all flex justify-between items-center ${borderClass} dark:text-white`}>
                             {opt}
                             {isSelected && (isCorrectOpt ? <CheckCircle2 className="text-green-500" /> : <XCircle className="text-red-500" />)}
                           </button>
@@ -154,11 +171,11 @@ export function LessonDetail() {
                     <div className="w-24 h-24 bg-yellow-400 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-yellow-500/40 animate-bounce">
                       <Award className="text-white w-12 h-12" />
                     </div>
-                    <h2 className="text-4xl font-black dark:text-white">Ajoyib natija!</h2>
-                    <p className="text-slate-500 text-lg">Siz barcha savollarga to'g'ri javob berdingiz va keyingi darsni ochdingiz!</p>
+                    <h2 className="text-4xl font-black dark:text-white">Dars yakunlandi!</h2>
+                    <p className="text-slate-500 text-lg">Siz keyingi darsni muvaffaqiyatli ochdingiz!</p>
                     <div className="bg-green-500 p-8 rounded-[32px] text-white shadow-lg">
-                      <p className="text-sm font-bold uppercase opacity-80 mb-1">Mukofot</p>
-                      <p className="text-5xl font-black">+{lesson.xp_reward} XP</p>
+                       <p className="text-sm font-bold uppercase opacity-80 mb-1">Eslatma</p>
+                       <p className="text-2xl font-black">Yangi dars ochildi 🔓</p>
                     </div>
                   </>
                 ) : (
@@ -167,18 +184,18 @@ export function LessonDetail() {
                       <AlertCircle className="text-red-500 w-12 h-12" />
                     </div>
                     <h2 className="text-3xl font-black dark:text-white">Natija yetarli emas</h2>
-                    <p className="text-slate-500">XP olish va keyingi darsni ochish uchun hamma savollarga to'g'ri javob berishingiz kerak.</p>
+                    <p className="text-slate-500">Keyingi darsni ochish uchun hamma savollarga to'g'ri javob berishingiz kerak.</p>
                     <div className="bg-slate-100 dark:bg-slate-800 p-6 rounded-[32px]">
                       <p className="text-2xl font-bold dark:text-white">{score} / {lesson.quiz_data.length}</p>
                       <p className="text-xs text-slate-400 uppercase font-bold">To'g'ri javoblar</p>
                     </div>
                     <Button onClick={() => { setShowQuiz(false); setQuizFinished(false); setCurrentQuestion(0); setScore(0); setSelectedOption(null); }} variant="outline" className="w-full h-14 rounded-2xl font-bold">
-                      Qayta o'qish va urinish
+                      Qayta urinish
                     </Button>
                   </>
                 )}
                 <Button onClick={() => navigate("/lessons")} className="w-full h-14 rounded-2xl bg-slate-900 dark:bg-white dark:text-slate-900 text-white font-bold">
-                  Darslar ro'yxatiga qaytish
+                  Ro'yxatga qaytish
                 </Button>
               </motion.div>
             )}
@@ -190,8 +207,6 @@ export function LessonDetail() {
 }
 
 function Badge({ children, color }: any) {
-  const colors: any = {
-    blue: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
-  };
+  const colors: any = { blue: "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" };
   return <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase ${colors[color]}`}>{children}</span>;
 }
