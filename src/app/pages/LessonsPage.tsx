@@ -33,20 +33,21 @@ export function LessonsPage() {
         .order('created_at', { ascending: true });
 
       // 2. O'quvchi tugatgan darslarni olamiz
-      const { data: completedData, error: progressError } = await supabase
+      const { data: completedData } = await supabase
         .from('user_progress')
         .select('lesson_id')
         .eq('user_id', user.id)
         .eq('is_completed', true);
 
-      if (!lessonError) {
+      if (!lessonError && allLessons) {
         const completedIds = completedData?.map(item => item.lesson_id) || [];
         
         // 3. Qulflash logikasini hisoblaymiz
-        const processedLessons = allLessons?.map((lesson, index) => {
+        const processedLessons = allLessons.map((lesson, index) => {
           const isCompleted = completedIds.includes(lesson.id);
           
-          // Mantiq: 1-dars doim ochiq. Qolganlari esa o'zidan oldingi dars bitgan bo'lsa ochiq.
+          // Mantiq: 1-dars (index 0) doim ochiq. 
+          // Qolganlari esa o'zidan oldingi dars bitgan (isCompleted) bo'lsa ochiq.
           let isLocked = false;
           if (index > 0) {
             const previousLessonId = allLessons[index - 1].id;
@@ -58,7 +59,7 @@ export function LessonsPage() {
           return { ...lesson, isCompleted, isLocked };
         });
 
-        setLessons(processedLessons || []);
+        setLessons(processedLessons);
       }
       setLoading(false);
     };
@@ -98,29 +99,29 @@ export function LessonsPage() {
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
             >
-              {/* Agar dars qulflangan bo'lsa Link ishlamaydi */}
               <Link 
                 to={lesson.isLocked ? "#" : `/lessons/${lesson.id}`}
+                onClick={(e) => lesson.isLocked && e.preventDefault()}
                 className={lesson.isLocked ? "cursor-not-allowed" : ""}
               >
                 <Card className={`transition-all overflow-hidden rounded-3xl border-2 ${
                   lesson.isLocked 
                     ? "opacity-60 bg-slate-100 dark:bg-slate-900/50 border-transparent" 
-                    : "hover:border-blue-500 hover:shadow-xl bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                    : "hover:border-blue-500 hover:shadow-xl bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 shadow-sm"
                 }`}>
                   <CardContent className="p-6 flex items-center justify-between">
                     <div className="flex items-center gap-6">
                       <div className={`w-16 h-16 rounded-2xl flex flex-col items-center justify-center transition-colors ${
                         lesson.isLocked 
                           ? "bg-slate-200 dark:bg-slate-800" 
-                          : "bg-slate-100 dark:bg-slate-700 group-hover:bg-blue-600"
+                          : "bg-blue-50 dark:bg-slate-700"
                       }`}>
                         {lesson.isLocked ? (
                           <Lock className="w-6 h-6 text-slate-400" />
                         ) : (
                           <>
-                            <span className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase leading-none mb-1">Sinf</span>
-                            <span className="text-2xl font-black text-slate-700 dark:text-white leading-none">
+                            <span className="text-[10px] font-black text-blue-400 dark:text-slate-500 uppercase leading-none mb-1">Sinf</span>
+                            <span className="text-2xl font-black text-blue-600 dark:text-white leading-none">
                               {lesson.grade}
                             </span>
                           </>
@@ -149,10 +150,13 @@ export function LessonsPage() {
                           <span className="text-[10px] font-black text-green-500 uppercase">Tugatildi</span>
                         </div>
                       ) : lesson.isLocked ? (
-                        <span className="text-xs font-bold text-slate-400 uppercase tracking-tighter italic">Qulflangan</span>
+                        <div className="flex items-center gap-2 text-slate-400">
+                           <Lock className="w-4 h-4" />
+                           <span className="text-xs font-bold uppercase tracking-tighter italic">Qulflangan</span>
+                        </div>
                       ) : (
-                        <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-full">
-                          <ChevronRight className="text-blue-600 w-6 h-6" />
+                        <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-full group">
+                          <ChevronRight className="text-blue-600 w-6 h-6 group-hover:translate-x-1 transition-transform" />
                         </div>
                       )}
                     </div>
@@ -165,6 +169,7 @@ export function LessonsPage() {
           <div className="text-center py-24 bg-white dark:bg-slate-800/50 rounded-[40px] border-2 border-dashed border-slate-200 dark:border-slate-700">
             <GraduationCap className="w-20 h-20 text-slate-300 dark:text-slate-600 mx-auto mb-6" />
             <h3 className="text-2xl font-bold dark:text-white mb-2">Darslar topilmadi</h3>
+            <p className="text-slate-500">Tez orada yangi darslar qo'shiladi!</p>
           </div>
         )}
       </div>
