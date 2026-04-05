@@ -6,7 +6,8 @@ import { LessonsPage } from "./pages/LessonsPage";
 import { LessonDetail } from "./pages/LessonDetail";
 import { CaseStudiesPage } from "./pages/CaseStudiesPage";
 import { CaseDetail } from "./pages/CaseDetail";
-import { DictionaryPage } from "./pages/DictionaryPage"; // <-- Lug'at sahifasini import qildik
+import { DictionaryPage } from "./pages/DictionaryPage";
+import { VideoGuidesPage } from "./pages/VideoGuidesPage"; // <--- Import qildik
 
 export const router = createBrowserRouter([
   {
@@ -17,29 +18,15 @@ export const router = createBrowserRouter([
     path: "/",
     element: <MainLayout />,
     children: [
-      {
-        index: true,
-        element: <Dashboard />,
-      },
-      {
-        path: "lessons",
-        element: <LessonsPage />,
-      },
-      {
-        path: "lessons/:id",
-        element: <LessonDetail />,
-      },
-      {
-        path: "cases", 
-        element: <CaseStudiesPage />, 
-      },
-      {
-        path: "cases/:id", 
-        element: <CaseDetail />,
-      },
-      {
-        path: "dictionary", // <-- Lug'at sahifasi uchun yo'nalish qo'shdik
-        element: <DictionaryPage />,
+      { index: true, element: <Dashboard /> },
+      { path: "lessons", element: <LessonsPage /> },
+      { path: "lessons/:id", element: <LessonDetail /> },
+      { path: "cases", element: <CaseStudiesPage /> },
+      { path: "cases/:id", element: <CaseDetail /> },
+      { path: "dictionary", element: <DictionaryPage /> },
+      { 
+        path: "videos", // <--- Yo'nalish qo'shdik
+        element: <VideoGuidesPage /> 
       }
     ],
   },
