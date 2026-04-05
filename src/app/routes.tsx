@@ -9,7 +9,8 @@ import { CaseDetail } from "./pages/CaseDetail";
 import { DictionaryPage } from "./pages/DictionaryPage";
 import { VideoGuidesPage } from "./pages/VideoGuidesPage";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
-import { ProfilePage } from "./pages/ProfilePage"; // <--- Profil sahifasini import qildik
+import { ProfilePage } from "./pages/ProfilePage";
+import { AdminDashboard } from "./pages/AdminDashboard"; // <--- Admin panelni import qildik
 
 export const router = createBrowserRouter([
   {
@@ -28,9 +29,10 @@ export const router = createBrowserRouter([
       { path: "dictionary", element: <DictionaryPage /> },
       { path: "videos", element: <VideoGuidesPage /> },
       { path: "leaderboard", element: <LeaderboardPage /> },
+      { path: "profile", element: <ProfilePage /> },
       { 
-        path: "profile", // <--- Profil uchun yo'nalish qo'shdik
-        element: <ProfilePage /> 
+        path: "admin", // <--- Admin uchun yo'nalish qo'shdik
+        element: <AdminDashboard /> 
       }
     ],
   },
