@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { Button } from "../components/ui/button";
 import { Progress } from "../components/ui/progress";
@@ -12,13 +12,16 @@ import {
   BrainCircuit, 
   XCircle,
   RotateCcw,
-  ArrowRight
+  ArrowRight,
+  Loader2
 } from "lucide-react";
-import { dictionary } from "../data/dictionary";
+import { supabase } from "../../lib/supabase";
 import { motion, AnimatePresence } from "motion/react";
 
 export function DictionaryPage() {
-  const categories = Array.from(new Set(dictionary.map(entry => entry.category)));
+  // BACKEND DAN KELADIGAN MA'LUMOTLAR UCHUN STATE
+  const [dictionary, setDictionary] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [unlockedLevel, setUnlockedLevel] = useState(0); 
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
@@ -36,6 +39,30 @@ export function DictionaryPage() {
     selectedOption: null as string | null
   });
 
+  // SUPABASE'DAN MA'LUMOTLARNI TORTISH
+  useEffect(() => {
+    const fetchDictionary = async () => {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('dictionary')
+        .select('*')
+        .order('level', { ascending: true }); // Bazadagi level ustuni bo'yicha
+
+      if (!error && data) {
+        // Bazada category bo'lmasa, level'dan o'zimiz kategoriya yasaymiz
+        const mappedData = data.map(item => ({
+          ...item,
+          category: item.category || `${item.level}-Bosqich` 
+        }));
+        setDictionary(mappedData);
+      }
+      setLoading(false);
+    };
+
+    fetchDictionary();
+  }, []);
+
+  const categories = Array.from(new Set(dictionary.map(entry => entry.category)));
   const categoryTerms = activeCategory ? dictionary.filter(t => t.category === activeCategory) : [];
   const currentTerm = categoryTerms[currentCardIndex];
 
@@ -96,7 +123,7 @@ export function DictionaryPage() {
     }));
   };
 
-  const nextQuestion = () => {
+  const nextQuestion = async () => {
     if (quizState.currentIndex < quizState.questions.length - 1) {
       setQuizState(prev => ({
         ...prev,
@@ -111,11 +138,29 @@ export function DictionaryPage() {
         if (currentCatIndex >= unlockedLevel) {
           setUnlockedLevel(currentCatIndex + 1);
         }
+
+        // BAZAGA XP QO'SHISH LOGIKASI
+        const savedUser = localStorage.getItem("user");
+        if (savedUser) {
+          const user = JSON.parse(savedUser);
+          const newTotalXp = (user.xp || 0) + 100; // Lug'atni tugatgani uchun 100 XP
+          const newLevel = Math.floor(newTotalXp / 1000) + 1;
+          
+          await supabase.from('users').update({ xp: newTotalXp, level: newLevel }).eq('id', user.id);
+          localStorage.setItem("user", JSON.stringify({ ...user, xp: newTotalXp, level: newLevel }));
+        }
       }
       setQuizState(prev => ({ ...prev, active: false }));
       setActiveCategory(null);
     }
   };
+
+  // Ma'lumot yuklanayotganda chiqadigan oyna
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
+    </div>
+  );
 
   return (
     <div className="p-6 md:p-10 max-w-5xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900 transition-colors duration-300">
