@@ -4,8 +4,9 @@ import { AuthPage } from "./pages/AuthPage";
 import { Dashboard } from "./pages/Dashboard";
 import { LessonsPage } from "./pages/LessonsPage";
 import { LessonDetail } from "./pages/LessonDetail";
-import { CaseStudiesPage } from "./pages/CaseStudiesPage"; // Fayl nomini to'g'riladik
+import { CaseStudiesPage } from "./pages/CaseStudiesPage";
 import { CaseDetail } from "./pages/CaseDetail";
+import { DictionaryPage } from "./pages/DictionaryPage"; // <-- Lug'at sahifasini import qildik
 
 export const router = createBrowserRouter([
   {
@@ -30,11 +31,15 @@ export const router = createBrowserRouter([
       },
       {
         path: "cases", 
-        element: <CaseStudiesPage />, // Bu yerni ham to'g'riladik
+        element: <CaseStudiesPage />, 
       },
       {
         path: "cases/:id", 
         element: <CaseDetail />,
+      },
+      {
+        path: "dictionary", // <-- Lug'at sahifasi uchun yo'nalish qo'shdik
+        element: <DictionaryPage />,
       }
     ],
   },
