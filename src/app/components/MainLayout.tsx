@@ -1,19 +1,9 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
+import { supabase } from "../../lib/supabase"; // <--- Supabase import qilindi
 import { 
-  Scale, 
-  Trophy, 
-  Book, 
-  BookOpen, 
-  User, 
-  Home,
-  GraduationCap,
-  PlaySquare,
-  Sun,
-  Moon,
-  Menu,
-  X,
-  LogOut
+  Scale, Trophy, Book, BookOpen, User, Home, GraduationCap, 
+  PlaySquare, Sun, Moon, Menu, X, LogOut
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -24,14 +14,66 @@ export function MainLayout() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
 
-  // AUTH TEKSHIRUVI
+  // AUTH VA KUNLIK SERIYA (STREAK) TEKSHIRUVI
   useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (!user) {
-      navigate("/login", { replace: true });
-    } else {
+    const checkAuthAndStreak = async () => {
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        navigate("/login", { replace: true });
+        return;
+      }
+
+      const user = JSON.parse(userStr);
       setIsAuthChecked(true);
-    }
+
+      // --- KUNLIK SERIYA LOGIKASI ---
+      // Bugungi sanani O'zbekiston vaqti bilan formatlash (YYYY-MM-DD)
+      const today = new Date().toLocaleDateString('en-CA'); 
+
+      const { data: dbUser } = await supabase
+        .from('users')
+        .select('streak, last_active_date')
+        .eq('id', user.id)
+        .single();
+
+      if (dbUser) {
+        let newStreak = dbUser.streak || 0;
+        const lastActive = dbUser.last_active_date;
+
+        // Agar bugun hali kirmagan bo'lsa
+        if (lastActive !== today) {
+          if (lastActive) {
+            // Kunlar farqini hisoblash
+            const lastDate = new Date(lastActive);
+            const currentDate = new Date(today);
+            const diffTime = Math.abs(currentDate.getTime() - lastDate.getTime());
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 1) {
+              // Kecha kirgan, seriya davom etadi
+              newStreak += 1;
+            } else if (diffDays > 1) {
+              // Kechadan oldin kirgan, seriya uzildi, yana 1 dan boshlaydi
+              newStreak = 1;
+            }
+          } else {
+            // Umuman birinchi marta kirishi
+            newStreak = 1;
+          }
+
+          // Bazani yangilash
+          await supabase.from('users').update({
+            streak: newStreak,
+            last_active_date: today
+          }).eq('id', user.id);
+
+          // LocalStorage'ni ham yangilash
+          localStorage.setItem("user", JSON.stringify({ ...user, streak: newStreak }));
+        }
+      }
+    };
+
+    checkAuthAndStreak();
   }, [navigate]);
 
   // QORONG'U REJIM
@@ -67,7 +109,6 @@ export function MainLayout() {
     { path: "/profile", icon: User, label: "Profil" },
   ];
 
-  // Telefonda pastda ko'rinadigan qisqa menyu
   const mobileBottomNav = [
     { path: "/", icon: Home, label: "Asosiy" },
     { path: "/lessons", icon: BookOpen, label: "Darslar" },
@@ -178,7 +219,7 @@ export function MainLayout() {
 
       <div className="flex-1 flex flex-col h-[100dvh] relative w-full overflow-hidden">
         
-        {/* 📱 MOBILE HEADER (Tepada FAQAT telefonda ko'rinadi) */}
+        {/* 📱 MOBILE HEADER */}
         <header className="md:hidden flex items-center justify-between p-4 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 sticky top-0 z-40">
            <button onClick={() => setIsMobileMenuOpen(true)} className="p-2 -ml-2 text-slate-600 dark:text-slate-300 active:scale-95 transition-transform">
              <Menu className="w-6 h-6" />
@@ -186,15 +227,15 @@ export function MainLayout() {
            <h2 className="font-black text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
              Qonun va Huquq
            </h2>
-           <div className="w-6" /> {/* Bo'shliq (Center qilish uchun) */}
+           <div className="w-6" />
         </header>
 
-        {/* ASOSIY QISM (Dashboard, Lessons va h.k.) */}
+        {/* ASOSIY QISM */}
         <main className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 pb-24 md:pb-0 relative z-0">
           <Outlet />
         </main>
 
-        {/* 📱 MOBILE BOTTOM NAVIGATION (FAQAT telefonda ko'rinadi) */}
+        {/* 📱 MOBILE BOTTOM NAVIGATION */}
         <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white/90 dark:bg-slate-900/90 backdrop-blur-2xl border-t border-slate-200 dark:border-slate-800 z-50 px-2 py-2 pb-safe shadow-[0_-10px_30px_rgba(0,0,0,0.05)] rounded-t-[24px]">
           <div className="flex items-center justify-around">
             {mobileBottomNav.map((item) => {
