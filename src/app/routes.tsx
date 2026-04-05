@@ -8,7 +8,8 @@ import { CaseStudiesPage } from "./pages/CaseStudiesPage";
 import { CaseDetail } from "./pages/CaseDetail";
 import { DictionaryPage } from "./pages/DictionaryPage";
 import { VideoGuidesPage } from "./pages/VideoGuidesPage";
-import { LeaderboardPage } from "./pages/LeaderboardPage"; // <--- Reyting sahifasini import qildik
+import { LeaderboardPage } from "./pages/LeaderboardPage";
+import { ProfilePage } from "./pages/ProfilePage"; // <--- Profil sahifasini import qildik
 
 export const router = createBrowserRouter([
   {
@@ -26,9 +27,10 @@ export const router = createBrowserRouter([
       { path: "cases/:id", element: <CaseDetail /> },
       { path: "dictionary", element: <DictionaryPage /> },
       { path: "videos", element: <VideoGuidesPage /> },
+      { path: "leaderboard", element: <LeaderboardPage /> },
       { 
-        path: "leaderboard", // <--- Reyting uchun yo'nalish qo'shdik
-        element: <LeaderboardPage /> 
+        path: "profile", // <--- Profil uchun yo'nalish qo'shdik
+        element: <ProfilePage /> 
       }
     ],
   },
