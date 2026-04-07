@@ -1,289 +1,219 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
-import { Progress } from "../components/ui/progress";
-import { Badge } from "../components/ui/badge";
-import { 
-  TrendingUp, 
-  Flame,
-  CheckCircle2, 
-  Sparkles, 
-  Zap, 
-  BookOpen, 
-  Scale, 
-  Award, 
-  Loader2, 
-  AlertCircle,
-  ChevronRight
-} from "lucide-react";
-import { motion } from "motion/react";
 import { supabase } from "../../lib/supabase";
+import { Card, CardContent } from "../components/ui/card";
+import { Button } from "../components/ui/button";
+import { Badge } from "../components/ui/badge";
+import { Progress } from "../components/ui/progress";
+import { 
+  Users, TrendingUp, CheckCircle2, AlertCircle, 
+  Clock, ShieldQuestion, Loader2, Award, Swords
+} from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
 
 export function Dashboard() {
-  const [user, setUser] = useState<any>(null);
-  const [weeklyDilemma, setWeeklyDilemma] = useState<any>(null);
-  const [stats, setStats] = useState({ lessons: 0, cases: 0 });
+  const [poll, setPoll] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [hasVoted, setHasVoted] = useState(false);
-  const [userChoice, setUserChoice] = useState<string | null>(null);
+  const [userVote, setUserVote] = useState<string | null>(null);
+  const [stats, setStats] = useState({ votesA: 0, votesB: 0, total: 0 });
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const loadDashboardData = async () => {
-      const savedUser = localStorage.getItem("user");
-      if (savedUser) {
-        const parsedUser = JSON.parse(savedUser);
-        
-        const [userRes, dilemmaRes, progressRes] = await Promise.all([
-          supabase.from('users').select('*').eq('id', parsedUser.id).single(),
-          supabase.from('weekly_dilemmas').select('*').order('created_at', { ascending: false }).limit(1).single(),
-          supabase.from('user_progress').select('lesson_id').eq('user_id', parsedUser.id).eq('is_completed', true)
-        ]);
-
-        if (userRes.data) setUser(userRes.data);
-        if (progressRes.data) setStats({ lessons: progressRes.data.length, cases: 0 });
-        
-        if (dilemmaRes.data) {
-          setWeeklyDilemma(dilemmaRes.data);
-          const voted = localStorage.getItem(`voted_week_${dilemmaRes.data.id}`);
-          if (voted) {
-            setHasVoted(true);
-            setUserChoice(voted);
-          }
-        }
-      }
-      setLoading(false);
-    };
-
-    loadDashboardData();
+    fetchPollData();
   }, []);
 
-  const handleVote = async (choice: string) => {
-    if (hasVoted || !weeklyDilemma) return;
+  const fetchPollData = async () => {
+    setLoading(true);
+    const savedUser = localStorage.getItem("user");
+    if (!savedUser) return;
+    const user = JSON.parse(savedUser);
 
-    setHasVoted(true);
-    setUserChoice(choice);
-    localStorage.setItem(`voted_week_${weeklyDilemma.id}`, choice);
+    // Faol so'rovnomani tortish
+    const { data: activePoll } = await supabase
+      .from('weekly_polls')
+      .select('*')
+      .eq('is_active', true)
+      .single();
 
-    if (choice === weeklyDilemma.correct_option) {
-      const newXp = (user.xp || 0) + (weeklyDilemma.xp_reward || 100);
-      const newLevel = Math.floor(newXp / 1000) + 1;
+    if (activePoll) {
+      setPoll(activePoll);
 
-      const { error } = await supabase
-        .from('users')
-        .update({ xp: newXp, level: newLevel })
-        .eq('id', user.id);
+      // Barcha ovozlarni tortish
+      const { data: votes } = await supabase
+        .from('poll_votes')
+        .select('*')
+        .eq('poll_id', activePoll.id);
 
-      if (!error) {
-        setUser({ ...user, xp: newXp, level: newLevel });
+      if (votes) {
+        // Foydalanuvchi ovoz berganligini tekshirish
+        const myVote = votes.find(v => v.user_id === user.id);
+        if (myVote) setUserVote(myVote.chosen_option);
+
+        // Statistikani hisoblash
+        const vA = votes.filter(v => v.chosen_option === 'A').length;
+        const vB = votes.filter(v => v.chosen_option === 'B').length;
+        setStats({ votesA: vA, votesB: vB, total: votes.length });
       }
     }
+    setLoading(false);
+  };
+
+  const handleVote = async (option: 'A' | 'B') => {
+    if (userVote || submitting) return;
+    setSubmitting(true);
+
+    const savedUser = localStorage.getItem("user");
+    if (!savedUser || !poll) return;
+    const user = JSON.parse(savedUser);
+
+    // 1. Ovozni bazaga yozish
+    await supabase.from('poll_votes').insert({
+      poll_id: poll.id,
+      user_id: user.id,
+      chosen_option: option
+    });
+
+    // 2. XP berish (+50 XP ovoz bergani uchun)
+    const newXp = (user.xp || 0) + 50;
+    const newLevel = Math.floor(newXp / 1000) + 1;
+    await supabase.from('users').update({ xp: newXp, level: newLevel }).eq('id', user.id);
+    localStorage.setItem("user", JSON.stringify({ ...user, xp: newXp, level: newLevel }));
+
+    // 3. Ekranni yangilash
+    setUserVote(option);
+    setStats(prev => ({
+      ...prev,
+      votesA: option === 'A' ? prev.votesA + 1 : prev.votesA,
+      votesB: option === 'B' ? prev.votesB + 1 : prev.votesB,
+      total: prev.total + 1
+    }));
+    setSubmitting(false);
   };
 
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950">
-      <Loader2 className="w-10 h-10 md:w-12 md:h-12 text-blue-500 animate-spin" />
+    <div className="min-h-[100dvh] flex items-center justify-center bg-slate-50 dark:bg-slate-950">
+      <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
     </div>
   );
 
-  if (!user) return null;
+  if (!poll) return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 p-6">
+      <ShieldQuestion className="w-20 h-20 text-slate-300 dark:text-slate-700 mb-4" />
+      <h2 className="text-2xl font-bold dark:text-white">So'rovnoma mavjud emas</h2>
+      <p className="text-slate-500">Tez orada yangi haftalik dilemma qo'shiladi.</p>
+    </div>
+  );
 
-  // DINAMIK DARAJA HISOBI
-  const currentLevel = Math.floor((user.xp || 0) / 1000) + 1;
-  const xpInCurrentLevel = (user.xp || 0) % 1000;
-  const progressPercentage = (xpInCurrentLevel / 1000) * 100;
+  const percentA = stats.total > 0 ? Math.round((stats.votesA / stats.total) * 100) : 0;
+  const percentB = stats.total > 0 ? Math.round((stats.votesB / stats.total) * 100) : 0;
 
   return (
-    <div className="p-4 md:p-6 lg:p-10 max-w-7xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900 transition-colors duration-300">
+    <div className="p-4 md:p-8 max-w-4xl mx-auto min-h-screen bg-slate-50 dark:bg-slate-950 pb-28">
       
-      {/* Header Section */}
-      <motion.div 
-        className="mb-6 md:mb-8 flex flex-col md:flex-row md:items-center justify-between gap-4"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-      >
-        <div>
-          <h1 className="text-2xl sm:text-3xl md:text-5xl font-black bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2 md:gap-3">
-            Salom, {user.first_name}! 👋
-          </h1>
-          <p className="text-slate-500 dark:text-slate-400 font-bold mt-1 md:mt-2 text-sm md:text-lg">
-            Bugun huquq olamida nimalarni o'rganamiz?
-          </p>
-        </div>
-        <div className="flex items-center gap-3 bg-white dark:bg-slate-800 p-2.5 md:p-3 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 w-fit">
-          <div className="bg-amber-100 p-2 rounded-xl text-amber-600">
-            <Sparkles className="w-5 h-5 md:w-6 md:h-6" />
-          </div>
-          <div className="pr-2">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Jami Ball</p>
-            <p className="text-lg md:text-xl font-black dark:text-white leading-none">{user.xp} XP</p>
-          </div>
-        </div>
+      {/* Tepa qism - Sarlavha */}
+      <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10 mt-4">
+        <Badge className="bg-indigo-100 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 mb-4 px-4 py-1.5 font-black uppercase tracking-widest border-0">
+          <Clock className="w-4 h-4 mr-2 inline" /> Hafta Dilemmasi
+        </Badge>
+        <h1 className="text-3xl md:text-5xl font-black text-gray-900 dark:text-white tracking-tight mb-4 leading-tight">
+          Sizning fikringiz qanday?
+        </h1>
+        <p className="text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">
+          Har hafta yangi bahsli mavzu. O'z pozitsiyangizni tanlang, ovoz bering va ko'pchilik qanday fikrda ekanligini bilib oling!
+        </p>
       </motion.div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-5 md:gap-8">
-        
-        {/* Left Side: Weekly Challenge */}
-        <div className="xl:col-span-2 space-y-5 md:space-y-8">
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.1 }}>
+        <Card className="border-0 shadow-2xl bg-white dark:bg-slate-900 rounded-[32px] overflow-hidden relative">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-purple-500" />
           
-          {weeklyDilemma && (
-            <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }}>
-              <Card className="border-0 shadow-2xl overflow-hidden bg-white dark:bg-slate-800 rounded-[24px] md:rounded-[32px] border-b-4 md:border-b-8 border-indigo-500">
-                <CardHeader className="p-5 md:p-8 pb-3 md:pb-4 flex flex-row items-center justify-between gap-4">
-                  <div className="space-y-1.5 md:space-y-2">
-                    <Badge className="bg-indigo-100 text-indigo-700 dark:bg-indigo-900/40 dark:text-indigo-400 px-3 py-1 md:px-4 md:py-1.5 rounded-full border-0 font-bold text-[10px] md:text-xs">
-                      Haftalik Bahs
-                    </Badge>
-                    <CardTitle className="text-xl sm:text-2xl md:text-3xl font-black dark:text-white leading-tight">
-                      {weeklyDilemma.title}
-                    </CardTitle>
-                  </div>
-                  <div className="bg-slate-100 dark:bg-slate-900 p-3 md:p-4 rounded-xl md:rounded-2xl shrink-0">
-                    <Scale className="w-6 h-6 md:w-8 md:h-8 text-indigo-500" />
-                  </div>
-                </CardHeader>
-
-                <CardContent className="p-5 md:p-8 pt-0 space-y-5 md:space-y-8">
-                  <div className="p-4 md:p-6 rounded-[20px] md:rounded-[24px] bg-slate-50 dark:bg-slate-900/50 border border-slate-100 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm md:text-lg leading-relaxed font-medium">
-                    {weeklyDilemma.scenario}
-                  </div>
-
-                  <div className="grid gap-3 md:gap-4">
-                    {!hasVoted ? (
-                      <>
-                        <DilemmaButton label="A" text={weeklyDilemma.option_a} onClick={() => handleVote('A')} color="blue" />
-                        <DilemmaButton label="B" text={weeklyDilemma.option_b} onClick={() => handleVote('B')} color="indigo" />
-                      </>
-                    ) : (
-                      <motion.div 
-                        initial={{ opacity: 0, y: 10 }} 
-                        animate={{ opacity: 1, y: 0 }} 
-                        className={`p-5 md:p-8 rounded-[20px] md:rounded-[28px] border-2 ${userChoice === weeklyDilemma.correct_option ? 'border-green-500 bg-green-50 dark:bg-green-900/10' : 'border-red-500 bg-red-50 dark:bg-red-900/10'}`}
-                      >
-                        <div className="flex items-center gap-3 md:gap-4 mb-3 md:mb-4">
-                          <div className={`p-1.5 md:p-2 rounded-full shrink-0 ${userChoice === weeklyDilemma.correct_option ? 'bg-green-500' : 'bg-red-500'}`}>
-                            {userChoice === weeklyDilemma.correct_option ? <CheckCircle2 className="text-white w-5 h-5 md:w-6 md:h-6" /> : <AlertCircle className="text-white w-5 h-5 md:w-6 md:h-6" />}
-                          </div>
-                          <h4 className="font-black text-lg md:text-2xl dark:text-white">
-                            {userChoice === weeklyDilemma.correct_option ? "To'g'ri topdingiz!" : "Noto'g'ri javob"}
-                          </h4>
-                        </div>
-                        <p className="text-slate-600 dark:text-slate-300 text-sm md:text-lg leading-relaxed italic mb-4 md:mb-6 font-medium">
-                          "{weeklyDilemma.explanation}"
-                        </p>
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 bg-white dark:bg-slate-800 rounded-full shadow-sm border border-slate-100 dark:border-slate-700 text-xs md:text-sm font-black text-blue-600">
-                          <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 fill-current" /> {userChoice === weeklyDilemma.correct_option ? `+${weeklyDilemma.xp_reward} XP to'plandi` : "Keyingi safar omad!"}
-                        </div>
-                      </motion.div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Quick Stats Grid - Mobile da yonma-yon qilish uchun */}
-          <div className="grid grid-cols-1 min-[400px]:grid-cols-3 gap-3 md:gap-6">
-            <StatItem icon={BookOpen} label="Darslar" value={stats.lessons} color="blue" />
-            <StatItem icon={Scale} label="Holatlar" value={stats.cases} color="purple" />
-            <StatItem icon={Award} label="Ball" value={user.xp} color="pink" />
-          </div>
-        </div>
-
-        {/* Right Side: Level & Progress */}
-        <div className="space-y-5 md:space-y-6">
-          <Card className="border-0 shadow-2xl text-white overflow-hidden rounded-[24px] md:rounded-[40px] relative" style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)' }}>
-            <div className="absolute top-0 right-0 w-24 h-24 md:w-32 md:h-32 bg-white/10 rounded-full blur-2xl md:blur-3xl -mr-12 -mt-12 md:-mr-16 md:-mt-16" />
-            <CardContent className="p-6 md:p-10 text-center relative z-10">
-              <div className="relative inline-flex mb-4 md:mb-6 mt-2 md:mt-0">
-                 <div className="w-24 h-24 md:w-32 md:h-32 bg-white/20 backdrop-blur-xl rounded-full flex items-center justify-center border-4 border-white/40 shadow-2xl">
-                    <span className="text-4xl md:text-6xl font-black">{currentLevel}</span>
-                 </div>
-                 <div className="absolute -bottom-1 -right-1 md:-bottom-2 md:-right-2 bg-yellow-400 p-2 md:p-3 rounded-xl md:rounded-2xl shadow-lg border-2 md:border-4 border-indigo-600">
-                    <Sparkles className="w-4 h-4 md:w-6 md:h-6 text-indigo-900" />
-                 </div>
-              </div>
-              <h3 className="text-xl md:text-3xl font-black mb-1 tracking-tight">{currentLevel}-Daraja</h3>
-              <p className="text-indigo-100 font-bold mb-5 md:mb-8 uppercase tracking-[0.1em] md:tracking-[0.2em] text-[10px] md:text-xs opacity-80">{user.grade}-sinf o'quvchisi</p>
-              
-              <div className="space-y-3 md:space-y-4 bg-black/20 p-4 md:p-6 rounded-[20px] md:rounded-[32px] border border-white/10 text-left backdrop-blur-sm">
-                <div className="flex justify-between text-[10px] md:text-xs font-black uppercase">
-                  <span>{xpInCurrentLevel} XP</span>
-                  <span>1000 XP</span>
-                </div>
-                <Progress value={progressPercentage} className="h-3 md:h-4 bg-white/20" />
-                <p className="text-[9px] md:text-[11px] font-black text-center text-white/60 tracking-wider">
-                  YANA {1000 - xpInCurrentLevel} XP KERAK
-                </p>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Streak Card */}
-          <Card className="border-0 shadow-xl bg-white dark:bg-slate-800 p-5 md:p-8 flex items-center gap-4 md:gap-6 rounded-[24px] md:rounded-[32px]">
-            <div className="bg-orange-100 dark:bg-orange-950 p-3 md:p-5 rounded-xl md:rounded-[24px] shadow-inner shrink-0">
-              <Flame className="w-8 h-8 md:w-10 md:h-10 text-orange-600 animate-pulse" />
+          <CardContent className="p-6 md:p-10">
+            {/* Savol va Tushuntirish */}
+            <div className="mb-10 text-center">
+              <h2 className="text-2xl md:text-3xl font-bold dark:text-white mb-4 leading-snug">
+                {poll.question}
+              </h2>
+              <p className="text-slate-600 dark:text-slate-400 text-base md:text-lg">
+                {poll.description}
+              </p>
             </div>
-            <div>
-              <p className="text-3xl md:text-4xl font-black dark:text-white leading-none">{user.streak || 0}</p>
-              <p className="text-[10px] md:text-xs font-black text-slate-400 uppercase tracking-widest mt-1.5 md:mt-2">KUNLIK SERIYA 🔥</p>
-            </div>
-          </Card>
 
-          {/* Practice Banner */}
-          <Link to="/lessons" className="block group">
-            <Card className="border-0 bg-slate-900 text-white p-5 md:p-6 rounded-[24px] md:rounded-[32px] overflow-hidden relative">
-              <div className="relative z-10 flex items-center justify-between">
-                <div>
-                  <h4 className="font-black text-lg md:text-xl mb-1">Darslarni davom ettir</h4>
-                  <p className="text-[10px] md:text-xs text-slate-400 font-bold uppercase tracking-widest">Yangi mavzular ochiq</p>
-                </div>
-                <div className="bg-blue-600 p-2 md:p-3 rounded-xl md:rounded-2xl group-hover:translate-x-2 transition-transform shrink-0">
-                  <ChevronRight className="w-5 h-5 md:w-6 md:h-6" />
-                </div>
-              </div>
-              <div className="absolute top-0 right-0 w-20 h-20 md:w-24 md:h-24 bg-blue-600/20 blur-2xl md:blur-3xl rounded-full" />
-            </Card>
-          </Link>
-        </div>
-      </div>
+            {/* OVOZ BERISH YOKI NATIJALARNI KO'RSATISH */}
+            <AnimatePresence mode="wait">
+              {!userVote ? (
+                // OVOZ BERISH TUGMALARI
+                <motion.div 
+                  key="vote-buttons"
+                  initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                  className="grid grid-cols-1 md:grid-cols-2 gap-4 relative"
+                >
+                  <div className="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-12 bg-white dark:bg-slate-900 rounded-full items-center justify-center z-10 font-black text-slate-400">
+                    YOKI
+                  </div>
+                  
+                  <Button 
+                    onClick={() => handleVote('A')} disabled={submitting}
+                    className="h-auto py-8 rounded-[24px] bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-600 text-blue-600 dark:text-blue-400 hover:text-white border-2 border-blue-200 dark:border-blue-800 transition-all group flex flex-col items-center gap-3"
+                  >
+                    <span className="text-xl md:text-2xl font-bold text-center whitespace-normal">{poll.option_a}</span>
+                    <span className="text-sm font-semibold opacity-70 group-hover:opacity-100 transition-opacity">Shu variantni tanlash</span>
+                  </Button>
+
+                  <Button 
+                    onClick={() => handleVote('B')} disabled={submitting}
+                    className="h-auto py-8 rounded-[24px] bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-600 text-purple-600 dark:text-purple-400 hover:text-white border-2 border-purple-200 dark:border-purple-800 transition-all group flex flex-col items-center gap-3"
+                  >
+                    <span className="text-xl md:text-2xl font-bold text-center whitespace-normal">{poll.option_b}</span>
+                    <span className="text-sm font-semibold opacity-70 group-hover:opacity-100 transition-opacity">Shu variantni tanlash</span>
+                  </Button>
+                </motion.div>
+              ) : (
+                // NATIJALAR BARLARI (PROGRESS)
+                <motion.div 
+                  key="vote-results"
+                  initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                  className="space-y-6"
+                >
+                  <div className="flex items-center justify-center gap-2 mb-8 text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 py-3 rounded-xl font-bold">
+                    <CheckCircle2 className="w-5 h-5" /> Ovoz berganingiz uchun +50 XP berildi!
+                  </div>
+
+                  {/* Variant A Progress */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <span className={`font-bold ${userVote === 'A' ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                        {poll.option_a} {userVote === 'A' && '(Sizning tanlovingiz)'}
+                      </span>
+                      <span className="font-black text-xl text-blue-600 dark:text-blue-400">{percentA}%</span>
+                    </div>
+                    <div className="h-4 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${percentA}%` }} transition={{ duration: 1, ease: "easeOut" }} className="h-full bg-blue-500 rounded-full" />
+                    </div>
+                  </div>
+
+                  {/* Variant B Progress */}
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-end">
+                      <span className={`font-bold ${userVote === 'B' ? 'text-purple-600 dark:text-purple-400' : 'text-slate-700 dark:text-slate-300'}`}>
+                        {poll.option_b} {userVote === 'B' && '(Sizning tanlovingiz)'}
+                      </span>
+                      <span className="font-black text-xl text-purple-600 dark:text-purple-400">{percentB}%</span>
+                    </div>
+                    <div className="h-4 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                      <motion.div initial={{ width: 0 }} animate={{ width: `${percentB}%` }} transition={{ duration: 1, ease: "easeOut" }} className="h-full bg-purple-500 rounded-full" />
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-center gap-4 mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-slate-500 text-sm font-bold">
+                    <span className="flex items-center gap-1.5"><Users className="w-4 h-4" /> Jami: {stats.total} ovoz</span>
+                    <span className="flex items-center gap-1.5"><TrendingUp className="w-4 h-4" /> Jonli natija</span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+          </CardContent>
+        </Card>
+      </motion.div>
     </div>
-  );
-}
-
-// Sub-components mobile moslashtirilgan
-function DilemmaButton({ label, text, onClick, color }: any) {
-  const accent = color === 'blue' ? 'text-blue-600 border-blue-100' : 'text-indigo-600 border-indigo-100';
-  return (
-    <button 
-      onClick={onClick} 
-      className="w-full text-left p-4 md:p-6 rounded-[16px] md:rounded-[24px] border-2 border-slate-100 dark:border-slate-800 hover:border-indigo-500 dark:hover:border-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-900/10 transition-all flex items-center justify-between group"
-    >
-      <div className="pr-4">
-        <span className={`block font-black text-[10px] md:text-xs uppercase mb-1 tracking-widest opacity-70 ${accent}`}>{label} VARIANT</span>
-        <span className="text-slate-800 dark:text-slate-200 font-bold text-sm md:text-lg">{text}</span>
-      </div>
-      <ChevronRight className="w-5 h-5 md:w-6 md:h-6 text-slate-300 group-hover:text-indigo-500 transition-all group-hover:translate-x-1 shrink-0" />
-    </button>
-  );
-}
-
-function StatItem({ icon: Icon, label, value, color }: any) {
-  const colorMap: any = {
-    blue: "bg-blue-50 text-blue-600 dark:bg-blue-900/30",
-    purple: "bg-purple-50 text-purple-600 dark:bg-purple-900/30",
-    pink: "bg-pink-50 text-pink-600 dark:bg-pink-900/30"
-  };
-  return (
-    <Card className="border-0 shadow-lg bg-white dark:bg-slate-800 p-4 md:p-6 rounded-[20px] md:rounded-[28px] hover:-translate-y-1 transition-transform">
-      <div className="flex items-center gap-3 md:gap-5">
-        <div className={`p-2.5 md:p-4 rounded-xl md:rounded-2xl ${colorMap[color]}`}>
-          <Icon className="w-5 h-5 md:w-7 md:h-7" />
-        </div>
-        <div>
-          <p className="text-[9px] md:text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{label}</p>
-          <p className="text-xl md:text-2xl font-black dark:text-white leading-none">{value}</p>
-        </div>
-      </div>
-    </Card>
   );
 }
