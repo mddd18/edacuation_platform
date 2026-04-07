@@ -19,7 +19,6 @@ import { supabase } from "../../lib/supabase";
 import { motion, AnimatePresence } from "motion/react";
 
 export function DictionaryPage() {
-  // BACKEND DAN KELADIGAN MA'LUMOTLAR UCHUN STATE
   const [dictionary, setDictionary] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -39,20 +38,19 @@ export function DictionaryPage() {
     selectedOption: null as string | null
   });
 
-  // SUPABASE'DAN MA'LUMOTLARNI TORTISH
   useEffect(() => {
     const fetchDictionary = async () => {
       setLoading(true);
       const { data, error } = await supabase
         .from('dictionary')
         .select('*')
-        .order('level', { ascending: true }); // Bazadagi level ustuni bo'yicha
+        .order('level', { ascending: true });
 
       if (!error && data) {
-        // Bazada category bo'lmasa, level'dan o'zimiz kategoriya yasaymiz
         const mappedData = data.map(item => ({
           ...item,
-          category: item.category || `${item.level}-Bosqich` 
+          // "Bosqich" o'rniga "Bo'lim" deb o'zgartirildi
+          category: item.category || `${item.level}-Bo'lim` 
         }));
         setDictionary(mappedData);
       }
@@ -102,10 +100,11 @@ export function DictionaryPage() {
       setLearnedTerms(prev => [...prev, id]);
     }
     if (currentCardIndex < categoryTerms.length - 1) {
+      // AYLANISH TEZLIGI SHU YERDA SEKINLASHTIRILDI (150ms dan 600ms ga oshirildi)
       setIsFlipped(false); 
       setTimeout(() => {
         setCurrentCardIndex(prev => prev + 1);
-      }, 150); 
+      }, 600); 
     } else {
       startQuiz();
     }
@@ -139,11 +138,10 @@ export function DictionaryPage() {
           setUnlockedLevel(currentCatIndex + 1);
         }
 
-        // BAZAGA XP QO'SHISH LOGIKASI
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
           const user = JSON.parse(savedUser);
-          const newTotalXp = (user.xp || 0) + 100; // Lug'atni tugatgani uchun 100 XP
+          const newTotalXp = (user.xp || 0) + 100;
           const newLevel = Math.floor(newTotalXp / 1000) + 1;
           
           await supabase.from('users').update({ xp: newTotalXp, level: newLevel }).eq('id', user.id);
@@ -155,7 +153,6 @@ export function DictionaryPage() {
     }
   };
 
-  // Ma'lumot yuklanayotganda chiqadigan oyna
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
       <Loader2 className="w-10 h-10 text-indigo-500 animate-spin" />
@@ -170,7 +167,7 @@ export function DictionaryPage() {
         .perspective-1000 { perspective: 1000px; }
       `}</style>
 
-      {/* 1. ASOSIY MENYU: Bo'limlar ro'yxati */}
+      {/* 1. ASOSIY MENYU */}
       <AnimatePresence mode="wait">
         {!activeCategory && !quizState.active && (
           <motion.div
@@ -183,7 +180,8 @@ export function DictionaryPage() {
               <div className="inline-flex p-4 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full mb-5 shadow-inner">
                 <BookOpen className="w-10 h-10" />
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">Bosqichli Lug'at</h1>
+              {/* SARLAVHA O'ZGARTIRILDI */}
+              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">Huquqiy Atamalar</h1>
               <p className="text-lg text-gray-500 dark:text-slate-400 font-medium">Bo'limlarni ketma-ket o'rganing va qulflarni oching</p>
             </div>
 
@@ -229,7 +227,7 @@ export function DictionaryPage() {
           </motion.div>
         )}
 
-        {/* 2. O'RGANISH REJIMI: Ketma-ket Kartochkalar */}
+        {/* 2. O'RGANISH REJIMI */}
         {activeCategory && !quizState.active && currentTerm && (
           <motion.div
             key="flashcards"
@@ -247,7 +245,6 @@ export function DictionaryPage() {
               </div>
             </div>
 
-            {/* Progress Bar */}
             <div className="mb-8 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 transition-colors">
               <div className="flex justify-between text-sm font-bold text-gray-500 dark:text-slate-400 mb-2 px-1">
                 <span>Taraqqiyot</span>
@@ -256,7 +253,6 @@ export function DictionaryPage() {
               <Progress value={((currentCardIndex + 1) / categoryTerms.length) * 100} className="h-3 bg-gray-100 dark:bg-slate-700" />
             </div>
 
-            {/* Bitta katta Kartochka */}
             <div className="perspective-1000 h-[400px]">
               <motion.div
                 key={currentTerm.id}
@@ -266,7 +262,6 @@ export function DictionaryPage() {
                 className="w-full h-full relative preserve-3d cursor-pointer"
                 onClick={() => setIsFlipped(!isFlipped)}
               >
-                {/* Old tomoni (Atama) */}
                 <Card className="absolute w-full h-full backface-hidden border-2 border-indigo-100 dark:border-indigo-800/50 shadow-2xl flex flex-col items-center justify-center p-8 text-center bg-white dark:bg-slate-800 hover:border-indigo-300 dark:hover:border-indigo-500/50 transition-colors">
                   <div className="absolute top-6 left-6 p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl">
                     <BrainCircuit className="w-6 h-6 text-indigo-500 dark:text-indigo-400" />
@@ -282,7 +277,6 @@ export function DictionaryPage() {
                   </div>
                 </Card>
 
-                {/* Orqa tomoni (Ma'nosi) */}
                 <Card 
                   className="absolute w-full h-full backface-hidden border-2 border-emerald-200 dark:border-emerald-800/50 shadow-2xl bg-gradient-to-br from-emerald-50 to-white dark:from-emerald-900/20 dark:to-slate-800 flex flex-col transition-colors"
                   style={{ transform: "rotateY(180deg)" }}
@@ -307,7 +301,7 @@ export function DictionaryPage() {
           </motion.div>
         )}
 
-        {/* 3. IMTIHON (TEST) REJIMI */}
+        {/* 3. IMTIHON REJIMI */}
         {quizState.active && (
           <motion.div
             key="quiz"
