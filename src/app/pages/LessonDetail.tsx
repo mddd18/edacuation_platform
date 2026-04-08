@@ -1,18 +1,57 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router";
 import { supabase } from "../../lib/supabase";
 import { 
-  ArrowLeft, CheckCircle2, XCircle, Loader2, Award, ChevronRight, AlertCircle
+  ArrowLeft, CheckCircle2, XCircle, Loader2, Award, ChevronRight, AlertCircle, Globe
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
 import { motion } from "motion/react";
+
+// TARJIMALAR LUG'ATI
+const translations = {
+  uz: {
+    back: "Orqaga",
+    testKnowledge: "Bilimni sinash",
+    question: "Savol",
+    correct: "To'g'ri",
+    excellent: "Ajoyib natija!",
+    successMsg: "Siz barcha savollarga to'g'ri javob berdingiz va keyingi darsni ochdingiz!",
+    reward: "Mukofot",
+    failed: "Natija yetarli emas",
+    failedMsg: "Keyingi darsni ochish uchun hamma savollarga to'g'ri javob berishingiz kerak.",
+    correctAnswers: "To'g'ri javoblar",
+    retry: "Qayta urinish",
+    backToList: "Ro'yxatga qaytish",
+  },
+  qq: {
+    back: "Artqa",
+    testKnowledge: "Bilimdi sínap kóriw",
+    question: "Soraw",
+    correct: "Durıs",
+    excellent: "Ájayıp nátiyje!",
+    successMsg: "Siz barlıq sorawlarǵa durıs juwap berdińiz hám keyingi sabaqtı ashtıńız!",
+    reward: "Sıylıq",
+    failed: "Nátiyje jetkiliksiz",
+    failedMsg: "Keyingi sabaqtı ashiw ushın hámme sorawlarǵa durıs juwap beriwińiz kerek.",
+    correctAnswers: "Durıs juwaplar",
+    retry: "Qayta urinip kóriw",
+    backToList: "Dizimge qaytıw",
+  }
+};
+
+type Language = 'uz' | 'qq';
 
 export function LessonDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [lesson, setLesson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  
+  // TIL HOLATI (Default O'zbek tili, localStorage dan olish ham mumkin)
+  const [lang, setLang] = useState<Language>('uz');
   
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -21,6 +60,10 @@ export function LessonDetail() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
   useEffect(() => {
+    // Agar ilovangizda til localStorage'da saqlansa, quyidagi kodni oching:
+    // const savedLang = localStorage.getItem('app_lang') as Language;
+    // if (savedLang && (savedLang === 'uz' || savedLang === 'qq')) setLang(savedLang);
+
     const fetchLesson = async () => {
       const { data, error } = await supabase.from('lessons').select('*').eq('id', id).single();
       if (error) navigate("/lessons");
@@ -29,6 +72,14 @@ export function LessonDetail() {
     };
     fetchLesson();
   }, [id, navigate]);
+
+  const toggleLanguage = () => {
+    const newLang = lang === 'uz' ? 'qq' : 'uz';
+    setLang(newLang);
+    // localStorage.setItem('app_lang', newLang);
+  };
+
+  const t = translations[lang];
 
   const handleAnswer = async (optionIndex: number) => {
     if (selectedOption !== null) return;
@@ -73,15 +124,21 @@ export function LessonDetail() {
 
   return (
     <div className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 pb-24 overflow-x-hidden w-full">
-      <div className="p-3 md:p-4 border-b dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50">
+      <div className="p-3 md:p-4 border-b dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 z-50 flex justify-between items-center">
         <button onClick={() => navigate("/lessons")} className="flex items-center gap-1.5 md:gap-2 text-sm md:text-base font-bold text-slate-500 hover:text-blue-500 transition-colors">
-          <ArrowLeft className="w-5 h-5" /> Orqaga
+          <ArrowLeft className="w-5 h-5" /> {t.back}
+        </button>
+        
+        {/* Tilni o'zgartirish tugmasi */}
+        <button onClick={toggleLanguage} className="flex items-center gap-1.5 text-xs md:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+          <Globe className="w-4 h-4" /> {lang === 'uz' ? "UZ" : "QQ"}
         </button>
       </div>
 
       <main className="max-w-3xl mx-auto px-4 mt-5 md:mt-8 w-full">
         {!showQuiz ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+            {/* Dars sarlavhasi va kontentini bazadan to'g'ridan-to'g'ri olyapmiz. Agar bazada 2 xil til saqlansa, bu yerni ham shunga moslash kerak */}
             <h1 className="text-2xl md:text-4xl font-black dark:text-white mb-4 leading-tight break-words">
               {lesson.title}
             </h1>
@@ -89,7 +146,7 @@ export function LessonDetail() {
               {lesson.content}
             </div>
             <Button onClick={() => setShowQuiz(true)} className="w-full h-14 md:h-16 rounded-[16px] md:rounded-2xl bg-blue-600 text-base md:text-xl font-bold text-white shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-transform">
-              Bilimni sinash <ChevronRight className="ml-1.5 w-5 h-5" />
+              {t.testKnowledge} <ChevronRight className="ml-1.5 w-5 h-5" />
             </Button>
           </motion.div>
         ) : (
@@ -97,8 +154,8 @@ export function LessonDetail() {
             {!quizFinished ? (
               <div className="space-y-4 w-full">
                 <div className="flex justify-between items-center px-1">
-                   <h2 className="font-bold text-slate-400 uppercase tracking-widest text-[10px] md:text-xs">Savol {currentQuestion + 1} / {lesson.quiz_data.length}</h2>
-                   <Badge color="blue" className="text-[10px]">{score} To'g'ri</Badge>
+                   <h2 className="font-bold text-slate-400 uppercase tracking-widest text-[10px] md:text-xs">{t.question} {currentQuestion + 1} / {lesson.quiz_data.length}</h2>
+                   <Badge color="blue" className="text-[10px]">{score} {t.correct}</Badge>
                 </div>
                 <Card className="rounded-[24px] md:rounded-[32px] border-0 shadow-xl dark:bg-slate-800 w-full">
                   <CardContent className="p-5 md:p-8">
@@ -135,10 +192,10 @@ export function LessonDetail() {
                     <div className="w-20 h-20 bg-yellow-400 rounded-full flex items-center justify-center mx-auto shadow-2xl shadow-yellow-500/40 animate-bounce">
                       <Award className="text-white w-10 h-10" />
                     </div>
-                    <h2 className="text-2xl md:text-4xl font-black dark:text-white">Ajoyib natija!</h2>
-                    <p className="text-sm text-slate-500 px-4">Siz barcha savollarga to'g'ri javob berdingiz va keyingi darsni ochdingiz!</p>
+                    <h2 className="text-2xl md:text-4xl font-black dark:text-white">{t.excellent}</h2>
+                    <p className="text-sm text-slate-500 px-4">{t.successMsg}</p>
                     <div className="bg-green-500 p-6 rounded-[24px] text-white shadow-lg mx-2">
-                       <p className="text-[10px] font-bold uppercase opacity-80 mb-1">Mukofot</p>
+                       <p className="text-[10px] font-bold uppercase opacity-80 mb-1">{t.reward}</p>
                        <p className="text-3xl font-black">+{lesson.xp_reward} XP</p>
                     </div>
                   </>
@@ -147,19 +204,19 @@ export function LessonDetail() {
                     <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto">
                       <AlertCircle className="text-red-500 w-10 h-10" />
                     </div>
-                    <h2 className="text-2xl font-black dark:text-white">Natija yetarli emas</h2>
-                    <p className="text-sm text-slate-500 px-4">Keyingi darsni ochish uchun hamma savollarga to'g'ri javob berishingiz kerak.</p>
+                    <h2 className="text-2xl font-black dark:text-white">{t.failed}</h2>
+                    <p className="text-sm text-slate-500 px-4">{t.failedMsg}</p>
                     <div className="bg-slate-100 dark:bg-slate-800 p-5 rounded-[24px] mx-2">
                       <p className="text-2xl font-bold dark:text-white">{score} / {lesson.quiz_data.length}</p>
-                      <p className="text-[10px] text-slate-400 uppercase font-bold mt-1">To'g'ri javoblar</p>
+                      <p className="text-[10px] text-slate-400 uppercase font-bold mt-1">{t.correctAnswers}</p>
                     </div>
                     <Button onClick={() => { setShowQuiz(false); setQuizFinished(false); setCurrentQuestion(0); setScore(0); setSelectedOption(null); }} variant="outline" className="w-full h-14 rounded-[16px] text-sm font-bold mx-2 max-w-[calc(100%-1rem)]">
-                      Qayta urinish
+                      {t.retry}
                     </Button>
                   </>
                 )}
                 <Button onClick={() => navigate("/lessons")} className="w-full h-14 rounded-[16px] bg-slate-900 dark:bg-white dark:text-slate-900 text-white text-sm font-bold mx-2 max-w-[calc(100%-1rem)]">
-                  Ro'yxatga qaytish
+                  {t.backToList}
                 </Button>
               </motion.div>
             )}
