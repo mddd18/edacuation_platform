@@ -6,11 +6,35 @@ import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
 import { motion } from "motion/react";
 
+// --- TARJIMALAR LUG'ATI ---
+const dict = {
+  UZ: {
+    title: "Amaliy Holatlar",
+    subtitle: "Haqiqiy holatlarni tahlil qilib, navbatdagi kvestlarni oching.",
+    solved: "Yechilgan",
+    continue: "Davom eting",
+    notFound: "Holatlar topilmadi"
+  },
+  QQ: {
+    title: "Ámeliy Jaǵdaylar",
+    subtitle: "Haqıyqıy jaǵdaylardı analiz qılıp, náwbettegi kvestlerdi ashiń.",
+    solved: "Sheshilgen",
+    continue: "Dawam etiń",
+    notFound: "Jaǵdaylar tabılmadı"
+  }
+};
+
 export function CaseStudiesPage() {
   const [cases, setCases] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // TIL STATI
+  const [lang, setLang] = useState<'UZ' | 'QQ'>('UZ');
 
   useEffect(() => {
+    const savedLang = (localStorage.getItem('appLang') as 'UZ' | 'QQ') || 'UZ';
+    setLang(savedLang);
+
     const fetchCases = async () => {
       setLoading(true);
       const savedUser = localStorage.getItem("user");
@@ -27,7 +51,6 @@ export function CaseStudiesPage() {
 
         const processedCases = allCases.map((c, index) => {
           const isSolved = solvedIds.includes(c.id);
-          // Agar oldingi holat yechilmagan bo'lsa, bunisi qulflangan turadi
           const isLocked = index > 0 && !solvedIds.includes(allCases[index - 1].id);
           let isCurrent = false;
 
@@ -36,12 +59,7 @@ export function CaseStudiesPage() {
             foundCurrent = true;
           }
 
-          return {
-            ...c,
-            isSolved,
-            isLocked,
-            isCurrent
-          };
+          return { ...c, isSolved, isLocked, isCurrent };
         });
         setCases(processedCases);
       }
@@ -52,6 +70,8 @@ export function CaseStudiesPage() {
 
   if (loading) return <div className="min-h-[100dvh] flex items-center justify-center"><Loader2 className="w-8 h-8 text-purple-600 animate-spin" /></div>;
 
+  const t = dict[lang];
+
   return (
     <div className="p-4 md:p-8 max-w-5xl mx-auto space-y-6 pb-28 w-full overflow-x-hidden">
       <header className="space-y-2">
@@ -59,10 +79,10 @@ export function CaseStudiesPage() {
           <Scale className="w-6 h-6 text-white" />
         </div>
         <h1 className="text-2xl md:text-4xl font-black dark:text-white tracking-tight break-words">
-          Amaliy Holatlar
+          {t.title}
         </h1>
         <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
-          Haqiqiy holatlarni tahlil qilib, navbatdagi kvestlarni oching.
+          {t.subtitle}
         </p>
       </header>
 
@@ -106,8 +126,8 @@ export function CaseStudiesPage() {
                           <Badge className={`${caseItem.isLocked ? "bg-slate-200 text-slate-400 dark:bg-slate-800" : "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"} border-0 px-2 py-0.5 text-[10px]`}>
                             {caseItem.xp_reward} XP
                           </Badge>
-                          {caseItem.isSolved && <span className="text-[10px] font-bold text-emerald-500 uppercase">Yechilgan</span>}
-                          {caseItem.isCurrent && <span className="text-[10px] font-bold text-purple-500 uppercase animate-pulse">Davom eting</span>}
+                          {caseItem.isSolved && <span className="text-[10px] font-bold text-emerald-500 uppercase">{t.solved}</span>}
+                          {caseItem.isCurrent && <span className="text-[10px] font-bold text-purple-500 uppercase animate-pulse">{t.continue}</span>}
                         </div>
                       </div>
                     </div>
@@ -128,7 +148,7 @@ export function CaseStudiesPage() {
         ) : (
           <div className="text-center py-16 bg-white dark:bg-slate-800/50 rounded-[24px] border-2 border-dashed border-slate-200 dark:border-slate-700">
             <Scale className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-            <h3 className="text-xl font-bold dark:text-white mb-2">Holatlar topilmadi</h3>
+            <h3 className="text-xl font-bold dark:text-white mb-2">{t.notFound}</h3>
           </div>
         )}
       </div>
