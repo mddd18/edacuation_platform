@@ -1,11 +1,47 @@
 import { Outlet, Link, useLocation, useNavigate } from "react-router";
 import { useState, useEffect } from "react";
-import { supabase } from "../../lib/supabase"; // <--- Supabase import qilindi
+import { supabase } from "../../lib/supabase"; 
 import { 
   Scale, Trophy, Book, BookOpen, User, Home, GraduationCap, 
-  PlaySquare, Sun, Moon, Menu, X, LogOut
+  PlaySquare, Sun, Moon, Menu, X, LogOut, Globe
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+
+// --- TARJIMALAR LUG'ATI ---
+const dict = {
+  UZ: {
+    appName: "Qonun va Huquq",
+    appMotto: "Bilim — bu kuch",
+    dashboard: "Asosiy panel",
+    lessons: "Darslar",
+    cases: "Amaliy holatlar",
+    dictionary: "Bosqichli Lug'at",
+    videos: "Video Qo'llanmalar",
+    leaderboard: "Reyting",
+    profile: "Profil",
+    theme: "Rejimni o'zgartirish",
+    logout: "Tizimdan chiqish",
+    mobileHome: "Asosiy",
+    mobileCases: "Holatlar",
+    langToggle: "Til: O'zbekcha"
+  },
+  QQ: {
+    appName: "Nızam hám Huquq",
+    appMotto: "Bilim — bul kúsh",
+    dashboard: "Tiykarǵı panel",
+    lessons: "Sabaqlar",
+    cases: "Ámeliy jaǵdaylar",
+    dictionary: "Basqıshlı sózlik",
+    videos: "Video qollanbalar",
+    leaderboard: "Reyting",
+    profile: "Profil",
+    theme: "Rejimti ózgertiw",
+    logout: "Sistemadan shıǵıw",
+    mobileHome: "Tiykarǵı",
+    mobileCases: "Jaǵdaylar",
+    langToggle: "Til: Qaraqalpaqsha"
+  }
+};
 
 export function MainLayout() {
   const location = useLocation();
@@ -13,8 +49,25 @@ export function MainLayout() {
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isAuthChecked, setIsAuthChecked] = useState(false);
+  
+  // TIL STATI (UZ yoki QQ)
+  const [lang, setLang] = useState<'UZ' | 'QQ'>('UZ');
 
-  // AUTH VA KUNLIK SERIYA (STREAK) TEKSHIRUVI
+  useEffect(() => {
+    // Sayt yonganda xotiradan tilni o'qish
+    const savedLang = localStorage.getItem('appLang') as 'UZ' | 'QQ';
+    if (savedLang) setLang(savedLang);
+  }, []);
+
+  const toggleLanguage = () => {
+    const newLang = lang === 'UZ' ? 'QQ' : 'UZ';
+    setLang(newLang);
+    localStorage.setItem('appLang', newLang);
+    // Til o'zgarganda butun sayt yangi tilda ishlashi uchun sahifani yangilaymiz
+    window.location.reload();
+  };
+
+  // AUTH VA KUNLIK SERIYA TEKSHIRUVI
   useEffect(() => {
     const checkAuthAndStreak = async () => {
       const userStr = localStorage.getItem("user");
@@ -26,8 +79,6 @@ export function MainLayout() {
       const user = JSON.parse(userStr);
       setIsAuthChecked(true);
 
-      // --- KUNLIK SERIYA LOGIKASI ---
-      // Bugungi sanani O'zbekiston vaqti bilan formatlash (YYYY-MM-DD)
       const today = new Date().toLocaleDateString('en-CA'); 
 
       const { data: dbUser } = await supabase
@@ -40,34 +91,20 @@ export function MainLayout() {
         let newStreak = dbUser.streak || 0;
         const lastActive = dbUser.last_active_date;
 
-        // Agar bugun hali kirmagan bo'lsa
         if (lastActive !== today) {
           if (lastActive) {
-            // Kunlar farqini hisoblash
             const lastDate = new Date(lastActive);
             const currentDate = new Date(today);
             const diffTime = Math.abs(currentDate.getTime() - lastDate.getTime());
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            if (diffDays === 1) {
-              // Kecha kirgan, seriya davom etadi
-              newStreak += 1;
-            } else if (diffDays > 1) {
-              // Kechadan oldin kirgan, seriya uzildi, yana 1 dan boshlaydi
-              newStreak = 1;
-            }
+            if (diffDays === 1) newStreak += 1;
+            else if (diffDays > 1) newStreak = 1;
           } else {
-            // Umuman birinchi marta kirishi
             newStreak = 1;
           }
 
-          // Bazani yangilash
-          await supabase.from('users').update({
-            streak: newStreak,
-            last_active_date: today
-          }).eq('id', user.id);
-
-          // LocalStorage'ni ham yangilash
+          await supabase.from('users').update({ streak: newStreak, last_active_date: today }).eq('id', user.id);
           localStorage.setItem("user", JSON.stringify({ ...user, streak: newStreak }));
         }
       }
@@ -99,21 +136,23 @@ export function MainLayout() {
     }
   };
 
+  const t = dict[lang]; // Joriy til lug'ati
+
   const navItems = [
-    { path: "/", icon: Home, label: "Asosiy panel" },
-    { path: "/lessons", icon: BookOpen, label: "Darslar" },
-    { path: "/cases", icon: Scale, label: "Amaliy holatlar" },
-    { path: "/dictionary", icon: Book, label: "Bosqichli Lug'at" },
-    { path: "/videos", icon: PlaySquare, label: "Video Qo'llanmalar" },
-    { path: "/leaderboard", icon: Trophy, label: "Reyting" },
-    { path: "/profile", icon: User, label: "Profil" },
+    { path: "/", icon: Home, label: t.dashboard },
+    { path: "/lessons", icon: BookOpen, label: t.lessons },
+    { path: "/cases", icon: Scale, label: t.cases },
+    { path: "/dictionary", icon: Book, label: t.dictionary },
+    { path: "/videos", icon: PlaySquare, label: t.videos },
+    { path: "/leaderboard", icon: Trophy, label: t.leaderboard },
+    { path: "/profile", icon: User, label: t.profile },
   ];
 
   const mobileBottomNav = [
-    { path: "/", icon: Home, label: "Asosiy" },
-    { path: "/lessons", icon: BookOpen, label: "Darslar" },
-    { path: "/cases", icon: Scale, label: "Holatlar" },
-    { path: "/profile", icon: User, label: "Profil" },
+    { path: "/", icon: Home, label: t.mobileHome },
+    { path: "/lessons", icon: BookOpen, label: t.lessons },
+    { path: "/cases", icon: Scale, label: t.mobileCases },
+    { path: "/profile", icon: User, label: t.profile },
   ];
 
   const isActive = (path: string) => {
@@ -154,7 +193,7 @@ export function MainLayout() {
         )}
       </AnimatePresence>
 
-      {/* 💻 SIDEBAR (Kompyuter va Mobile Menyu) */}
+      {/* 💻 SIDEBAR */}
       <aside 
         className={`fixed md:static inset-y-0 left-0 z-[70] w-72 flex flex-col transition-transform duration-300 ease-in-out shadow-2xl md:translate-x-0 ${
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
@@ -171,8 +210,8 @@ export function MainLayout() {
               <GraduationCap className="w-7 h-7 text-white" />
             </div>
             <div>
-              <h1 className="font-extrabold text-xl text-white tracking-tight">Qonun va Huquq</h1>
-              <p className="text-[11px] font-bold text-white/70 uppercase tracking-widest mt-0.5">Bilim — bu kuch</p>
+              <h1 className="font-extrabold text-xl text-white tracking-tight">{t.appName}</h1>
+              <p className="text-[11px] font-bold text-white/70 uppercase tracking-widest mt-0.5">{t.appMotto}</p>
             </div>
           </div>
           <button onClick={() => setIsMobileMenuOpen(false)} className="md:hidden p-2 bg-white/10 rounded-lg text-white active:scale-90 transition-transform">
@@ -203,16 +242,21 @@ export function MainLayout() {
           </div>
         </nav>
         
-        {/* Sidebar pastki qismi: Tema va Chiqish */}
+        {/* Sidebar pastki qismi: Til, Tema va Chiqish */}
         <div className="p-5 border-t border-white/10 relative z-10 space-y-3">
+          <button onClick={toggleLanguage} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
+             <span className="text-sm font-medium">{t.langToggle}</span>
+             <Globe className="w-5 h-5 text-blue-300" />
+          </button>
+
           <button onClick={toggleTheme} className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors">
-             <span className="text-sm font-medium">Rejimni o'zgartirish</span>
+             <span className="text-sm font-medium">{t.theme}</span>
              {isDarkMode ? <Sun className="w-5 h-5 text-yellow-300" /> : <Moon className="w-5 h-5" />}
           </button>
           
           <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl bg-red-500/20 text-red-100 hover:bg-red-500/40 transition-colors">
              <LogOut className="w-5 h-5" />
-             <span className="text-sm font-bold">Tizimdan chiqish</span>
+             <span className="text-sm font-bold">{t.logout}</span>
           </button>
         </div>
       </aside>
@@ -225,7 +269,7 @@ export function MainLayout() {
              <Menu className="w-6 h-6" />
            </button>
            <h2 className="font-black text-lg text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-400 dark:to-indigo-400">
-             Qonun va Huquq
+             {t.appName}
            </h2>
            <div className="w-6" />
         </header>
