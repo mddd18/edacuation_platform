@@ -4,18 +4,37 @@ import { supabase } from "../../lib/supabase";
 import { Star, Loader2, Lock, Check } from "lucide-react";
 import { motion } from "motion/react";
 
+// --- TARJIMALAR LUG'ATI ---
+const dict = {
+  UZ: {
+    title: "Ta'lim Yo'lagi",
+    subtitle: "Bosqichlarni birma-bir bosib o'ting",
+    notFound: "Darslar topilmadi"
+  },
+  QQ: {
+    title: "Bilim Jolı",
+    subtitle: "Basqıshlardı birin-ketin basıp ótiń",
+    notFound: "Sabaqlar tabılmadı"
+  }
+};
+
 export function LessonsPage() {
   const [lessons, setLessons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // TIL STATI
+  const [lang, setLang] = useState<'UZ' | 'QQ'>('UZ');
 
   useEffect(() => {
+    const savedLang = (localStorage.getItem('appLang') as 'UZ' | 'QQ') || 'UZ';
+    setLang(savedLang);
+
     const fetchLessonsWithProgress = async () => {
       setLoading(true);
       const savedUser = localStorage.getItem("user");
       if (!savedUser) return;
       const user = JSON.parse(savedUser);
 
-      // Barcha darslar va progresslarni tortamiz
       const { data: allLessons } = await supabase
         .from('lessons')
         .select('*')
@@ -37,7 +56,6 @@ export function LessonsPage() {
           const isLocked = index > 0 && !completedIds.includes(allLessons[index - 1].id);
           let isCurrent = false;
 
-          // Agar dars tugatilmagan va qulflanmagan bo'lsa, u hozirgi (navbatdagi) dars hisoblanadi
           if (!isCompleted && !isLocked && !foundCurrent) {
             isCurrent = true;
             foundCurrent = true;
@@ -60,27 +78,25 @@ export function LessonsPage() {
     </div>
   );
 
+  const t = dict[lang];
+
   return (
     <div className="p-4 md:p-8 max-w-lg mx-auto w-full overflow-x-hidden min-h-screen bg-slate-50 dark:bg-slate-950 pb-32">
       
       <header className="mb-8 text-center mt-4">
         <h1 className="text-3xl md:text-4xl font-black dark:text-white tracking-tight mb-2">
-          Ta'lim Yo'lagi
+          {t.title}
         </h1>
         <p className="text-sm font-bold text-slate-500 dark:text-slate-400">
-          Bosqichlarni birma-bir bosib o'ting
+          {t.subtitle}
         </p>
       </header>
 
-      {/* ROADMAP KONTENYERI */}
       <div className="relative py-4 flex flex-col items-center w-full">
-        
-        {/* Orqa fondagi markaziy chiziq (Trunk) */}
         <div className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-6 bg-slate-200 dark:bg-slate-800 rounded-full z-0"></div>
 
         {lessons.length > 0 ? (
           lessons.map((lesson, index) => {
-            // Zigzag pozitsiyalarini belgilash (Duolingo uslubi)
             const positions = [
               "translate-x-0",
               "translate-x-12 md:translate-x-16",
@@ -96,7 +112,6 @@ export function LessonsPage() {
             return (
               <div key={lesson.id} className={`relative z-10 flex flex-col items-center mb-10 md:mb-14 w-full ${zigClass}`}>
 
-                {/* Sarlavha Pufakchasi (Speech Bubble) */}
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -111,7 +126,6 @@ export function LessonsPage() {
                 >
                   {lesson.title}
                   
-                  {/* Pufakchaning pastki uchi (Triangle) */}
                   <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 border-b-2 border-r-2 ${
                     lesson.isCurrent
                       ? "bg-blue-500 border-blue-600"
@@ -121,13 +135,11 @@ export function LessonsPage() {
                   }`}></div>
                 </motion.div>
 
-                {/* Asosiy Dumaloq Tugma (3D Effect) */}
                 <Link
                   to={lesson.isLocked ? "#" : `/lessons/${lesson.id}`}
                   onClick={(e) => lesson.isLocked && e.preventDefault()}
                   className="block relative group cursor-pointer"
                 >
-                  {/* Agar joriy dars bo'lsa, orqasida pulsatsiya effekti yonib turadi */}
                   {lesson.isCurrent && (
                     <span className="absolute -inset-3 bg-blue-400 rounded-full opacity-40 animate-ping z-0"></span>
                   )}
@@ -148,7 +160,6 @@ export function LessonsPage() {
                     )}
                   </div>
 
-                  {/* Kichik status ikonkachasi (O'ng pastki burchakda) */}
                   <div className={`absolute -bottom-1 -right-2 w-8 h-8 md:w-9 md:h-9 rounded-full border-2 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 flex items-center justify-center z-20 shadow-sm ${
                     lesson.isCompleted ? "border-green-500" : lesson.isCurrent ? "border-blue-500" : ""
                   }`}>
@@ -166,7 +177,7 @@ export function LessonsPage() {
             );
           })
         ) : (
-          <div className="text-center py-20 text-slate-500 font-bold">Darslar topilmadi</div>
+          <div className="text-center py-20 text-slate-500 font-bold">{t.notFound}</div>
         )}
       </div>
     </div>
