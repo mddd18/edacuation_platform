@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Trophy, TrendingUp, Crown, Star, Loader2, Globe } from "lucide-react";
+import { Trophy, TrendingUp, Crown, Star, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 
-// TARJIMALAR LUG'ATI
+// TARJIMALAR
 const translations = {
-  uz: {
+  UZ: {
     title: "Peshqadamlar Jadvali",
     subtitle: "Boshqa huquqshunos talabalar orasida o'rningizni ko'ring va eng yaxshilar qatoriga qo'shiling",
     level: "Daraja",
@@ -20,7 +20,7 @@ const translations = {
     currentRank: "Joriy O'rin",
     untilLevel: "-Darajagacha"
   },
-  qq: {
+  QQ: {
     title: "Kóshbasshılar dizimi",
     subtitle: "Basqa huquqtanıwshı studentler arasında ózińizdiń ornıńızdı kóriń hám eń jaqsılar qatarına qosılıń",
     level: "Dáreje",
@@ -35,14 +35,13 @@ const translations = {
   }
 };
 
-type Language = 'uz' | 'qq';
-
 export function LeaderboardPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [currentUserData, setCurrentUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [lang, setLang] = useState<Language>('uz');
-
+  
+  // TIZIMDAGI TILNI OLISH (MainLayout da 'appLang' deb saqlangan)
+  const lang = (localStorage.getItem('appLang') as 'UZ' | 'QQ') || 'UZ';
   const t = translations[lang];
 
   useEffect(() => {
@@ -51,7 +50,6 @@ export function LeaderboardPage() {
       const savedUser = localStorage.getItem("user");
       const parsedUser = savedUser ? JSON.parse(savedUser) : null;
 
-      // Eng ko'p XP yig'gan 50 ta o'quvchini bazadan tortib olamiz
       const { data, error } = await supabase
         .from('users')
         .select('id, first_name, grade, xp, level')
@@ -59,17 +57,15 @@ export function LeaderboardPage() {
         .limit(50);
 
       if (!error && data) {
-        // Ma'lumotlarga rank (o'rin) va name xususiyatlarini qo'shamiz
         const rankedData = data.map((u, index) => ({
           ...u,
           rank: index + 1,
           name: u.first_name,
-          badges: u.level || 1 // Nishonlarni hozircha level'ga tenglab turamiz
+          badges: u.level || 1 
         }));
         
         setUsers(rankedData);
 
-        // Hozirgi foydalanuvchining reytingdagi o'rnini topamiz
         if (parsedUser) {
           const myData = rankedData.find(u => u.id === parsedUser.id);
           setCurrentUserData(myData || { ...parsedUser, rank: '-', badges: parsedUser.level || 1 });
@@ -92,23 +88,9 @@ export function LeaderboardPage() {
   const top3 = users.find(u => u.rank === 3);
   const topPodium = [top2, top1, top3].filter(Boolean);
 
-  const toggleLanguage = () => {
-    setLang(lang === 'uz' ? 'qq' : 'uz');
-  };
-
   return (
     <div className="p-6 md:p-10 max-w-6xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900 transition-colors duration-300 overflow-x-hidden relative">
       
-      {/* Til o'zgartirish tugmasi */}
-      <div className="absolute top-6 right-6 md:top-10 md:right-10 z-50">
-        <button 
-          onClick={toggleLanguage} 
-          className="flex items-center gap-1.5 text-xs md:text-sm font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-4 py-2 rounded-full shadow-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-700"
-        >
-          <Globe className="w-4 h-4" /> {lang === 'uz' ? "O'zbekcha" : "Qaraqalpaqsha"}
-        </button>
-      </div>
-
       {/* Header */}
       <motion.div 
         className="mb-14 text-center mt-8 md:mt-0"
@@ -199,7 +181,6 @@ export function LeaderboardPage() {
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Umumiy Reyting */}
         <div className="lg:col-span-2">
           <Card className="border-0 shadow-xl bg-white/80 dark:bg-slate-800/90 backdrop-blur-md transition-colors duration-300">
             <CardHeader className="border-b border-gray-100 dark:border-slate-700/50 pb-5">
@@ -277,7 +258,6 @@ export function LeaderboardPage() {
           </Card>
         </div>
 
-        {/* Stats Card (Yon panel) */}
         <div className="lg:col-span-1">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
