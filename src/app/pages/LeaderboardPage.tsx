@@ -22,7 +22,7 @@ const translations = {
   },
   QQ: {
     title: "Jetekshiler dizimi",
-    subtitle: "Basqa huquqtanıwshı studentler arasında ózińizdiń ornıńızdı kóriń hám eń jaqsılar qatarına qosılıń",
+    subtitle: "Basqa huquqtanıwshı oqiwshilar arasında ózińizdiń ornıńızdı kóriń hám eń jaqsılar qatarına qosılıń",
     level: "Dáreje",
     badge: "Nıshan",
     overallRating: "Ulıwma Reyting",
