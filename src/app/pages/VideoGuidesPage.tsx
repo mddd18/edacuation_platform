@@ -10,9 +10,55 @@ import { videoGuides } from "../data/videos";
 import { motion, AnimatePresence } from "motion/react";
 import { Input } from "../components/ui/input";
 
+// TARJIMALAR LUG'ATI
+const translations = {
+  UZ: {
+    title: "Video Qo'llanmalar",
+    subtitle: "OneID, My.gov.uz va o'qishga topshirish kabi muhim davlat xizmatlaridan onlayn foydalanishni videolarda o'rganing.",
+    searchPlaceholder: "Qidiring...",
+    emptyState: "Siz qidirgan video qo'llanma topilmadi.",
+    filters: {
+      all: "Barchasi",
+      oneid: "OneID",
+      mygov: "My.gov.uz",
+      admission: "O'qishga topshirish"
+    }
+  },
+  QQ: {
+    title: "Video Qollanbalar",
+    subtitle: "OneID, My.gov.uz hám oqıwǵa tapsırıw sıyaqlı áhmiyetli mámleketlik xızmetlerden onlayn paydalanıwdı videolarda úyreniń.",
+    searchPlaceholder: "Izleń...",
+    emptyState: "Siz izlegen video qollanba tabılmadı.",
+    filters: {
+      all: "Barlıǵı",
+      oneid: "OneID",
+      mygov: "My.gov.uz",
+      admission: "Oqıwǵa tapsırıw"
+    }
+  }
+};
+
 export function VideoGuidesPage() {
   const [filter, setFilter] = useState<string>("Barchasi");
   const [search, setSearch] = useState("");
+
+  // TIZIMDAGI TILNI OLISH
+  const lang = (localStorage.getItem('appLang') as 'UZ' | 'QQ') || 'UZ';
+  const t = translations[lang];
+
+  // Kategoriyalar ro'yxati (id - asl nomi, label - tarjima qilingan nomi)
+  const categories = [
+    { id: "Barchasi", label: t.filters.all },
+    { id: "OneID", label: t.filters.oneid },
+    { id: "My.gov.uz", label: t.filters.mygov },
+    { id: "O'qishga topshirish", label: t.filters.admission }
+  ];
+
+  // Video kategoriyasini tarjima qilib ko'rsatish uchun yordamchi funksiya
+  const getDisplayCategory = (catId: string) => {
+    const found = categories.find(c => c.id === catId);
+    return found ? found.label : catId;
+  };
 
   const filteredVideos = videoGuides.filter(video => {
     const matchesFilter = filter === "Barchasi" || video.category === filter;
@@ -32,10 +78,10 @@ export function VideoGuidesPage() {
           <PlaySquare className="w-8 h-8 md:w-10 md:h-10" />
         </div>
         <h1 className="text-2xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-2 md:mb-3 tracking-tight">
-          Video Qo'llanmalar
+          {t.title}
         </h1>
         <p className="text-sm md:text-lg text-gray-500 dark:text-slate-400 font-medium max-w-2xl text-center px-2">
-          OneID, My.gov.uz va o'qishga topshirish kabi muhim davlat xizmatlaridan onlayn foydalanishni videolarda o'rganing.
+          {t.subtitle}
         </p>
       </motion.div>
 
@@ -44,17 +90,17 @@ export function VideoGuidesPage() {
         
         {/* Kategoriyalar */}
         <div className="flex flex-wrap gap-2 w-full lg:w-auto justify-start sm:justify-center lg:justify-start">
-          {["Barchasi", "OneID", "My.gov.uz", "O'qishga topshirish"].map(category => (
+          {categories.map(category => (
             <button
-              key={category}
-              onClick={() => setFilter(category)}
+              key={category.id}
+              onClick={() => setFilter(category.id)}
               className={`px-3 py-2 md:px-4 md:py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all ${
-                filter === category 
+                filter === category.id 
                   ? "bg-red-500 text-white shadow-md shadow-red-500/30" 
                   : "bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600"
               }`}
             >
-              {category}
+              {category.label}
             </button>
           ))}
         </div>
@@ -64,7 +110,7 @@ export function VideoGuidesPage() {
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
           <Input 
             type="text" 
-            placeholder="Qidiring..." 
+            placeholder={t.searchPlaceholder}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-9 md:pl-10 h-10 md:h-12 w-full text-sm md:text-base bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700 dark:text-white rounded-xl"
@@ -103,11 +149,12 @@ export function VideoGuidesPage() {
                   <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
                     <MonitorPlay className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-500" />
                     <Badge className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-none shadow-none text-[10px] md:text-xs px-2 py-0.5 font-bold whitespace-nowrap">
-                      {video.category}
+                      {getDisplayCategory(video.category)}
                     </Badge>
                   </div>
                   
                   <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
+                    {/* Agar kelajakda video title va description ham tarjima qilinsa, bu yerni ham o'zgartirish kerak bo'ladi */}
                     {video.title}
                   </h3>
 
@@ -123,7 +170,7 @@ export function VideoGuidesPage() {
       
       {filteredVideos.length === 0 && (
         <div className="text-center py-16 md:py-20 text-sm md:text-base text-gray-500 dark:text-slate-500 font-medium w-full">
-          Siz qidirgan video qo'llanma topilmadi.
+          {t.emptyState}
         </div>
       )}
     </div>
