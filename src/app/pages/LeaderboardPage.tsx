@@ -21,7 +21,7 @@ const translations = {
     untilLevel: "-Darajagacha"
   },
   QQ: {
-    title: "Kóshbasshılar dizimi",
+    title: "Jetekshiler dizimi",
     subtitle: "Basqa huquqtanıwshı studentler arasında ózińizdiń ornıńızdı kóriń hám eń jaqsılar qatarına qosılıń",
     level: "Dáreje",
     badge: "Nıshan",
