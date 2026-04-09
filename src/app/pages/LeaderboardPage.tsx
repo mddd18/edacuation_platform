@@ -2,13 +2,48 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
-import { Trophy, TrendingUp, Crown, Star, Loader2 } from "lucide-react";
+import { Trophy, TrendingUp, Crown, Star, Loader2, Globe } from "lucide-react";
 import { motion } from "motion/react";
+
+// TARJIMALAR LUG'ATI
+const translations = {
+  uz: {
+    title: "Peshqadamlar Jadvali",
+    subtitle: "Boshqa huquqshunos talabalar orasida o'rningizni ko'ring va eng yaxshilar qatoriga qo'shiling",
+    level: "Daraja",
+    badge: "Nishon",
+    overallRating: "Umumiy Reyting",
+    itsYou: "Bu Siz",
+    empty: "Hozircha reytingda hech kim yo'q.",
+    yourResult: "Sizning Natijangiz",
+    thisWeek: "Joriy haftadagi ko'rsatkichlaringiz",
+    currentRank: "Joriy O'rin",
+    untilLevel: "-Darajagacha"
+  },
+  qq: {
+    title: "Kóshbasshılar dizimi",
+    subtitle: "Basqa huquqtanıwshı studentler arasında ózińizdiń ornıńızdı kóriń hám eń jaqsılar qatarına qosılıń",
+    level: "Dáreje",
+    badge: "Nıshan",
+    overallRating: "Ulıwma Reyting",
+    itsYou: "Bul Siz",
+    empty: "Házirshe reytingte hesh kim joq.",
+    yourResult: "Siziń Nátiyjeńiz",
+    thisWeek: "Házirgi háptedegi kórsetkishlerińiz",
+    currentRank: "Házirgi Orın",
+    untilLevel: "-Dárejege shekem"
+  }
+};
+
+type Language = 'uz' | 'qq';
 
 export function LeaderboardPage() {
   const [users, setUsers] = useState<any[]>([]);
   const [currentUserData, setCurrentUserData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [lang, setLang] = useState<Language>('uz');
+
+  const t = translations[lang];
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -52,17 +87,31 @@ export function LeaderboardPage() {
     </div>
   );
 
-  // Top 3 o'rinni xavfsiz ajratib olish (agar bazada odam kam bo'lsa xato bermasligi uchun)
   const top1 = users.find(u => u.rank === 1);
   const top2 = users.find(u => u.rank === 2);
   const top3 = users.find(u => u.rank === 3);
-  const topPodium = [top2, top1, top3].filter(Boolean); // Podium tartibi: 2, 1, 3
+  const topPodium = [top2, top1, top3].filter(Boolean);
+
+  const toggleLanguage = () => {
+    setLang(lang === 'uz' ? 'qq' : 'uz');
+  };
 
   return (
-    <div className="p-6 md:p-10 max-w-6xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900 transition-colors duration-300 overflow-x-hidden">
+    <div className="p-6 md:p-10 max-w-6xl mx-auto min-h-screen bg-slate-50/50 dark:bg-slate-900 transition-colors duration-300 overflow-x-hidden relative">
+      
+      {/* Til o'zgartirish tugmasi */}
+      <div className="absolute top-6 right-6 md:top-10 md:right-10 z-50">
+        <button 
+          onClick={toggleLanguage} 
+          className="flex items-center gap-1.5 text-xs md:text-sm font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-4 py-2 rounded-full shadow-sm hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border border-gray-200 dark:border-slate-700"
+        >
+          <Globe className="w-4 h-4" /> {lang === 'uz' ? "O'zbekcha" : "Qaraqalpaqsha"}
+        </button>
+      </div>
+
       {/* Header */}
       <motion.div 
-        className="mb-14 text-center"
+        className="mb-14 text-center mt-8 md:mt-0"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -71,10 +120,10 @@ export function LeaderboardPage() {
           <Trophy className="w-10 h-10 text-amber-500 dark:text-amber-400" />
         </div>
         <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">
-          Peshqadamlar Jadvali
+          {t.title}
         </h1>
         <p className="text-lg text-slate-500 dark:text-slate-400 font-medium max-w-2xl mx-auto">
-          Boshqa huquqshunos talabalar orasida o'rningizni ko'ring va eng yaxshilar qatoriga qo'shiling
+          {t.subtitle}
         </p>
       </motion.div>
 
@@ -128,7 +177,7 @@ export function LeaderboardPage() {
                     </div>
                     
                     <h3 className="font-extrabold text-xl mb-1 truncate px-2 text-gray-900 dark:text-white">{entry.name}</h3>
-                    <p className="text-sm font-bold text-gray-500 dark:text-slate-400 mb-4">{entry.level}-Daraja</p>
+                    <p className="text-sm font-bold text-gray-500 dark:text-slate-400 mb-4">{entry.level}-{t.level}</p>
                     
                     <div className="flex items-center justify-center gap-4 text-sm bg-gray-50 dark:bg-slate-900/50 py-3 rounded-xl mx-2 border border-gray-100 dark:border-slate-700">
                       <div className="text-center">
@@ -138,7 +187,7 @@ export function LeaderboardPage() {
                       <div className="w-px h-8 bg-gray-200 dark:bg-slate-700" />
                       <div className="text-center">
                         <p className="font-black text-gray-900 dark:text-white">{entry.badges}</p>
-                        <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase font-bold">Nishon</p>
+                        <p className="text-[10px] text-gray-400 dark:text-slate-500 uppercase font-bold">{t.badge}</p>
                       </div>
                     </div>
                   </CardContent>
@@ -158,7 +207,7 @@ export function LeaderboardPage() {
                 <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg text-blue-600 dark:text-blue-400">
                   <TrendingUp className="w-6 h-6" />
                 </div>
-                Umumiy Reyting
+                {t.overallRating}
               </CardTitle>
             </CardHeader>
             <CardContent className="p-6">
@@ -195,7 +244,7 @@ export function LeaderboardPage() {
                           </h4>
                           {isCurrentUser && (
                             <Badge className="bg-white text-blue-600 hover:bg-white text-[10px] px-2.5 uppercase py-0.5 font-black border-none shrink-0">
-                              Bu Siz
+                              {t.itsYou}
                             </Badge>
                           )}
                         </div>
@@ -204,7 +253,7 @@ export function LeaderboardPage() {
                       <div className="flex items-center gap-5 sm:gap-8 text-sm shrink-0">
                         <div className="text-right">
                           <p className={`font-black text-lg ${isCurrentUser ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{entry.level}</p>
-                          <p className={`text-[10px] uppercase font-bold ${isCurrentUser ? 'text-blue-100' : 'text-gray-400 dark:text-slate-500'}`}>Daraja</p>
+                          <p className={`text-[10px] uppercase font-bold ${isCurrentUser ? 'text-blue-100' : 'text-gray-400 dark:text-slate-500'}`}>{t.level}</p>
                         </div>
                         <div className="text-right hidden sm:block">
                           <p className={`font-black text-lg ${isCurrentUser ? 'text-white' : 'text-gray-900 dark:text-white'}`}>{entry.xp?.toLocaleString() || 0}</p>
@@ -215,20 +264,20 @@ export function LeaderboardPage() {
                             {entry.badges}
                             <Star className={`w-4 h-4 ${isCurrentUser ? 'text-yellow-300' : 'text-amber-400'}`} fill="currentColor" />
                           </p>
-                          <p className={`text-[10px] uppercase font-bold ${isCurrentUser ? 'text-blue-100' : 'text-gray-400 dark:text-slate-500'}`}>Nishon</p>
+                          <p className={`text-[10px] uppercase font-bold ${isCurrentUser ? 'text-blue-100' : 'text-gray-400 dark:text-slate-500'}`}>{t.badge}</p>
                         </div>
                       </div>
                     </motion.div>
                   );
                 }) : (
-                  <div className="text-center py-8 text-slate-500 font-medium">Hozircha reytingda hech kim yo'q.</div>
+                  <div className="text-center py-8 text-slate-500 font-medium">{t.empty}</div>
                 )}
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Stats Card (Yon panel) - Real hisoblash */}
+        {/* Stats Card (Yon panel) */}
         <div className="lg:col-span-1">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -239,22 +288,21 @@ export function LeaderboardPage() {
             <Card className="border-0 shadow-2xl bg-gradient-to-br from-slate-900 to-slate-800 dark:from-slate-950 dark:to-slate-900 text-white overflow-hidden relative border-slate-700">
               <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl" />
               <CardHeader className="relative z-10 border-b border-slate-700/50 pb-5">
-                <CardTitle className="text-xl text-white font-bold">Sizning Natijangiz</CardTitle>
-                <CardDescription className="text-slate-400 font-medium">Joriy haftadagi ko'rsatkichlaringiz</CardDescription>
+                <CardTitle className="text-xl text-white font-bold">{t.yourResult}</CardTitle>
+                <CardDescription className="text-slate-400 font-medium">{t.thisWeek}</CardDescription>
               </CardHeader>
               <CardContent className="relative z-10 pt-6">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="text-center p-5 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors">
                     <p className="text-4xl font-black text-white mb-2">{currentUserData?.rank || '-'}</p>
-                    <p className="text-[11px] text-slate-300 uppercase font-bold tracking-wider">Joriy O'rin</p>
+                    <p className="text-[11px] text-slate-300 uppercase font-bold tracking-wider">{t.currentRank}</p>
                   </div>
                   <div className="text-center p-5 bg-white/5 rounded-2xl border border-white/10 hover:bg-white/10 transition-colors flex flex-col justify-center">
-                    {/* Keyingi level uchun kerak bo'ladigan XP (Level * 1000 dan joriy XP ni ayiramiz) */}
                     <p className="text-2xl font-black text-blue-400 mb-2 mt-1">
                       {currentUserData ? ((currentUserData.level * 1000) - currentUserData.xp) : 0} XP
                     </p>
                     <p className="text-[10px] text-slate-300 uppercase font-bold tracking-wider">
-                      {currentUserData ? currentUserData.level + 1 : 2}-Darajagacha
+                      {currentUserData ? currentUserData.level + 1 : 2}{t.untilLevel}
                     </p>
                   </div>
                 </div>
