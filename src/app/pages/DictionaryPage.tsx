@@ -12,23 +12,79 @@ import {
 import { supabase } from "../../lib/supabase";
 import { motion, AnimatePresence } from "motion/react";
 
-// BO'LIM NOMLARI (Siz so'ragan sarlavhalar)
-const levelTitles: Record<number, string> = {
-  1: "Asosiy Qonun (Konstitutsiya)",
-  2: "Davlat tili",
-  3: "Davlat bayrog'i",
-  4: "Davlat gerbi",
-  5: "Davlat madhiyasi",
-  6: "Oliy hokimiyat va boshqaruv",
-  7: "Ma'muriy-hududiy tuzilish",
-  8: "Fuqarolar huquq va erkinliklari",
-  9: "Saylov tizimi",
-  10: "Iqtisodiy negizlar va byudjet"
+// --- TARJIMALAR LUG'ATI ---
+const dict = {
+  UZ: {
+    title: "Huquqiy Atamalar",
+    subtitle: "Bo'limlarni ketma-ket o'rganing va 80% dan yuqori to'plab XP yig'ing",
+    chapter: "Bo'lim",
+    terms: "ta atama",
+    completed: "Tugatilgan",
+    unlocked: "Ochiq",
+    locked: "Qulflangan",
+    menu: "Menyu",
+    progress: "Taraqqiyot",
+    seeMeaning: "Ma'nosini ko'rish",
+    understood: "Tushundim",
+    findMatch: "Ta'rifga mos atamani toping",
+    test: "Test",
+    next: "Keyingisi",
+    seeResult: "Natijani ko'rish",
+    excellent: "Ajoyib natija!",
+    tryAgain: "Yana urinib ko'ring",
+    scoreText: (total: number, score: number, percent: number) => `Siz ${total} ta savoldan ${score} tasiga to'g'ri javob berdingiz (${percent}%).`,
+    passed80: "80% lik marradan o'tdingiz",
+    xpReward: "🎉 Sizga +100 XP berildi va keyingi bo'lim ochildi!",
+    noXp: "(Siz bu bo'limdan oldin o'tganligingiz sababli XP berilmaydi)",
+    notUnlocked: "Keyingi bo'lim ochilmadi",
+    need80: "Keyingi bo'limni ochish uchun kamida 80% to'g'ri javob topishingiz shart.",
+    backToMenu: "Menyuga qaytish",
+    levelTitles: {
+      1: "Asosiy Qonun (Konstitutsiya)", 2: "Davlat tili", 3: "Davlat bayrog'i", 4: "Davlat gerbi",
+      5: "Davlat madhiyasi", 6: "Oliy hokimiyat va boshqaruv", 7: "Ma'muriy-hududiy tuzilish",
+      8: "Fuqarolar huquq va erkinliklari", 9: "Saylov tizimi", 10: "Iqtisodiy negizlar va byudjet"
+    }
+  },
+  QQ: {
+    title: "Huquqıy Atamalar",
+    subtitle: "Bólimlerdi izbe-iz úyreniń hám 80% ten joqarı toplap XP jıynań",
+    chapter: "Bólim",
+    terms: "atama",
+    completed: "Tawsılǵan",
+    unlocked: "Aşıq",
+    locked: "Qulplanǵan",
+    menu: "Menyu",
+    progress: "Rawajlanıw",
+    seeMeaning: "Mánisin kóriw",
+    understood: "Túsindim",
+    findMatch: "Táripke sáykes atamanı tabıń",
+    test: "Test",
+    next: "Keyingisi",
+    seeResult: "Nátiyjeni kóriw",
+    excellent: "Ájayıp nátiyje!",
+    tryAgain: "Jáne urinip kóriń",
+    scoreText: (total: number, score: number, percent: number) => `Siz ${total} sorawdan ${score} sorawǵa durıs juwap berdińiz (${percent}%).`,
+    passed80: "80% lik shekten óttińiz",
+    xpReward: "🎉 Sizge +100 XP berildi hám keyingi bólim aşıldı!",
+    noXp: "(Siz bul bólimnen aldın ótkenińiz ushın XP berilmeydi)",
+    notUnlocked: "Keyingi bólim ashılmadı",
+    need80: "Keyingi bólimdi ashiw ushın keminde 80% durıs juwap tabıwıńız shárt.",
+    backToMenu: "Menyuǵa qaytıw",
+    levelTitles: {
+      1: "Tiykarǵı Nızam (Konstituciya)", 2: "Mámleketlik til", 3: "Mámleketlik bayraq", 4: "Mámleketlik gerb",
+      5: "Mámleketlik gimn", 6: "Joqarı hákimiyat hám basqarıw", 7: "Hákimshilik-aymaqlıq dúzilis",
+      8: "Puxaralar huquq hám erkinlikleri", 9: "Saylaw sisteması", 10: "Ekonomikalıq tiykarlar hám byudjet"
+    }
+  }
 };
 
 export function DictionaryPage() {
   const [dictionary, setDictionary] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // TIZIM TILI
+  const lang = (localStorage.getItem('appLang') as 'UZ' | 'QQ') || 'UZ';
+  const t = dict[lang];
 
   const [unlockedDictLevel, setUnlockedDictLevel] = useState(1); 
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
@@ -44,7 +100,7 @@ export function DictionaryPage() {
     score: 0,
     showResult: false,
     selectedOption: null as string | null,
-    isFinished: false // Test tugagach chiqadigan oyna uchun
+    isFinished: false 
   });
 
   useEffect(() => {
@@ -72,9 +128,7 @@ export function DictionaryPage() {
     fetchData();
   }, []);
 
-  // Mavjud bo'limlarni (1 dan 10 gacha) aniqlash
   const levels = Array.from(new Set(dictionary.map(entry => entry.level))).sort((a, b) => a - b);
-  
   const categoryTerms = activeCategory ? dictionary.filter(t => t.level === activeCategory) : [];
   const currentTerm = categoryTerms[currentCardIndex];
 
@@ -144,19 +198,16 @@ export function DictionaryPage() {
         selectedOption: null
       }));
     } else {
-      // Test tugadi, natijalar oynasini ko'rsatamiz
       setQuizState(prev => ({ ...prev, isFinished: true }));
     }
   };
 
-  // Testni to'liq yakunlash va XP berish logikasi (Natija oynasidan so'ng)
   const finishQuiz = async () => {
     const totalQuestions = quizState.questions.length;
     const percentage = Math.round((quizState.score / totalQuestions) * 100);
-    const passed = percentage >= 80; // 80% LIK MARRA
+    const passed = percentage >= 80; 
 
     if (passed && activeCategory) {
-      // Faqat birinchi marta o'tganda (keyingi bo'limni ochish va XP berish)
       if (activeCategory >= unlockedDictLevel) {
         const nextLevel = activeCategory + 1;
         setUnlockedDictLevel(nextLevel);
@@ -165,7 +216,7 @@ export function DictionaryPage() {
         if (savedUser) {
           const user = JSON.parse(savedUser);
           const newTotalXp = (user.xp || 0) + 100;
-          const newDbLevel = Math.floor(newTotalXp / 1000) + 1; // User level
+          const newDbLevel = Math.floor(newTotalXp / 1000) + 1; 
           
           await supabase.from('users').update({ 
             xp: newTotalXp, 
@@ -180,7 +231,6 @@ export function DictionaryPage() {
       }
     }
     
-    // Menyuga qaytish
     setQuizState(prev => ({ ...prev, active: false, isFinished: false }));
     setActiveCategory(null);
   };
@@ -212,16 +262,16 @@ export function DictionaryPage() {
               <div className="inline-flex p-4 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full mb-5 shadow-inner">
                 <BookOpen className="w-10 h-10" />
               </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">Huquqiy Atamalar</h1>
-              <p className="text-lg text-gray-500 dark:text-slate-400 font-medium">Bo'limlarni ketma-ket o'rganing va 80% dan yuqori to'plab XP yig'ing</p>
+              <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-4 tracking-tight">{t.title}</h1>
+              <p className="text-lg text-gray-500 dark:text-slate-400 font-medium">{t.subtitle}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {levels.map((levelNum) => {
                 const isUnlocked = levelNum <= unlockedDictLevel;
-                const isCompleted = levelNum < unlockedDictLevel; // Oldin tugatilgan
+                const isCompleted = levelNum < unlockedDictLevel; 
                 const termsCount = dictionary.filter(t => t.level === levelNum).length;
-                const title = levelTitles[levelNum] || "Qo'shimcha bo'lim";
+                const title = (t.levelTitles as any)[levelNum] || "Qo'shimcha bo'lim";
                 
                 return (
                   <motion.div
@@ -239,7 +289,6 @@ export function DictionaryPage() {
                             : "opacity-60 bg-gray-50 dark:bg-slate-800/50 border-gray-200 dark:border-slate-700 grayscale cursor-not-allowed"
                       }`}
                     >
-                      {/* O'tilgan bo'limlar uchun yashil tepa chiziq */}
                       {isCompleted && <div className="absolute top-0 left-0 w-full h-1.5 bg-emerald-500" />}
 
                       <CardContent className="p-8 flex flex-col items-center text-center">
@@ -251,16 +300,16 @@ export function DictionaryPage() {
                           {isCompleted ? <CheckCircle2 className="w-8 h-8" /> : isUnlocked ? <Unlock className="w-8 h-8" /> : <Lock className="w-8 h-8" />}
                         </div>
                         
-                        <p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1">{levelNum}-Bo'lim</p>
+                        <p className="text-xs font-black text-indigo-500 uppercase tracking-widest mb-1">{levelNum}-{t.chapter}</p>
                         <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 min-h-[56px]">{title}</h3>
-                        <p className="text-sm font-medium text-gray-500 dark:text-slate-400 mb-5">{termsCount} ta atama</p>
+                        <p className="text-sm font-medium text-gray-500 dark:text-slate-400 mb-5">{termsCount} {t.terms}</p>
                         
                         {isCompleted ? (
-                          <Badge className="bg-emerald-500 dark:bg-emerald-600 text-white border-none shadow-sm px-5 py-1.5 font-bold uppercase tracking-wider text-[10px]">Tugatilgan</Badge>
+                          <Badge className="bg-emerald-500 dark:bg-emerald-600 text-white border-none shadow-sm px-5 py-1.5 font-bold uppercase tracking-wider text-[10px]">{t.completed}</Badge>
                         ) : isUnlocked ? (
-                          <Badge className="bg-indigo-500 dark:bg-indigo-600 text-white border-none shadow-sm px-5 py-1.5 font-bold uppercase tracking-wider text-[10px]">Ochiq</Badge>
+                          <Badge className="bg-indigo-500 dark:bg-indigo-600 text-white border-none shadow-sm px-5 py-1.5 font-bold uppercase tracking-wider text-[10px]">{t.unlocked}</Badge>
                         ) : (
-                          <Badge variant="outline" className="text-gray-500 dark:text-slate-400 border-gray-300 dark:border-slate-600 px-5 py-1.5 font-bold uppercase tracking-wider text-[10px]">Qulflangan</Badge>
+                          <Badge variant="outline" className="text-gray-500 dark:text-slate-400 border-gray-300 dark:border-slate-600 px-5 py-1.5 font-bold uppercase tracking-wider text-[10px]">{t.locked}</Badge>
                         )}
                       </CardContent>
                     </Card>
@@ -276,16 +325,16 @@ export function DictionaryPage() {
           <motion.div key="flashcards" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="max-w-2xl mx-auto">
             <div className="flex items-center justify-between mb-8">
               <Button variant="ghost" onClick={() => setActiveCategory(null)} className="font-bold text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-800 rounded-xl transition-colors">
-                <ArrowLeft className="w-5 h-5 mr-2" /> Menyu
+                <ArrowLeft className="w-5 h-5 mr-2" /> {t.menu}
               </Button>
               <div className="text-right">
-                <h2 className="text-xl font-black text-indigo-900 dark:text-indigo-300">{activeCategory}-Bo'lim</h2>
+                <h2 className="text-xl font-black text-indigo-900 dark:text-indigo-300">{activeCategory}-{t.chapter}</h2>
               </div>
             </div>
 
             <div className="mb-8 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 transition-colors">
               <div className="flex justify-between text-sm font-bold text-gray-500 dark:text-slate-400 mb-2 px-1">
-                <span>Taraqqiyot</span>
+                <span>{t.progress}</span>
                 <span className="text-indigo-600 dark:text-indigo-400">{currentCardIndex + 1} / {categoryTerms.length}</span>
               </div>
               <Progress value={((currentCardIndex + 1) / categoryTerms.length) * 100} className="h-3 bg-gray-100 dark:bg-slate-700" />
@@ -310,7 +359,7 @@ export function DictionaryPage() {
                   </h3>
                   <div className="absolute bottom-8 flex flex-col items-center gap-2">
                     <RotateCcw className="w-6 h-6 text-gray-300 dark:text-slate-500 animate-spin-slow" />
-                    <p className="text-sm font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">Ma'nosini ko'rish</p>
+                    <p className="text-sm font-bold text-gray-400 dark:text-slate-500 uppercase tracking-widest">{t.seeMeaning}</p>
                   </div>
                 </Card>
 
@@ -329,7 +378,7 @@ export function DictionaryPage() {
                       className="w-full mt-6 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg h-16 shadow-xl shadow-emerald-500/30 rounded-xl border-none shrink-0"
                       onClick={(e) => handleNextCard(currentTerm.id, e)}
                     >
-                      <CheckCircle2 className="w-6 h-6 mr-3" /> Tushundim
+                      <CheckCircle2 className="w-6 h-6 mr-3" /> {t.understood}
                     </Button>
                   </CardContent>
                 </Card>
@@ -347,10 +396,10 @@ export function DictionaryPage() {
               <>
                 <div className="flex justify-between items-center mb-8">
                   <Button variant="ghost" onClick={() => setQuizState(prev => ({ ...prev, active: false }))} className="font-bold text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-800 transition-colors">
-                    <ArrowLeft className="w-5 h-5 mr-2" /> Menyu
+                    <ArrowLeft className="w-5 h-5 mr-2" /> {t.menu}
                   </Button>
                   <div className="font-black text-indigo-600 dark:text-indigo-300 bg-indigo-100 dark:bg-indigo-900/50 px-5 py-2.5 rounded-xl text-sm uppercase tracking-wider">
-                    Test: {quizState.currentIndex + 1} / {quizState.questions.length}
+                    {t.test}: {quizState.currentIndex + 1} / {quizState.questions.length}
                   </div>
                 </div>
 
@@ -360,7 +409,7 @@ export function DictionaryPage() {
                     <div className="flex items-center gap-3 mb-4">
                       <BrainCircuit className="w-6 h-6 text-indigo-500 dark:text-indigo-400" />
                       <p className="text-sm font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-widest">
-                        Ta'rifga mos atamani toping
+                        {t.findMatch}
                       </p>
                     </div>
                     
@@ -398,7 +447,7 @@ export function DictionaryPage() {
                       {quizState.showResult && (
                         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mt-10 flex justify-end">
                           <Button size="lg" className="bg-gray-900 dark:bg-white text-white dark:text-slate-900 hover:bg-gray-800 dark:hover:bg-slate-200 px-8 py-6 rounded-xl font-bold text-lg shadow-xl" onClick={nextQuestion}>
-                            {quizState.currentIndex === quizState.questions.length - 1 ? "Natijani ko'rish" : "Keyingisi"} <ArrowRight className="w-5 h-5 ml-2" />
+                            {quizState.currentIndex === quizState.questions.length - 1 ? t.seeResult : t.next} <ArrowRight className="w-5 h-5 ml-2" />
                           </Button>
                         </motion.div>
                       )}
@@ -425,41 +474,41 @@ export function DictionaryPage() {
                         </div>
                         
                         <h2 className="text-3xl font-black text-gray-900 dark:text-white mb-2">
-                          {passed ? "Ajoyib natija!" : "Yana urinib ko'ring"}
+                          {passed ? t.excellent : t.tryAgain}
                         </h2>
                         
                         <p className="text-lg text-slate-500 dark:text-slate-400 font-medium mb-8">
-                          Siz {total} ta savoldan <span className={`font-black ${passed ? 'text-emerald-500' : 'text-red-500'}`}>{quizState.score} tasiga</span> to'g'ri javob berdingiz ({percentage}%).
+                          {t.scoreText(total, quizState.score, percentage)}
                         </p>
 
                         {passed ? (
                           <div className="bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800/50 p-4 rounded-2xl w-full max-w-md mb-8">
                             <p className="font-bold text-emerald-700 dark:text-emerald-400 flex items-center justify-center gap-2">
-                              <CheckCircle2 className="w-5 h-5" /> 80% lik marradan o'tdingiz
+                              <CheckCircle2 className="w-5 h-5" /> {t.passed80}
                             </p>
                             {isNewCompletion ? (
                               <p className="text-sm font-bold text-emerald-600 dark:text-emerald-500 mt-2 bg-white dark:bg-slate-800 py-2 rounded-xl">
-                                🎉 Sizga +100 XP berildi va keyingi bo'lim ochildi!
+                                {t.xpReward}
                               </p>
                             ) : (
                               <p className="text-sm font-bold text-emerald-600 dark:text-emerald-500 mt-2">
-                                (Siz bu bo'limdan oldin o'tganligingiz sababli XP berilmaydi)
+                                {t.noXp}
                               </p>
                             )}
                           </div>
                         ) : (
                           <div className="bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800/50 p-4 rounded-2xl w-full max-w-md mb-8">
                             <p className="font-bold text-red-700 dark:text-red-400 flex items-center justify-center gap-2">
-                              <XCircle className="w-5 h-5" /> Keyingi bo'lim ochilmadi
+                              <XCircle className="w-5 h-5" /> {t.notUnlocked}
                             </p>
                             <p className="text-sm font-bold text-red-600 dark:text-red-500 mt-2">
-                              Keyingi bo'limni ochish uchun kamida 80% to'g'ri javob topishingiz shart.
+                              {t.need80}
                             </p>
                           </div>
                         )}
 
                         <Button size="lg" className="w-full max-w-xs font-bold text-lg h-14 rounded-xl" onClick={finishQuiz}>
-                          Menyuga qaytish
+                          {t.backToMenu}
                         </Button>
                       </div>
                     );
