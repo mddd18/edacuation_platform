@@ -51,7 +51,7 @@ const dict = {
     chapter: "Bólim",
     terms: "atama",
     completed: "Tawsılǵan",
-    unlocked: "Aşıq",
+    unlocked: "Ashıq",
     locked: "Qulplanǵan",
     menu: "Menyu",
     progress: "Rawajlanıw",
