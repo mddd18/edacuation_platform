@@ -109,6 +109,9 @@ export function LessonsPage() {
             ];
             const zigClass = positions[index % positions.length];
 
+            // TIZIM TILI BO'YICHA NOMNI TANLASH
+            const activeTitle = lang === 'QQ' && lesson.title_qq ? lesson.title_qq : lesson.title;
+
             return (
               <div key={lesson.id} className={`relative z-10 flex flex-col items-center mb-10 md:mb-14 w-full ${zigClass}`}>
 
@@ -124,7 +127,7 @@ export function LessonsPage() {
                         : "bg-white border-slate-200 dark:bg-slate-800 dark:border-slate-700 text-slate-400"
                   }`}
                 >
-                  {lesson.title}
+                  {activeTitle}
                   
                   <div className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 rotate-45 border-b-2 border-r-2 ${
                     lesson.isCurrent
