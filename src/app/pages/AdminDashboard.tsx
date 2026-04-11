@@ -152,6 +152,16 @@ export function AdminDashboard() {
 
   if (loading) return <div className="min-h-screen flex items-center justify-center dark:bg-slate-950"><Loader2 className="w-10 h-10 text-indigo-600 animate-spin" /></div>;
 
+  // QIDIRUV LOGIKASI
+  const filteredUsers = users.filter(user => {
+    const searchString = `${user.first_name || ''} ${user.last_name || ''} ${user.username || ''} ${user.email || ''}`.toLowerCase();
+    const matchesSearch = searchString.includes(searchQuery.toLowerCase());
+    const matchesGrade = gradeFilter === "all" || (user.grade && user.grade.toString() === gradeFilter);
+    return matchesSearch && matchesGrade;
+  });
+  
+  const availableGrades = ["all", ...Array.from(new Set(users.map(u => u.grade?.toString()).filter(Boolean)))].sort();
+
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-8 min-h-screen pb-24">
       {/* HEADER */}
@@ -169,6 +179,28 @@ export function AdminDashboard() {
         </div>
       </div>
 
+      {/* STATISTIKA */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-indigo-600 text-white overflow-hidden relative">
+          <CardContent className="p-6 relative z-10 flex justify-between items-start">
+            <div><p className="text-blue-100 font-bold text-sm uppercase mb-1">O'quvchilar</p><h3 className="text-4xl font-black">{stats.totalUsers}</h3></div>
+            <div className="p-3 bg-white/20 rounded-2xl"><Users className="w-6 h-6" /></div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-emerald-400 to-emerald-600 text-white overflow-hidden relative">
+          <CardContent className="p-6 relative z-10 flex justify-between items-start">
+            <div><p className="text-emerald-100 font-bold text-sm uppercase mb-1">Jami Darslar</p><h3 className="text-4xl font-black">{stats.totalLessons}</h3></div>
+            <div className="p-3 bg-white/20 rounded-2xl"><BookOpen className="w-6 h-6" /></div>
+          </CardContent>
+        </Card>
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-fuchsia-600 text-white overflow-hidden relative">
+          <CardContent className="p-6 relative z-10 flex justify-between items-start">
+            <div><p className="text-purple-100 font-bold text-sm uppercase mb-1">Jami Holatlar</p><h3 className="text-4xl font-black">{stats.totalCases}</h3></div>
+            <div className="p-3 bg-white/20 rounded-2xl"><Scale className="w-6 h-6" /></div>
+          </CardContent>
+        </Card>
+      </div>
+
       {/* TABS */}
       <div className="flex overflow-x-auto gap-2 pb-2 custom-scrollbar">
         <Button onClick={() => setActiveTab('users')} variant={activeTab === 'users' ? 'default' : 'outline'} className={`rounded-xl ${activeTab === 'users' ? 'bg-indigo-600' : ''}`}><Users className="w-4 h-4 mr-2" /> O'quvchilar</Button>
@@ -178,7 +210,54 @@ export function AdminDashboard() {
       </div>
 
       <AnimatePresence mode="wait">
-        {/* DARS QO'SHISH TABI */}
+
+        {/* 1. O'QUVCHILAR BAZASI TABI */}
+        {activeTab === 'users' && (
+          <motion.div key="users" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <Card className="border-0 shadow-xl bg-white dark:bg-slate-900 rounded-[24px] overflow-hidden">
+              <CardHeader className="border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 p-6 flex-row items-center justify-between">
+                <CardTitle className="text-xl font-bold dark:text-white flex items-center gap-2"><LayoutList className="w-5 h-5 text-indigo-500" /> Baza</CardTitle>
+                <div className="flex gap-2">
+                  <input type="text" placeholder="Ism yoki login..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} className="px-4 py-2 border rounded-xl text-sm w-48 dark:bg-slate-800 dark:border-slate-700" />
+                  <select value={gradeFilter} onChange={(e) => setGradeFilter(e.target.value)} className="px-4 py-2 border rounded-xl text-sm dark:bg-slate-800 dark:border-slate-700">
+                    {availableGrades.map(g => <option key={g} value={g}>{g === "all" ? "Barchasi" : `${g}-sinf`}</option>)}
+                  </select>
+                </div>
+              </CardHeader>
+              <CardContent className="p-0 overflow-x-auto">
+                <table className="w-full text-left text-sm whitespace-nowrap">
+                  <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 uppercase font-bold text-[11px]">
+                    <tr><th className="px-6 py-4">Ism</th><th className="px-6 py-4">Sinf</th><th className="px-6 py-4">XP</th><th className="px-6 py-4">Sana</th></tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                    {filteredUsers.map(user => (
+                      <tr key={user.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50">
+                        <td className="px-6 py-4 font-bold dark:text-white">
+                          {user.first_name} {user.last_name}
+                          <span className="text-xs font-normal text-slate-500 block mt-0.5">
+                            {user.username ? `@${user.username}` : user.email}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">{user.grade}-sinf</td>
+                        <td className="px-6 py-4 font-bold text-amber-500">{user.xp} XP</td>
+                        <td className="px-6 py-4 text-slate-500">{new Date(user.created_at).toLocaleDateString()}</td>
+                      </tr>
+                    ))}
+                    {filteredUsers.length === 0 && (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-8 text-center text-slate-500 font-medium">
+                          O'quvchilar topilmadi...
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* 2. DARS QO'SHISH TABI */}
         {activeTab === 'lesson' && (
           <motion.div key="lesson" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
             <Card className="border-0 shadow-xl bg-white dark:bg-slate-900 rounded-[24px]">
@@ -290,6 +369,45 @@ export function AdminDashboard() {
                   </div>
                   
                   <Button type="submit" disabled={isSubmitting} className="w-full bg-purple-600 hover:bg-purple-700 h-14 rounded-xl text-lg font-bold">Saqlash va Joylash</Button>
+                </form>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* 4. SO'ROVNOMA QO'SHISH TABI */}
+        {activeTab === 'poll' && (
+          <motion.div key="poll" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <Card className="border-0 shadow-xl bg-white dark:bg-slate-900 rounded-[24px]">
+              <CardHeader><CardTitle className="text-amber-500 flex items-center gap-2"><PieChart className="w-6 h-6" /> Hafta Dilemmasini Yangilash</CardTitle></CardHeader>
+              <CardContent>
+                <form onSubmit={handleAddPoll} className="space-y-6">
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* UZ */}
+                    <div className="space-y-4 border-r md:pr-4 dark:border-slate-700">
+                      <h3 className="font-bold text-blue-600 bg-blue-50 dark:bg-blue-900/30 p-2 rounded-lg text-center">O'ZBEK TILI</h3>
+                      <div><label className="text-xs font-bold text-slate-500">Bahsli Savol (UZ)</label><input required value={pollQ} onChange={e=>setPollQ(e.target.value)} className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700" /></div>
+                      <div><label className="text-xs font-bold text-slate-500">Tushuntirish (UZ)</label><textarea required value={pollDesc} onChange={e=>setPollDesc(e.target.value)} rows={2} className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700" /></div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div><label className="text-xs font-bold text-blue-500">A - Variant (UZ)</label><input required value={pollOptA} onChange={e=>setPollOptA(e.target.value)} className="w-full p-3 border-2 border-blue-200 dark:border-blue-800 rounded-xl dark:bg-slate-800" /></div>
+                        <div><label className="text-xs font-bold text-purple-500">B - Variant (UZ)</label><input required value={pollOptB} onChange={e=>setPollOptB(e.target.value)} className="w-full p-3 border-2 border-purple-200 dark:border-purple-800 rounded-xl dark:bg-slate-800" /></div>
+                      </div>
+                    </div>
+
+                    {/* QQ */}
+                    <div className="space-y-4">
+                      <h3 className="font-bold text-amber-500 bg-amber-50 dark:bg-amber-900/30 p-2 rounded-lg text-center">QORAQALPOQ TILI</h3>
+                      <div><label className="text-xs font-bold text-slate-500">Bahsli Savol (QQ)</label><input required value={pollQQq} onChange={e=>setPollQQq(e.target.value)} className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700" /></div>
+                      <div><label className="text-xs font-bold text-slate-500">Tushuntirish (QQ)</label><textarea required value={pollDescQq} onChange={e=>setPollDescQq(e.target.value)} rows={2} className="w-full p-3 border rounded-xl dark:bg-slate-800 dark:border-slate-700" /></div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div><label className="text-xs font-bold text-blue-500">A - Variant (QQ)</label><input required value={pollOptAQq} onChange={e=>setPollOptAQq(e.target.value)} className="w-full p-3 border-2 border-blue-200 dark:border-blue-800 rounded-xl dark:bg-slate-800" /></div>
+                        <div><label className="text-xs font-bold text-purple-500">B - Variant (QQ)</label><input required value={pollOptBQq} onChange={e=>setPollOptBQq(e.target.value)} className="w-full p-3 border-2 border-purple-200 dark:border-purple-800 rounded-xl dark:bg-slate-800" /></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button type="submit" disabled={isSubmitting} className="w-full bg-amber-500 hover:bg-amber-600 h-14 rounded-xl text-lg font-bold text-white shadow-lg mt-4">Faollashtirish</Button>
                 </form>
               </CardContent>
             </Card>
