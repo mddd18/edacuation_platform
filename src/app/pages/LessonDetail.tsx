@@ -8,11 +8,11 @@ import {
 } from "lucide-react";
 import { Button } from "../components/ui/button";
 import { Card, CardContent } from "../components/ui/card";
-import { motion } from "motion/react";
+import { motion, AnimatePresence } from "motion/react";
 
 // TARJIMALAR LUG'ATI
 const translations = {
-  uz: {
+  UZ: {
     back: "Orqaga",
     testKnowledge: "Bilimni sinash",
     question: "Savol",
@@ -26,7 +26,7 @@ const translations = {
     retry: "Qayta urinish",
     backToList: "Ro'yxatga qaytish",
   },
-  qq: {
+  QQ: {
     back: "Artqa",
     testKnowledge: "Bilimdi sínap kóriw",
     question: "Soraw",
@@ -42,7 +42,7 @@ const translations = {
   }
 };
 
-type Language = 'uz' | 'qq';
+type Language = 'UZ' | 'QQ';
 
 export function LessonDetail() {
   const { id } = useParams();
@@ -50,8 +50,7 @@ export function LessonDetail() {
   const [lesson, setLesson] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   
-  // TIL HOLATI (Default O'zbek tili, localStorage dan olish ham mumkin)
-  const [lang, setLang] = useState<Language>('uz');
+  const [lang, setLang] = useState<Language>('UZ');
   
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [score, setScore] = useState(0);
@@ -60,9 +59,8 @@ export function LessonDetail() {
   const [selectedOption, setSelectedOption] = useState<number | null>(null);
 
   useEffect(() => {
-    // Agar ilovangizda til localStorage'da saqlansa, quyidagi kodni oching:
-    // const savedLang = localStorage.getItem('app_lang') as Language;
-    // if (savedLang && (savedLang === 'uz' || savedLang === 'qq')) setLang(savedLang);
+    const savedLang = (localStorage.getItem('appLang') as Language) || 'UZ';
+    setLang(savedLang);
 
     const fetchLesson = async () => {
       const { data, error } = await supabase.from('lessons').select('*').eq('id', id).single();
@@ -74,28 +72,33 @@ export function LessonDetail() {
   }, [id, navigate]);
 
   const toggleLanguage = () => {
-    const newLang = lang === 'uz' ? 'qq' : 'uz';
+    const newLang = lang === 'UZ' ? 'QQ' : 'UZ';
     setLang(newLang);
-    // localStorage.setItem('app_lang', newLang);
+    localStorage.setItem('appLang', newLang);
   };
 
   const t = translations[lang];
+
+  // BAZADAN KELAYOTGAN TILLARNI TANLASH LOGIKASI
+  const activeTitle = lesson ? (lang === 'QQ' && lesson.title_qq ? lesson.title_qq : lesson.title) : "";
+  const activeContent = lesson ? (lang === 'QQ' && lesson.content_qq ? lesson.content_qq : lesson.content) : "";
+  const activeQuizData = lesson ? (lang === 'QQ' && lesson.quiz_data_qq ? lesson.quiz_data_qq : lesson.quiz_data) : [];
 
   const handleAnswer = async (optionIndex: number) => {
     if (selectedOption !== null) return;
     setSelectedOption(optionIndex);
     
-    const isCorrect = optionIndex === lesson.quiz_data[currentQuestion].correct;
+    const isCorrect = optionIndex === activeQuizData[currentQuestion].correct;
     if (isCorrect) setScore(s => s + 1);
 
     setTimeout(async () => {
-      if (currentQuestion + 1 < lesson.quiz_data.length) {
+      if (currentQuestion + 1 < activeQuizData.length) {
         setCurrentQuestion(c => c + 1);
         setSelectedOption(null);
       } else {
         setQuizFinished(true);
         const finalScore = isCorrect ? score + 1 : score;
-        const totalQuestions = lesson.quiz_data.length;
+        const totalQuestions = activeQuizData.length;
 
         if (finalScore === totalQuestions) {
           const savedUser = localStorage.getItem("user");
@@ -120,7 +123,7 @@ export function LessonDetail() {
 
   if (loading) return <div className="min-h-[100dvh] flex items-center justify-center dark:bg-slate-950"><Loader2 className="animate-spin text-blue-500 w-8 h-8 md:w-10 md:h-10" /></div>;
 
-  const isPassed = score === lesson.quiz_data.length;
+  const isPassed = score === activeQuizData.length;
 
   return (
     <div className="min-h-[100dvh] bg-slate-50 dark:bg-slate-950 pb-24 overflow-x-hidden w-full">
@@ -131,19 +134,18 @@ export function LessonDetail() {
         
         {/* Tilni o'zgartirish tugmasi */}
         <button onClick={toggleLanguage} className="flex items-center gap-1.5 text-xs md:text-sm font-bold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-full hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-          <Globe className="w-4 h-4" /> {lang === 'uz' ? "UZ" : "QQ"}
+          <Globe className="w-4 h-4" /> {lang === 'UZ' ? "UZ" : "QQ"}
         </button>
       </div>
 
       <main className="max-w-3xl mx-auto px-4 mt-5 md:mt-8 w-full">
         {!showQuiz ? (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-            {/* Dars sarlavhasi va kontentini bazadan to'g'ridan-to'g'ri olyapmiz. Agar bazada 2 xil til saqlansa, bu yerni ham shunga moslash kerak */}
             <h1 className="text-2xl md:text-4xl font-black dark:text-white mb-4 leading-tight break-words">
-              {lesson.title}
+              {activeTitle}
             </h1>
             <div className="bg-white dark:bg-slate-900 p-5 md:p-10 rounded-[24px] md:rounded-[32px] border dark:border-slate-800 shadow-sm mb-6 text-sm sm:text-base md:text-lg leading-relaxed dark:text-slate-300 whitespace-pre-wrap break-words">
-              {lesson.content}
+              {activeContent}
             </div>
             <Button onClick={() => setShowQuiz(true)} className="w-full h-14 md:h-16 rounded-[16px] md:rounded-2xl bg-blue-600 text-base md:text-xl font-bold text-white shadow-lg shadow-blue-500/20 active:scale-[0.98] transition-transform">
               {t.testKnowledge} <ChevronRight className="ml-1.5 w-5 h-5" />
@@ -154,18 +156,18 @@ export function LessonDetail() {
             {!quizFinished ? (
               <div className="space-y-4 w-full">
                 <div className="flex justify-between items-center px-1">
-                   <h2 className="font-bold text-slate-400 uppercase tracking-widest text-[10px] md:text-xs">{t.question} {currentQuestion + 1} / {lesson.quiz_data.length}</h2>
+                   <h2 className="font-bold text-slate-400 uppercase tracking-widest text-[10px] md:text-xs">{t.question} {currentQuestion + 1} / {activeQuizData.length}</h2>
                    <Badge color="blue" className="text-[10px]">{score} {t.correct}</Badge>
                 </div>
                 <Card className="rounded-[24px] md:rounded-[32px] border-0 shadow-xl dark:bg-slate-800 w-full">
                   <CardContent className="p-5 md:p-8">
                     <h3 className="text-lg sm:text-xl md:text-2xl font-bold dark:text-white mb-6 leading-snug break-words">
-                      {lesson.quiz_data[currentQuestion].question}
+                      {activeQuizData[currentQuestion].question}
                     </h3>
                     <div className="grid gap-3 w-full">
-                      {lesson.quiz_data[currentQuestion].options.map((opt: string, i: number) => {
+                      {activeQuizData[currentQuestion].options.map((opt: string, i: number) => {
                         const isSelected = selectedOption === i;
-                        const isCorrectOpt = i === lesson.quiz_data[currentQuestion].correct;
+                        const isCorrectOpt = i === activeQuizData[currentQuestion].correct;
                         let borderClass = "border-slate-200 dark:border-slate-700";
                         if (isSelected) {
                           borderClass = isCorrectOpt ? "border-green-500 bg-green-50 dark:bg-green-900/20" : "border-red-500 bg-red-50 dark:bg-red-900/20";
@@ -207,7 +209,7 @@ export function LessonDetail() {
                     <h2 className="text-2xl font-black dark:text-white">{t.failed}</h2>
                     <p className="text-sm text-slate-500 px-4">{t.failedMsg}</p>
                     <div className="bg-slate-100 dark:bg-slate-800 p-5 rounded-[24px] mx-2">
-                      <p className="text-2xl font-bold dark:text-white">{score} / {lesson.quiz_data.length}</p>
+                      <p className="text-2xl font-bold dark:text-white">{score} / {activeQuizData.length}</p>
                       <p className="text-[10px] text-slate-400 uppercase font-bold mt-1">{t.correctAnswers}</p>
                     </div>
                     <Button onClick={() => { setShowQuiz(false); setQuizFinished(false); setCurrentQuestion(0); setScore(0); setSelectedOption(null); }} variant="outline" className="w-full h-14 rounded-[16px] text-sm font-bold mx-2 max-w-[calc(100%-1rem)]">
