@@ -10,7 +10,7 @@ import { motion, AnimatePresence } from "motion/react";
 // --- TARJIMALAR LUG'ATI ---
 const dict = {
   UZ: {
-    appName: "Qonun va Huquq",
+    appName: "Huquq-edu",
     appMotto: "Bilim — bu kuch",
     dashboard: "Asosiy panel",
     lessons: "Darslar",
@@ -26,7 +26,7 @@ const dict = {
     langToggle: "Til: O'zbekcha"
   },
   QQ: {
-    appName: "Nızam hám Huquq",
+    appName: "Huquq-edu",
     appMotto: "Bilim — bul kúsh",
     dashboard: "Tiykarǵı panel",
     lessons: "Sabaqlar",
