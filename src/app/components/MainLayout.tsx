@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase"; 
 import { 
   Scale, Trophy, Book, BookOpen, User, Home, GraduationCap, 
-  PlaySquare, Sun, Moon, Menu, X, LogOut, Globe
+  Landmark, Sun, Moon, Menu, X, LogOut, Globe // PlaySquare o'rniga Landmark qo'shildi
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -16,7 +16,7 @@ const dict = {
     lessons: "Darslar",
     cases: "Amaliy holatlar",
     dictionary: "Bosqichli Lug'at",
-    videos: "Video Qo'llanmalar",
+    egov: "Elektron hukumat", // O'zgartirildi
     leaderboard: "Reyting",
     profile: "Profil",
     theme: "Rejimni o'zgartirish",
@@ -32,7 +32,7 @@ const dict = {
     lessons: "Sabaqlar",
     cases: "Ámeliy jaǵdaylar",
     dictionary: "Basqıshlı sózlik",
-    videos: "Video qollanbalar",
+    egov: "Mámleketlik xızmetler", // O'zgartirildi
     leaderboard: "Reyting",
     profile: "Profil",
     theme: "Rejimti ózgertiw",
@@ -143,7 +143,7 @@ export function MainLayout() {
     { path: "/lessons", icon: BookOpen, label: t.lessons },
     { path: "/cases", icon: Scale, label: t.cases },
     { path: "/dictionary", icon: Book, label: t.dictionary },
-    { path: "/videos", icon: PlaySquare, label: t.videos },
+    { path: "/videos", icon: Landmark, label: t.egov }, // "videos" o'zgartirildi
     { path: "/leaderboard", icon: Trophy, label: t.leaderboard },
     { path: "/profile", icon: User, label: t.profile },
   ];
