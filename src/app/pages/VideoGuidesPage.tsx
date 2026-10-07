@@ -204,36 +204,66 @@ export function VideoGuidesPage() {
 
         {/* 2-BO'LIM: KIBERXAVFSIZLIK */}
         <TabsContent value="cyber" className="animate-in fade-in duration-500">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-10 border border-gray-100 dark:border-slate-700 text-center shadow-sm">
-            <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
-              <ShieldAlert className="w-10 h-10 text-red-600 dark:text-red-400" />
-            </div>
-            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Kiberjinoyatlardan himoyalanish
-            </h2>
-            <p className="text-gray-500 dark:text-slate-400 max-w-lg mx-auto mb-8">
-              Tez orada bu yerda firibgarlardan himoyalanish, shaxsiy ma'lumotlarni asrash va xavfsiz internet qoidalari bo'yicha amaliy qollanmalar qo'shiladi.
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 w-full">
             
-            {/* Namuna sifatida qo'yilgan karta (Backendga ulab o'zgartirishingiz mumkin) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-              <Card className="h-full border-2 border-red-100 dark:border-slate-700 hover:border-red-300 transition-all duration-300 bg-gray-50 dark:bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group">
-                <div className="h-40 bg-slate-200 dark:bg-slate-800 flex items-center justify-center group-hover:bg-red-50 dark:group-hover:bg-red-900/20 transition-colors">
-                  <PlayCircle className="w-12 h-12 text-slate-400 group-hover:text-red-500 transition-colors" />
+            {/* 1-VIDEO: Kiberfiribgarlardan qanday himoyalanish kerak? */}
+            <Card className="h-full w-full border-2 border-gray-100 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-500/50 transition-all duration-300 bg-white dark:bg-slate-800 shadow-md hover:shadow-xl overflow-hidden flex flex-col rounded-2xl">
+              <div className="w-full aspect-video bg-gray-200 dark:bg-slate-900 relative overflow-hidden">
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full object-cover"
+                  src="https://www.youtube.com/embed/BlRDVMzqA6I" 
+                  title="Kiberfiribgarlardan qanday himoyalanish kerak?"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+              <CardContent className="p-4 md:p-6 flex flex-col flex-1 w-full">
+                <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
+                  <ShieldAlert className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-500" />
+                  <Badge className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-none shadow-none text-[10px] md:text-xs px-2 py-0.5 font-bold whitespace-nowrap">
+                    Kiberxavfsizlik
+                  </Badge>
                 </div>
-                <CardContent className="p-5">
-                  <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white group-hover:text-red-500 transition-colors">
-                    Plastik karta xavfsizligi
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-slate-400">
-                    Sms-kodlarni hech kimga bermang. Firibgarlar qanday usullardan foydalanishi haqida bilib oling.
-                  </p>
-                </CardContent>
-              </Card>
-            </div>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
+                  Kiberfiribgarlardan qanday himoyalanish kerak?
+                </h3>
+                <p className="text-xs md:text-sm text-gray-600 dark:text-slate-400 font-medium leading-relaxed mt-auto break-words">
+                  Virtual firibgarlar qanday usullardan foydalanadi (masalan, fishing)? Soxta SMS kodlar, Telegramdagi yolg'on ssilkalar va yutug'li o'yinlarga ishonib qolmaslik haqida batafsil ma'lumot.
+                </p>
+              </CardContent>
+            </Card>
+
+            {/* 2-VIDEO: Kredit bitimiga taqiq qo'yish (my.gov.uz) */}
+            <Card className="h-full w-full border-2 border-gray-100 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-500/50 transition-all duration-300 bg-white dark:bg-slate-800 shadow-md hover:shadow-xl overflow-hidden flex flex-col rounded-2xl">
+              <div className="w-full aspect-video bg-gray-200 dark:bg-slate-900 relative overflow-hidden">
+                <iframe
+                  className="absolute top-0 left-0 w-full h-full object-cover"
+                  src="https://www.youtube.com/embed/3PRPVe8IM7w" 
+                  title="Kredit bitimini tuzishga taqiq qo‘yish yoki ta’qiqni olib tashlash"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+              <CardContent className="p-4 md:p-6 flex flex-col flex-1 w-full">
+                <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
+                  <ShieldAlert className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-500" />
+                  <Badge className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-none shadow-none text-[10px] md:text-xs px-2 py-0.5 font-bold whitespace-nowrap">
+                    Firibgarlikdan himoya
+                  </Badge>
+                </div>
+                <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
+                  Sizning nomingizdan kredit olishlarining oldini oling!
+                </h3>
+                <p className="text-xs md:text-sm text-gray-600 dark:text-slate-400 font-medium leading-relaxed mt-auto break-words">
+                  Nomingizga firibgarlar kredit olishidan xavotirdamisiz? My.gov.uz orqali kredit bitimini tuzishga taqiq qo'yish yoki uni olib tashlash bo'yicha amaliy yo'riqnoma.
+                </p>
+              </CardContent>
+            </Card>
+
           </div>
         </TabsContent>
-
       </Tabs>
     </div>
   );
