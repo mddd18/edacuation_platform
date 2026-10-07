@@ -10,7 +10,8 @@ import { DictionaryPage } from "./pages/DictionaryPage";
 import { VideoGuidesPage } from "./pages/VideoGuidesPage";
 import { LeaderboardPage } from "./pages/LeaderboardPage";
 import { ProfilePage } from "./pages/ProfilePage";
-import { AdminDashboard } from "./pages/AdminDashboard"; // <--- Admin panelni import qildik
+import { AdminDashboard } from "./pages/AdminDashboard";
+import { KonstitutsiyaVideosPage } from "./pages/KonstitutsiyaVideosPage"; // <--- Yangi sahifani import qildik
 
 export const router = createBrowserRouter([
   {
@@ -28,10 +29,11 @@ export const router = createBrowserRouter([
       { path: "cases/:id", element: <CaseDetail /> },
       { path: "dictionary", element: <DictionaryPage /> },
       { path: "videos", element: <VideoGuidesPage /> },
+      { path: "constitution-videos", element: <KonstitutsiyaVideosPage /> }, // <--- Yangi sahifa yo'li
       { path: "leaderboard", element: <LeaderboardPage /> },
       { path: "profile", element: <ProfilePage /> },
       { 
-        path: "admin", // <--- Admin uchun yo'nalish qo'shdik
+        path: "admin", 
         element: <AdminDashboard /> 
       }
     ],
