@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { supabase } from "../../lib/supabase"; 
 import { 
   Scale, Trophy, Book, BookOpen, User, Home, GraduationCap, 
-  Landmark, Sun, Moon, Menu, X, LogOut, Globe // PlaySquare o'rniga Landmark qo'shildi
+  Landmark, Sun, Moon, Menu, X, LogOut, Globe, BookMarked 
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
@@ -16,7 +16,8 @@ const dict = {
     lessons: "Darslar",
     cases: "Amaliy holatlar",
     dictionary: "Bosqichli Lug'at",
-    egov: "Elektron hukumat", // O'zgartirildi
+    egov: "Elektron hukumat",
+    constitutionVideos: "Konstitutsiya darslari", // <--- Qo'shildi
     leaderboard: "Reyting",
     profile: "Profil",
     theme: "Rejimni o'zgartirish",
@@ -32,7 +33,8 @@ const dict = {
     lessons: "Sabaqlar",
     cases: "Ámeliy jaǵdaylar",
     dictionary: "Basqıshlı sózlik",
-    egov: "Mámleketlik xızmetler", // O'zgartirildi
+    egov: "Mámleketlik xızmetler",
+    constitutionVideos: "Konstituciya sabaqları", // <--- Qo'shildi
     leaderboard: "Reyting",
     profile: "Profil",
     theme: "Rejimti ózgertiw",
@@ -54,7 +56,6 @@ export function MainLayout() {
   const [lang, setLang] = useState<'UZ' | 'QQ'>('UZ');
 
   useEffect(() => {
-    // Sayt yonganda xotiradan tilni o'qish
     const savedLang = localStorage.getItem('appLang') as 'UZ' | 'QQ';
     if (savedLang) setLang(savedLang);
   }, []);
@@ -63,7 +64,6 @@ export function MainLayout() {
     const newLang = lang === 'UZ' ? 'QQ' : 'UZ';
     setLang(newLang);
     localStorage.setItem('appLang', newLang);
-    // Til o'zgarganda butun sayt yangi tilda ishlashi uchun sahifani yangilaymiz
     window.location.reload();
   };
 
@@ -136,14 +136,15 @@ export function MainLayout() {
     }
   };
 
-  const t = dict[lang]; // Joriy til lug'ati
+  const t = dict[lang];
 
   const navItems = [
     { path: "/", icon: Home, label: t.dashboard },
     { path: "/lessons", icon: BookOpen, label: t.lessons },
     { path: "/cases", icon: Scale, label: t.cases },
     { path: "/dictionary", icon: Book, label: t.dictionary },
-    { path: "/videos", icon: Landmark, label: t.egov }, // "videos" o'zgartirildi
+    { path: "/videos", icon: Landmark, label: t.egov },
+    { path: "/constitution-videos", icon: BookMarked, label: t.constitutionVideos }, // <--- Konstitutsiya darslari qo'shildi
     { path: "/leaderboard", icon: Trophy, label: t.leaderboard },
     { path: "/profile", icon: User, label: t.profile },
   ];
