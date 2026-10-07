@@ -1,10 +1,13 @@
 import { useState } from "react";
 import { Card, CardContent } from "../components/ui/card";
 import { Badge } from "../components/ui/badge";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "../components/ui/tabs";
 import { 
-  PlaySquare, 
   Search,
-  MonitorPlay
+  MonitorPlay,
+  Landmark,
+  ShieldAlert,
+  PlayCircle
 } from "lucide-react";
 import { videoGuides } from "../data/videos";
 import { motion, AnimatePresence } from "motion/react";
@@ -13,8 +16,10 @@ import { Input } from "../components/ui/input";
 // TARJIMALAR LUG'ATI
 const translations = {
   UZ: {
-    title: "Video Qo'llanmalar",
-    subtitle: "OneID, My.gov.uz va o'qishga topshirish kabi muhim davlat xizmatlaridan onlayn foydalanishni videolarda o'rganing.",
+    title: "Elektron Hukumat va Xavfsizlik",
+    subtitle: "Davlat xizmatlaridan onlayn foydalanish va internetda firibgarlikdan himoyalanish sirlari.",
+    tabEgov: "Elektron hukumat",
+    tabCyber: "Kiberjinoyatga qarshi",
     searchPlaceholder: "Qidiring...",
     emptyState: "Siz qidirgan video qo'llanma topilmadi.",
     filters: {
@@ -25,8 +30,10 @@ const translations = {
     }
   },
   QQ: {
-    title: "Video Qollanbalar",
-    subtitle: "OneID, My.gov.uz hám oqıwǵa tapsırıw sıyaqlı áhmiyetli mámleketlik xızmetlerden onlayn paydalanıwdı videolarda úyreniń.",
+    title: "Mámleketlik Xızmetler hám Qáwipsizlik",
+    subtitle: "Mámleketlik xızmetlerden onlayn paydalanıw hám internette kiberjınayattan qorǵanıw sırları.",
+    tabEgov: "Mámleketlik xızmetler",
+    tabCyber: "Kiberqáwipsizlik",
     searchPlaceholder: "Izleń...",
     emptyState: "Siz izlegen video qollanba tabılmadı.",
     filters: {
@@ -69,13 +76,15 @@ export function VideoGuidesPage() {
 
   return (
     <div className="py-6 px-4 md:p-10 w-full max-w-7xl mx-auto min-h-screen dark:bg-slate-900 transition-colors duration-300">
+      
+      {/* SARLAVHA QISMI */}
       <motion.div 
         className="mb-6 md:mb-8 text-center flex flex-col items-center"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <div className="inline-flex p-3 md:p-4 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-full mb-3 md:mb-4 shadow-inner">
-          <PlaySquare className="w-8 h-8 md:w-10 md:h-10" />
+        <div className="inline-flex p-3 md:p-4 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full mb-3 md:mb-4 shadow-inner">
+          <Landmark className="w-8 h-8 md:w-10 md:h-10" />
         </div>
         <h1 className="text-2xl md:text-5xl font-extrabold text-gray-900 dark:text-white mb-2 md:mb-3 tracking-tight">
           {t.title}
@@ -85,94 +94,147 @@ export function VideoGuidesPage() {
         </p>
       </motion.div>
 
-      {/* Filtrlash va Qidiruv - Endi ekran bo'yicha pastga tushadi (wrap) */}
-      <div className="flex flex-col lg:flex-row gap-4 justify-between items-center mb-6 md:mb-10 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 transition-colors w-full box-border">
-        
-        {/* Kategoriyalar */}
-        <div className="flex flex-wrap gap-2 w-full lg:w-auto justify-start sm:justify-center lg:justify-start">
-          {categories.map(category => (
-            <button
-              key={category.id}
-              onClick={() => setFilter(category.id)}
-              className={`px-3 py-2 md:px-4 md:py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all ${
-                filter === category.id 
-                  ? "bg-red-500 text-white shadow-md shadow-red-500/30" 
-                  : "bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600"
-              }`}
-            >
-              {category.label}
-            </button>
-          ))}
-        </div>
-        
-        {/* Qidiruv qutisi */}
-        <div className="relative w-full lg:w-80">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
-          <Input 
-            type="text" 
-            placeholder={t.searchPlaceholder}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9 md:pl-10 h-10 md:h-12 w-full text-sm md:text-base bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700 dark:text-white rounded-xl"
-          />
-        </div>
-      </div>
+      {/* BO'LIMLAR (TABS) */}
+      <Tabs defaultValue="egov" className="w-full">
+        <TabsList className="grid w-full md:w-[500px] mx-auto grid-cols-2 p-1 bg-gray-200 dark:bg-slate-800 rounded-xl mb-8">
+          <TabsTrigger 
+            value="egov" 
+            className="flex items-center gap-2 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-sm data-[state=active]:text-blue-600 dark:data-[state=active]:text-blue-400 font-bold transition-all"
+          >
+            <Landmark className="w-4 h-4" />
+            <span className="text-sm md:text-base">{t.tabEgov}</span>
+          </TabsTrigger>
+          
+          <TabsTrigger 
+            value="cyber" 
+            className="flex items-center gap-2 rounded-lg data-[state=active]:bg-white dark:data-[state=active]:bg-slate-900 data-[state=active]:shadow-sm data-[state=active]:text-red-600 dark:data-[state=active]:text-red-400 font-bold transition-all"
+          >
+            <ShieldAlert className="w-4 h-4" />
+            <span className="text-sm md:text-base">{t.tabCyber}</span>
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Videolar Ro'yxati */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 w-full">
-        <AnimatePresence mode="popLayout">
-          {filteredVideos.map((video, index) => (
-            <motion.div
-              layout
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-              key={video.id}
-              className="w-full"
-            >
-              <Card className="h-full w-full border-2 border-gray-100 dark:border-slate-700 hover:border-red-300 dark:hover:border-red-500/50 transition-all duration-300 bg-white dark:bg-slate-800 shadow-md hover:shadow-xl overflow-hidden flex flex-col rounded-2xl">
-                
-                {/* Youtube Embed Qismi - Chegaralangan (overflow-hidden) */}
-                <div className="w-full aspect-video bg-gray-200 dark:bg-slate-900 relative overflow-hidden">
-                  <iframe
-                    className="absolute top-0 left-0 w-full h-full object-cover"
-                    src={`https://www.youtube.com/embed/${video.youtubeId}`}
-                    title={video.title}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
+        {/* 1-BO'LIM: ELEKTRON HUKUMAT */}
+        <TabsContent value="egov" className="animate-in fade-in duration-500">
+          
+          {/* Filtrlash va Qidiruv */}
+          <div className="flex flex-col lg:flex-row gap-4 justify-between items-center mb-6 md:mb-10 bg-white dark:bg-slate-800 p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-slate-700 transition-colors w-full box-border">
+            
+            <div className="flex flex-wrap gap-2 w-full lg:w-auto justify-start sm:justify-center lg:justify-start">
+              {categories.map(category => (
+                <button
+                  key={category.id}
+                  onClick={() => setFilter(category.id)}
+                  className={`px-3 py-2 md:px-4 md:py-2.5 rounded-xl text-xs md:text-sm font-bold transition-all ${
+                    filter === category.id 
+                      ? "bg-blue-600 text-white shadow-md shadow-blue-500/30" 
+                      : "bg-gray-100 dark:bg-slate-700 text-gray-600 dark:text-slate-300 hover:bg-gray-200 dark:hover:bg-slate-600"
+                  }`}
+                >
+                  {category.label}
+                </button>
+              ))}
+            </div>
+            
+            <div className="relative w-full lg:w-80">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 md:w-5 md:h-5 text-gray-400" />
+              <Input 
+                type="text" 
+                placeholder={t.searchPlaceholder}
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="pl-9 md:pl-10 h-10 md:h-12 w-full text-sm md:text-base bg-gray-50 dark:bg-slate-900 border-gray-200 dark:border-slate-700 dark:text-white rounded-xl"
+              />
+            </div>
+          </div>
+
+          {/* Videolar Ro'yxati */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 md:gap-8 w-full">
+            <AnimatePresence mode="popLayout">
+              {filteredVideos.map((video, index) => (
+                <motion.div
+                  layout
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ duration: 0.3, delay: index * 0.05 }}
+                  key={video.id}
+                  className="w-full"
+                >
+                  <Card className="h-full w-full border-2 border-gray-100 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-500/50 transition-all duration-300 bg-white dark:bg-slate-800 shadow-md hover:shadow-xl overflow-hidden flex flex-col rounded-2xl">
+                    <div className="w-full aspect-video bg-gray-200 dark:bg-slate-900 relative overflow-hidden">
+                      <iframe
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                        src={`https://www.youtube.com/embed/${video.youtubeId}`}
+                        title={video.title}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      ></iframe>
+                    </div>
+                    
+                    <CardContent className="p-4 md:p-6 flex flex-col flex-1 w-full">
+                      <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
+                        <MonitorPlay className="w-3.5 h-3.5 md:w-4 md:h-4 text-blue-500" />
+                        <Badge className="bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 border-none shadow-none text-[10px] md:text-xs px-2 py-0.5 font-bold whitespace-nowrap">
+                          {getDisplayCategory(video.category)}
+                        </Badge>
+                      </div>
+                      
+                      <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
+                        {video.title}
+                      </h3>
+
+                      <p className="text-xs md:text-sm text-gray-600 dark:text-slate-400 font-medium leading-relaxed mt-auto break-words">
+                        {video.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+          
+          {filteredVideos.length === 0 && (
+            <div className="text-center py-16 md:py-20 text-sm md:text-base text-gray-500 dark:text-slate-500 font-medium w-full">
+              {t.emptyState}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* 2-BO'LIM: KIBERXAVFSIZLIK */}
+        <TabsContent value="cyber" className="animate-in fade-in duration-500">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-10 border border-gray-100 dark:border-slate-700 text-center shadow-sm">
+            <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-6">
+              <ShieldAlert className="w-10 h-10 text-red-600 dark:text-red-400" />
+            </div>
+            <h2 className="text-xl md:text-2xl font-bold text-gray-900 dark:text-white mb-4">
+              Kiberjinoyatlardan himoyalanish
+            </h2>
+            <p className="text-gray-500 dark:text-slate-400 max-w-lg mx-auto mb-8">
+              Tez orada bu yerda firibgarlardan himoyalanish, shaxsiy ma'lumotlarni asrash va xavfsiz internet qoidalari bo'yicha amaliy qollanmalar qo'shiladi.
+            </p>
+            
+            {/* Namuna sifatida qo'yilgan karta (Backendga ulab o'zgartirishingiz mumkin) */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
+              <Card className="h-full border-2 border-red-100 dark:border-slate-700 hover:border-red-300 transition-all duration-300 bg-gray-50 dark:bg-slate-900 rounded-2xl overflow-hidden cursor-pointer group">
+                <div className="h-40 bg-slate-200 dark:bg-slate-800 flex items-center justify-center group-hover:bg-red-50 dark:group-hover:bg-red-900/20 transition-colors">
+                  <PlayCircle className="w-12 h-12 text-slate-400 group-hover:text-red-500 transition-colors" />
                 </div>
-                
-                <CardContent className="p-4 md:p-6 flex flex-col flex-1 w-full">
-                  <div className="flex items-center gap-1.5 md:gap-2 mb-2 md:mb-3">
-                    <MonitorPlay className="w-3.5 h-3.5 md:w-4 md:h-4 text-red-500" />
-                    <Badge className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-none shadow-none text-[10px] md:text-xs px-2 py-0.5 font-bold whitespace-nowrap">
-                      {getDisplayCategory(video.category)}
-                    </Badge>
-                  </div>
-                  
-                  <h3 className="text-lg md:text-xl font-bold text-gray-900 dark:text-white leading-tight mb-2">
-                    {/* Agar kelajakda video title va description ham tarjima qilinsa, bu yerni ham o'zgartirish kerak bo'ladi */}
-                    {video.title}
+                <CardContent className="p-5">
+                  <h3 className="font-bold text-lg mb-2 text-gray-900 dark:text-white group-hover:text-red-500 transition-colors">
+                    Plastik karta xavfsizligi
                   </h3>
-
-                  <p className="text-xs md:text-sm text-gray-600 dark:text-slate-400 font-medium leading-relaxed mt-auto break-words">
-                    {video.description}
+                  <p className="text-sm text-gray-500 dark:text-slate-400">
+                    Sms-kodlarni hech kimga bermang. Firibgarlar qanday usullardan foydalanishi haqida bilib oling.
                   </p>
                 </CardContent>
               </Card>
-            </motion.div>
-          ))}
-        </AnimatePresence>
-      </div>
-      
-      {filteredVideos.length === 0 && (
-        <div className="text-center py-16 md:py-20 text-sm md:text-base text-gray-500 dark:text-slate-500 font-medium w-full">
-          {t.emptyState}
-        </div>
-      )}
+            </div>
+          </div>
+        </TabsContent>
+
+      </Tabs>
     </div>
   );
 }
